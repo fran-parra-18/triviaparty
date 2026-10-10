@@ -52,8 +52,18 @@ if not exist "server\dist\index.js" set "NEEDBUILD=1"
 if not "%STAMP%"=="" if not "%STAMP%"=="%OLDSTAMP%" set "NEEDBUILD=1"
 if "%NEEDBUILD%"=="1" (
   echo   [2/4] Compilando el juego...
-  call npm run build
+  call npm run build -w client
   if errorlevel 1 goto :fallo
+  rem El cliente de Prisma solo se genera si falta (regenerarlo con un servidor abierto falla en Windows).
+  if not exist "node_modules\.prisma\client\index.js" (
+    pushd server
+    call node scripts\prisma.mjs generate
+    popd
+  )
+  pushd server
+  call npx tsup
+  if errorlevel 1 (popd & goto :fallo)
+  popd
   if not "%STAMP%"=="" (echo %STAMP%)>".build-stamp"
 ) else (
   echo   [2/4] Compilacion al dia.
