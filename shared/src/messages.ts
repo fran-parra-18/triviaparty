@@ -1,4 +1,4 @@
-import type { ErrorCode } from './types';
+import type { ErrorCode, GamePhase } from './types';
 
 export const ERROR_MESSAGES: Record<ErrorCode, string> = {
   ROOM_NOT_FOUND: 'No existe ninguna sala con ese código.',
@@ -19,3 +19,26 @@ export const ERROR_MESSAGES: Record<ErrorCode, string> = {
   SERVER_FULL: 'El servidor alcanzó el máximo de salas activas. Intenta más tarde.',
   INTERNAL: 'Error interno del servidor.',
 };
+
+/** Texto del botón principal de avance según la fase (lo usan el anfitrión y el líder). */
+export function nextActionLabel(
+  phase: GamePhase,
+  progress: { index: number; total: number } | null,
+  showResultsAfterEach: boolean,
+): string | null {
+  const isLast = !!progress && progress.index >= progress.total - 1;
+  switch (phase) {
+    case 'countdown':
+      return 'Saltar cuenta atrás';
+    case 'question':
+      return 'Cerrar pregunta';
+    case 'locked':
+      return showResultsAfterEach ? 'Revelar respuesta' : isLast ? 'Ver resultados' : 'Siguiente pregunta';
+    case 'reveal':
+      return 'Ver clasificación';
+    case 'leaderboard':
+      return isLast ? '🏆 Ver podio' : 'Siguiente pregunta →';
+    default:
+      return null;
+  }
+}

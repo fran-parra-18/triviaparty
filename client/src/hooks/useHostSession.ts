@@ -102,6 +102,7 @@ export function useHostSession() {
     end: () => act('host:end'),
     playAgain: () => act('host:playAgain'),
     kick: (playerId: string) => act('host:kick', { playerId }),
+    setLeader: (playerId: string | null) => act('host:setLeader', { playerId }),
     updateSettings: (settings: Partial<GameSettings>) => act('host:updateSettings', { settings }),
     close: async () => {
       const ok = await act('host:close');

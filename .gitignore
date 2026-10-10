@@ -9,3 +9,4 @@ server/test/.tmp/
 coverage/
 .DS_Store
 .vite/
+.build-stamp

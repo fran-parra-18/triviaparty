@@ -124,6 +124,8 @@ export class Room {
   lastActivity = Date.now();
   notice: string | null = null;
   closed = false;
+  /** Jugador que puede controlar la partida desde su celular (lo designa el anfitrión). */
+  leaderId: string | null = null;
 
   private readonly tokens = new Map<string, string>(); // token → playerId
   private readonly rng: Rng;
@@ -246,6 +248,7 @@ export class Room {
     this.players.delete(playerId);
     this.tokens.delete(player.token);
     this.answers.delete(playerId);
+    if (this.leaderId === playerId) this.leaderId = null;
     this.leaderboard = this.leaderboard.filter((e) => e.playerId !== playerId);
     if (this.phase === 'question' && this.allConnectedAnswered()) this.closeQuestion();
     else this.changed();
@@ -259,6 +262,21 @@ export class Room {
 
   connectedPlayers(): Player[] {
     return [...this.players.values()].filter((p) => p.connected);
+  }
+
+  /** Designa al líder (o lo quita con null). Solo puede haber uno. */
+  setLeader(playerId: string | null) {
+    this.assertOpen();
+    if (playerId !== null && !this.players.has(playerId)) {
+      throw new GameError('INVALID_PAYLOAD', 'Ese jugador no está en la sala.');
+    }
+    this.leaderId = playerId;
+    this.touch();
+    this.changed();
+  }
+
+  isLeader(playerId: string): boolean {
+    return this.leaderId !== null && this.leaderId === playerId;
   }
 
   // ───────────────────────── Configuración ─────────────────────────
@@ -762,6 +780,7 @@ export class Room {
         score: p.published.score,
         avatar: p.avatar,
         joinedLate: p.joinedLate,
+        isLeader: p.id === this.leaderId,
       }));
     return {
       role: 'host',
@@ -783,6 +802,7 @@ export class Room {
       final: this.phase === 'finished' ? this.final : null,
       history: this.history,
       gameNumber: this.gameNumber,
+      leaderId: this.leaderId,
       autoAdvanceAt: this.timerKind === 'auto' && !this.paused ? this.timerDeadline : null,
       serverNow: Date.now(),
       notice: this.notice,
@@ -823,7 +843,9 @@ export class Room {
         rank: p.published.rank,
         correctCount: p.published.correctCount,
         streak: p.published.streak,
+        isLeader: p.id === this.leaderId,
       },
+      minPlayersMet: this.connectedPlayers().length >= this.settings.minPlayers,
       playerCount: this.players.size,
       players: [...this.players.values()]
         .sort((a, b) => a.joinOrder - b.joinOrder)

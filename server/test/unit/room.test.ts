@@ -96,6 +96,32 @@ describe('Room — jugadores', () => {
   });
 });
 
+describe('Room — líder', () => {
+  it('solo puede haber un líder y aparece en las vistas', () => {
+    const { room } = makeRoom();
+    const a = room.addPlayer('Ana', 's1');
+    const b = room.addPlayer('Beto', 's2');
+    room.setLeader(a.id);
+    expect(room.isLeader(a.id)).toBe(true);
+    room.setLeader(b.id);
+    expect(room.isLeader(a.id)).toBe(false);
+    expect(room.playerView(b.id)!.me.isLeader).toBe(true);
+    expect(room.hostView().leaderId).toBe(b.id);
+    expect(room.hostView().players.find((p) => p.id === b.id)!.isLeader).toBe(true);
+    room.setLeader(null);
+    expect(room.hostView().leaderId).toBeNull();
+  });
+
+  it('rechaza un líder inexistente y lo quita si el jugador sale de la sala', () => {
+    const { room } = makeRoom();
+    const a = room.addPlayer('Ana', 's1');
+    expectGameError(() => room.setLeader('p_inexistente'), 'INVALID_PAYLOAD');
+    room.setLeader(a.id);
+    room.removePlayer(a.id);
+    expect(room.leaderId).toBeNull();
+  });
+});
+
 describe('Room — flujo de partida', () => {
   it('juega una partida completa con puntuación y podio', async () => {
     const { room, onGameFinished } = makeRoom();

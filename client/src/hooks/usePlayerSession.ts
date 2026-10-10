@@ -1,4 +1,4 @@
-import type { PlayerView } from '@trivia/shared';
+import type { LeaderAction, PlayerView } from '@trivia/shared';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { observeServerTime } from '../lib/clock';
 import { errorText, getSocket, request } from '../lib/socket';
@@ -111,6 +111,14 @@ export function usePlayerSession(urlCode: string | null) {
     return res.ok;
   }, []);
 
+  /** Acciones del jugador líder (comenzar, avanzar, pausar…). */
+  const control = useCallback(async (action: LeaderAction) => {
+    const res = await request('player:control', { action });
+    // Pulsar «Siguiente» dos veces seguidas puede llegar tras el cambio de fase: no es un error real.
+    if (!res.ok && !(action === 'next' && res.error === 'INVALID_STATE')) setError(errorText(res));
+    return res.ok;
+  }, []);
+
   const leave = useCallback(async () => {
     await request('player:leave', {});
     forget();
@@ -134,6 +142,7 @@ export function usePlayerSession(urlCode: string | null) {
     storedCode: stored.current?.code ?? null,
     join,
     answer,
+    control,
     leave,
     reset,
     reconnectHere: () => {

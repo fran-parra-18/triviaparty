@@ -126,6 +126,24 @@ function HostGame({ view, actions }: { view: HostView; actions: HostActions }) {
             👥 {view.players.filter((p) => p.connected).length}
             {view.players.some((p) => !p.connected) && <span className="text-white/50">/{view.players.length}</span>}
           </span>
+          {view.players.length > 0 && (
+            <label className="chip hidden gap-1 text-base md:inline-flex" title="El líder controla la partida desde su celular">
+              <span aria-hidden>👑</span>
+              <span className="sr-only">Líder de la partida</span>
+              <select
+                className="max-w-[9rem] bg-transparent font-semibold text-white outline-none [&>option]:bg-night-800"
+                value={view.leaderId ?? ''}
+                onChange={(e) => void actions.setLeader(e.target.value || null)}
+              >
+                <option value="">Sin líder</option>
+                {view.players.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
           <SoundToggle />
           <FullscreenToggle />
         </div>

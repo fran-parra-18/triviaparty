@@ -139,6 +139,57 @@ describe('partida completa en tiempo real', () => {
   });
 });
 
+describe('jugador líder', () => {
+  it('el líder comienza y avanza la partida desde su celular; los demás no pueden', async () => {
+    const { host, hostState, code } = await createRoom({ questionCount: 3 });
+    const leader = await joinPlayer(code, 'Lía');
+    const other = await joinPlayer(code, 'Otro');
+
+    // Antes de ser designado, no tiene permiso.
+    expect(await emit(leader.socket, 'player:control', { action: 'start' })).toMatchObject({ ok: false, error: 'NOT_ALLOWED' });
+    expect((await emit(host, 'host:setLeader', { playerId: leader.playerId })).ok).toBe(true);
+    const lv = await leader.state.waitFor((v) => v.me.isLeader);
+    expect(lv.minPlayersMet).toBe(true);
+    expect((await other.state.waitFor((v) => v.players.length === 2)).me.isLeader).toBe(false);
+    await hostState.waitFor((v) => v.leaderId === leader.playerId);
+
+    expect(await emit(other.socket, 'player:control', { action: 'start' })).toMatchObject({ ok: false, error: 'NOT_ALLOWED' });
+    expect(await emit(leader.socket, 'player:control', { action: 'hackear' } as never)).toMatchObject({ ok: false, error: 'INVALID_PAYLOAD' });
+
+    expect((await emit(leader.socket, 'player:control', { action: 'start' })).ok).toBe(true);
+    for (let i = 0; i < 3; i++) {
+      await leader.state.waitFor((v) => v.phase === 'question' && v.question?.index === i);
+      // Con la pregunta abierta, el líder no puede cerrarla (podría responder y cortar a los demás).
+      expect(await emit(leader.socket, 'player:control', { action: 'next' })).toMatchObject({ ok: false, error: 'NOT_ALLOWED' });
+      await emit(leader.socket, 'player:answer', { questionIndex: i, choice: 0 });
+      await emit(other.socket, 'player:answer', { questionIndex: i, choice: 1 });
+      await hostState.waitFor((v) => v.phase === 'locked' && v.progress?.index === i);
+      // Un jugador normal no puede revelar.
+      expect(await emit(other.socket, 'player:control', { action: 'next' })).toMatchObject({ ok: false, error: 'NOT_ALLOWED' });
+      expect((await emit(leader.socket, 'player:control', { action: 'next' })).ok).toBe(true); // revelar
+      await hostState.waitFor((v) => v.phase === 'reveal' && v.progress?.index === i);
+      expect((await emit(leader.socket, 'player:control', { action: 'pause' })).ok).toBe(true);
+      await hostState.waitFor((v) => v.paused);
+      expect((await emit(leader.socket, 'player:control', { action: 'resume' })).ok).toBe(true);
+      await emit(leader.socket, 'player:control', { action: 'next' }); // clasificación
+      await hostState.waitFor((v) => v.phase === 'leaderboard' && v.progress?.index === i);
+      await emit(leader.socket, 'player:control', { action: 'next' }); // siguiente / podio
+    }
+    await hostState.waitFor((v) => v.phase === 'finished');
+    // El líder no puede terminar ni configurar: esas acciones siguen siendo del anfitrión.
+    expect(await emit(leader.socket, 'host:end', {})).toMatchObject({ ok: false, error: 'NOT_ALLOWED' });
+    expect((await emit(leader.socket, 'player:control', { action: 'playAgain' })).ok).toBe(true);
+    await hostState.waitFor((v) => v.phase === 'lobby' && v.leaderId === leader.playerId);
+
+    // El anfitrión le quita el control.
+    await emit(host, 'host:setLeader', { playerId: null });
+    await leader.state.waitFor((v) => !v.me.isLeader);
+    expect(await emit(leader.socket, 'player:control', { action: 'start' })).toMatchObject({ ok: false, error: 'NOT_ALLOWED' });
+    // Un jugador no puede nombrarse líder a sí mismo.
+    expect(await emit(other.socket, 'host:setLeader', { playerId: other.playerId })).toMatchObject({ ok: false, error: 'NOT_ALLOWED' });
+  });
+});
+
 describe('reconexión', () => {
   it('un jugador que se reconecta recupera su estado sin duplicarse ni duplicar puntos', async () => {
     const { host, hostState, code } = await createRoom();

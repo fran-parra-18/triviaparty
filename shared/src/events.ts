@@ -1,5 +1,8 @@
 import type { Ack, HostView, PlayerView } from './types';
 
+export const LEADER_ACTIONS = ['start', 'next', 'pause', 'resume', 'playAgain'] as const;
+export type LeaderAction = (typeof LEADER_ACTIONS)[number];
+
 /** Eventos que el cliente envía al servidor. Todos los payloads se validan con Zod en el servidor. */
 export interface ClientToServerEvents {
   // ── Anfitrión ──
@@ -14,6 +17,8 @@ export interface ClientToServerEvents {
   'host:end': (payload: Record<string, never>, ack: Ack) => void;
   'host:playAgain': (payload: Record<string, never>, ack: Ack) => void;
   'host:kick': (payload: { playerId: string }, ack: Ack) => void;
+  /** Designa (o quita, con null) al jugador líder que controla la partida desde su celular. */
+  'host:setLeader': (payload: { playerId: string | null }, ack: Ack) => void;
   'host:close': (payload: Record<string, never>, ack: Ack) => void;
 
   // ── Participante ──
@@ -24,6 +29,8 @@ export interface ClientToServerEvents {
   'player:rejoin': (payload: { code: string; token: string }, ack: Ack<{ code: string; playerId: string; name: string }>) => void;
   'player:answer': (payload: { questionIndex: number; choice: number }, ack: Ack) => void;
   'player:leave': (payload: Record<string, never>, ack: Ack) => void;
+  /** Acciones de control permitidas al jugador líder. */
+  'player:control': (payload: { action: LeaderAction }, ack: Ack) => void;
 
   // ── Utilidades ──
   /** Sincronización de reloj: devuelve la hora del servidor. */

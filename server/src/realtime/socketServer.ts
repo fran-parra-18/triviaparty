@@ -4,6 +4,8 @@ import {
   hostReclaimPayloadSchema,
   joinPayloadSchema,
   kickPayloadSchema,
+  leaderControlPayloadSchema,
+  setLeaderPayloadSchema,
   rejoinPayloadSchema,
   type ClientToServerEvents,
   type ServerToClientEvents,
@@ -201,6 +203,10 @@ export function registerSocketHandlers(io: IoServer, manager: RoomManager, opts:
         }
       }
     });
+    handle('host:setLeader', (payload) => {
+      const { playerId } = parse(setLeaderPayloadSchema, payload);
+      requireHost().setLeader(playerId);
+    });
     handle('host:close', () => {
       const room = requireHost();
       manager.close(room.code, 'El anfitrión cerró la sala.');
@@ -233,6 +239,24 @@ export function registerSocketHandlers(io: IoServer, manager: RoomManager, opts:
       const { room, playerId } = requirePlayer();
       const { questionIndex, choice } = parse(answerPayloadSchema, payload);
       room.submitAnswer(playerId, questionIndex, choice);
+    });
+
+    // El líder puede manejar el avance de la partida desde su celular (no terminarla ni configurarla).
+    handle('player:control', async (payload) => {
+      const { room, playerId } = requirePlayer();
+      if (!room.isLeader(playerId)) throw new GameError('NOT_ALLOWED', 'Solo el líder de la partida puede hacer esto.');
+      const { action } = parse(leaderControlPayloadSchema, payload);
+      if (action === 'start') await room.start();
+      else if (action === 'next') {
+        // El líder también juega: si pudiera cerrar la pregunta, respondería y la cerraría antes que los demás.
+        if (room.phase === 'question') {
+          throw new GameError('NOT_ALLOWED', 'La pregunta se cierra sola cuando todos responden o se acaba el tiempo.');
+        }
+        room.next();
+      }
+      else if (action === 'pause') room.pause();
+      else if (action === 'resume') room.resume();
+      else room.playAgain();
     });
 
     handle('player:leave', () => {

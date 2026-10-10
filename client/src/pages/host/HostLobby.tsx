@@ -63,7 +63,10 @@ export function HostLobby({ view, actions }: { view: HostView; actions: HostActi
 
         <section className="glass flex min-h-0 flex-col p-6" aria-label="Jugadores en la sala">
           <div className="mb-4 flex items-baseline justify-between gap-3">
-            <h2 className="text-3xl font-bold">Jugadores</h2>
+            <div>
+              <h2 className="text-3xl font-bold">Jugadores</h2>
+              <p className="text-sm text-white/50">Toca 👑 para elegir un líder que maneje la partida desde su celular.</p>
+            </div>
             <span className="font-display text-2xl text-white/70" aria-live="polite">
               {connected} {connected === 1 ? 'conectado' : 'conectados'}
               <span className="text-base"> · máx. {s.maxPlayers}</span>
@@ -82,12 +85,25 @@ export function HostLobby({ view, actions }: { view: HostView; actions: HostActi
                   className={`group flex animate-pop-in items-center gap-2 rounded-full py-1.5 pl-1.5 pr-2 ${p.connected ? 'bg-white/15' : 'bg-white/5 opacity-50'}`}
                 >
                   <Avatar name={p.name} index={p.avatar} size={48} />
-                  <span className="max-w-[14rem] truncate text-2xl font-bold">{p.name}</span>
+                  <span className="max-w-[14rem] truncate text-2xl font-bold">
+                    {p.isLeader && <span title="Líder: controla la partida desde su celular">👑 </span>}
+                    {p.name}
+                  </span>
                   <span
                     className={`h-3 w-3 rounded-full ${p.connected ? 'bg-emerald-400' : 'bg-white/30'}`}
                     title={p.connected ? 'Conectado' : 'Desconectado'}
                     aria-label={p.connected ? 'conectado' : 'desconectado'}
                   />
+                  <button
+                    type="button"
+                    className={`rounded-full px-1.5 text-lg transition hover:bg-amber-400/30 ${p.isLeader ? 'opacity-100' : 'opacity-40 hover:opacity-100 focus:opacity-100'}`}
+                    aria-pressed={p.isLeader}
+                    aria-label={p.isLeader ? `Quitar a ${p.name} como líder` : `Hacer líder a ${p.name}`}
+                    title={p.isLeader ? 'Quitar líder' : 'Hacer líder: podrá avanzar la partida desde su celular'}
+                    onClick={() => void actions.setLeader(p.isLeader ? null : p.id)}
+                  >
+                    👑
+                  </button>
                   <button
                     type="button"
                     className="ml-1 rounded-full px-2 text-white/40 opacity-0 transition hover:bg-rose-500/30 hover:text-white focus:opacity-100 group-hover:opacity-100"

@@ -18,6 +18,8 @@ export interface PublicPlayer {
   /** Índice de color/avatar estable para mostrar al jugador. */
   avatar: number;
   joinedLate: boolean;
+  /** Jugador designado por el anfitrión para controlar la partida desde su celular. */
+  isLeader: boolean;
 }
 
 export interface TimerView {
@@ -124,6 +126,7 @@ export interface HostView {
   final: FinalView | null;
   history: SessionHistoryEntry[];
   gameNumber: number;
+  leaderId: string | null;
   /** Instante en que se programó el siguiente avance automático. */
   autoAdvanceAt: number | null;
   serverNow: number;
@@ -153,7 +156,10 @@ export interface PlayerView {
     rank: number | null;
     correctCount: number;
     streak: number;
+    /** Si es true, este jugador puede controlar la partida (líder). */
+    isLeader: boolean;
   };
+  minPlayersMet: boolean;
   playerCount: number;
   players: { id: string; name: string; avatar: number; connected: boolean }[];
   progress: { index: number; total: number } | null;

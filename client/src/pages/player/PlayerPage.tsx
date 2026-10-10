@@ -1,4 +1,4 @@
-import { ROOM_CODE_LENGTH, type PlayerView } from '@trivia/shared';
+import { ROOM_CODE_LENGTH, nextActionLabel, type LeaderAction, type PlayerView } from '@trivia/shared';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { CountdownNumber, Podium, TimerBar, fireConfetti, useCountdownNumber } from '../../components/game';
@@ -20,7 +20,7 @@ export function PlayerPage() {
       <ConnectionBanner {...conn} />
       <Toast message={session.error} onClose={session.clearError} />
       {view ? (
-        <PlayerGame view={view} onAnswer={session.answer} onLeave={session.leave} />
+        <PlayerGame view={view} onAnswer={session.answer} onLeave={session.leave} onControl={session.control} />
       ) : (
         <div className="relative z-10 flex min-h-dvh flex-col items-center justify-center gap-6 px-5 py-8">
           <Link to="/" aria-label="Inicio">
@@ -146,10 +146,12 @@ function PlayerGame({
   view,
   onAnswer,
   onLeave,
+  onControl,
 }: {
   view: PlayerView;
   onAnswer: (index: number, choice: number) => Promise<boolean>;
   onLeave: () => Promise<void>;
+  onControl: (action: LeaderAction) => Promise<boolean>;
 }) {
   return (
     <div className="relative z-10 flex h-dvh flex-col">
@@ -158,6 +160,7 @@ function PlayerGame({
         <div className="min-w-0 flex-1">
           <p className="truncate font-display text-lg font-bold leading-tight">{view.me.name}</p>
           <p className="text-xs text-white/60">
+            {view.me.isLeader && <span className="font-bold text-amber-300">👑 Líder · </span>}
             Sala {view.code}
             {!view.hostConnected && <span className="text-amber-300"> · anfitrión desconectado</span>}
           </p>
@@ -180,6 +183,74 @@ function PlayerGame({
           <PhaseView view={view} onAnswer={onAnswer} onLeave={onLeave} />
         )}
       </main>
+      {view.me.isLeader && <LeaderBar view={view} onControl={onControl} />}
+    </div>
+  );
+}
+
+/** Controles del jugador líder: maneja la partida desde el celular sin tocar la PC. */
+function LeaderBar({ view, onControl }: { view: PlayerView; onControl: (action: LeaderAction) => Promise<boolean> }) {
+  const [busy, setBusy] = useState(false);
+  const run = async (action: LeaderAction) => {
+    if (busy) return;
+    setBusy(true);
+    vibrate(20);
+    await onControl(action);
+    setBusy(false);
+  };
+  const active = !['lobby', 'finished'].includes(view.phase);
+  const label = nextActionLabel(view.phase, view.progress, view.showResultsAfterEach);
+  // Durante la pregunta el botón es discreto, para no confundirlo con las respuestas.
+  const compact = view.phase === 'question' || view.phase === 'countdown';
+
+  return (
+    <div className="border-t border-amber-300/30 bg-night-900/95 px-4 pt-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]" role="toolbar" aria-label="Controles del líder">
+      <div className="mb-1 text-center text-xs font-semibold uppercase tracking-wider text-amber-300">👑 Controlas la partida</div>
+      <div className="flex gap-2">
+        {view.phase === 'lobby' && (
+          <button
+            type="button"
+            className="btn-primary flex-1 py-3"
+            disabled={busy || !view.minPlayersMet}
+            onClick={() => void run('start')}
+          >
+            {view.minPlayersMet ? '▶ Comenzar partida' : 'Faltan jugadores'}
+          </button>
+        )}
+        {view.phase === 'finished' && (
+          <button type="button" className="btn-primary flex-1 py-3" disabled={busy} onClick={() => void run('playAgain')}>
+            🔁 Jugar otra vez
+          </button>
+        )}
+        {active && (
+          <>
+            <button
+              type="button"
+              className="btn-secondary px-4"
+              disabled={busy}
+              aria-label={view.paused ? 'Reanudar partida' : 'Pausar partida'}
+              onClick={() => void run(view.paused ? 'resume' : 'pause')}
+            >
+              {view.paused ? '▶' : '⏸'}
+            </button>
+            {view.phase === 'question' && (
+              <span className="flex flex-1 items-center justify-center rounded-2xl bg-white/5 px-3 text-sm text-white/60">
+                Esperando respuestas…
+              </span>
+            )}
+            {label && view.phase !== 'question' && (
+              <button
+                type="button"
+                className={`${compact ? 'btn-secondary text-base' : 'btn-primary py-3 text-xl'} flex-1`}
+                disabled={busy}
+                onClick={() => void run('next')}
+              >
+                {label}
+              </button>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 }
@@ -229,7 +300,11 @@ function LobbyWait({ view, onLeave }: { view: PlayerView; onLeave: () => Promise
         <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" /> Conectado como <strong>{view.me.name}</strong>
       </p>
       <p className="text-white/60">
-        {view.gameNumber > 0 ? 'Esperando la siguiente partida…' : 'Mira la pantalla principal: el anfitrión iniciará la partida enseguida.'}
+        {view.me.isLeader
+          ? 'Eres el líder: podrás comenzar y avanzar la partida desde este celular.'
+          : view.gameNumber > 0
+            ? 'Esperando la siguiente partida…'
+            : 'Mira la pantalla principal: el anfitrión iniciará la partida enseguida.'}
       </p>
       <p className="chip text-base">
         👥 {view.playerCount} {view.playerCount === 1 ? 'jugador' : 'jugadores'} en la sala

@@ -1,4 +1,4 @@
-import type { HostView } from '@trivia/shared';
+import { nextActionLabel, type HostView } from '@trivia/shared';
 import { useEffect, useRef, useState } from 'react';
 import { AutoAdvanceHint, CountdownNumber, Leaderboard, TimerRing, useCountdownNumber } from '../../components/game';
 import { CategoryBadge, OPTION_BG, OPTION_TEXT, OptionShape } from '../../components/ui';
@@ -7,17 +7,7 @@ import { sounds } from '../../lib/sound';
 import type { HostActions } from './HostPage';
 
 export function HostPlay({ view, actions }: { view: HostView; actions: HostActions }) {
-  const total = view.progress?.total ?? 0;
-  const index = view.progress?.index ?? 0;
-  const isLast = index >= total - 1;
-
-  const primary: Record<string, string> = {
-    countdown: 'Saltar cuenta atrás',
-    question: 'Cerrar pregunta',
-    locked: view.settings.showResultsAfterEach ? 'Revelar respuesta' : isLast ? 'Ver resultados' : 'Siguiente pregunta',
-    reveal: 'Ver clasificación',
-    leaderboard: isLast ? '🏆 Ver podio' : 'Siguiente pregunta →',
-  };
+  const primaryLabel = nextActionLabel(view.phase, view.progress, view.settings.showResultsAfterEach);
 
   return (
     <main className="relative flex flex-1 flex-col px-4 pb-4 md:px-8">
@@ -62,7 +52,7 @@ export function HostPlay({ view, actions }: { view: HostView; actions: HostActio
         </span>
         <AutoAdvanceHint at={view.autoAdvanceAt} />
         <button type="button" className="btn-primary ml-auto px-8 py-4 text-xl" onClick={() => void actions.next()} title="Siguiente (Espacio)">
-          {primary[view.phase] ?? 'Siguiente'}
+          {primaryLabel ?? 'Siguiente'}
         </button>
       </footer>
     </main>
