@@ -21,11 +21,24 @@ export function Avatar({ name, index, size = 40 }: { name: string; index: number
 }
 
 export function Logo({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' | 'xl' }) {
-  const text = { sm: 'text-2xl', md: 'text-4xl', lg: 'text-6xl', xl: 'text-7xl md:text-8xl' }[size];
-  const icon = { sm: 32, md: 48, lg: 72, xl: 96 }[size];
+  // En tamaños grandes el emblema ya dice «TRIVIA», así que solo se añade «Party» debajo.
+  if (size === 'lg' || size === 'xl') {
+    const img = size === 'xl' ? 'w-56 md:w-72' : 'w-40 md:w-52';
+    const party = size === 'xl' ? 'text-5xl md:text-6xl' : 'text-4xl';
+    return (
+      <div className="flex flex-col items-center select-none" role="img" aria-label="Trivia Party">
+        <img src="/logo.webp" alt="" className={`${img} drop-shadow-[0_10px_30px_rgba(124,77,255,0.45)]`} />
+        <span className={`-mt-2 font-display font-bold uppercase leading-none tracking-[0.2em] ${party}`}>
+          <span className="bg-gradient-to-r from-amber-300 via-yellow-300 to-orange-400 bg-clip-text text-transparent">Party</span>
+        </span>
+      </div>
+    );
+  }
+  const text = { sm: 'text-2xl', md: 'text-4xl' }[size];
+  const icon = { sm: 40, md: 56 }[size];
   return (
     <div className="flex items-center justify-center gap-3 select-none">
-      <img src="/favicon.svg" width={icon} height={icon} alt="" className="drop-shadow-lg" />
+      <img src="/logo.webp" width={icon} height={icon} alt="" className="drop-shadow-lg" />
       <span className={`font-display font-bold leading-none tracking-tight ${text}`}>
         <span className="bg-gradient-to-r from-brand-pink via-fuchsia-400 to-brand-violet bg-clip-text text-transparent">Trivia</span>{' '}
         <span className="text-white">Party</span>
