@@ -25,13 +25,19 @@ const FORBIDDEN_OPTIONS = [
 ];
 
 const STOPWORDS = new Set(
-  'el la los las un una unos unas de del al a en y o u que cual cuales quien quienes como cuando donde por para con sin se su sus es son fue fueron era ser esta este estos estas ese esa eso lo le les mas muy mayor menor primer primera primero nombre conocido conocida llama llamado llamada'.split(
+  'el la los las lo un una unos unas de del al a ante en entre y e o u ni que cual cuales quien quienes como cuando cuanto cuantos cuantas donde por para con sin sobre se su sus si no ya mi tu te me nos le les es son fue fueron era eran ser ha han hay esta este estos estas ese esa eso mas muy tiene tienen mayor menor primer primera primero nombre conocido conocida llama llamado llamada'.split(
     ' ',
   ),
 );
 
+/** Palabras significativas del enunciado (sin palabras vacías). Las cortas, como «Na» o «K», cuentan. */
 export function contentTokens(normalized: string): Set<string> {
-  return new Set(normalized.split(' ').filter((w) => w.length > 2 && !STOPWORDS.has(w)));
+  return new Set(normalized.split(' ').filter((w) => w.length > 0 && !STOPWORDS.has(w)));
+}
+
+/** Clave para comparar opciones entre sí: conserva signos y símbolos («−32 °F» ≠ «32 °F»). */
+function optionKey(option: string): string {
+  return option.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().replace(/\s+/g, ' ').trim();
 }
 
 export function jaccard(a: Set<string>, b: Set<string>): number {
@@ -47,7 +53,7 @@ export function checkCoherence(q: NormalizedQuestion): [string[], string[]] {
   const errors: string[] = [];
   const warnings: string[] = [];
   const normOptions = q.options.map(normalizeText);
-  if (new Set(normOptions).size !== 4) errors.push('Hay opciones repetidas');
+  if (new Set(q.options.map(optionKey)).size !== 4) errors.push('Hay opciones repetidas');
   if (normOptions.some((o) => o.length === 0)) errors.push('Hay opciones vacías');
   if (normOptions.some((o) => FORBIDDEN_OPTIONS.includes(o))) {
     errors.push('Opciones tipo "todas/ninguna de las anteriores" no se admiten: las opciones se barajan');
@@ -61,6 +67,16 @@ export function checkCoherence(q: NormalizedQuestion): [string[], string[]] {
     warnings.push(`La respuesta correcta aparece en el enunciado ("${q.options[q.answerIndex]}")`);
   }
   if (normalizeText(q.explanation).length < 15) errors.push('La explicación es demasiado corta');
+
+  // Coherencia respuesta-explicación: si la explicación nombra una opción incorrecta y no la correcta,
+  // es probable que el índice de la respuesta esté mal marcado.
+  const explanation = ` ${normalizeText(q.explanation)} `;
+  const mentions = (o: string) => o.length >= 3 && explanation.includes(` ${o} `);
+  const mentionedWrong = normOptions.filter((o, i) => i !== q.answerIndex && mentions(o));
+  if (!mentions(correct) && mentionedWrong.length === 1 && !normOptions.some((o, i) => i !== q.answerIndex && correct.includes(o))) {
+    const wrong = q.options[normOptions.indexOf(mentionedWrong[0]!)];
+    warnings.push(`La explicación menciona «${wrong}», que no es la respuesta marcada («${q.options[q.answerIndex]}»)`);
+  }
   return [errors, warnings];
 }
 
