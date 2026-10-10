@@ -173,9 +173,11 @@ export function SettingsPanel({ view, actions, onClose }: { view: HostView; acti
                     type="button"
                     aria-pressed={active}
                     aria-label={`${c.name}${count !== undefined ? `, ${count} preguntas` : ''}`}
+                    disabled={count === 0}
+                    title={count === 0 ? 'Aún no hay preguntas en esta categoría' : undefined}
                     onClick={() => toggleCategory(c.id)}
-                    className={`flex items-center gap-2 rounded-2xl border-2 px-3 py-2 text-left text-sm font-semibold transition ${
-                      active ? 'border-brand-cyan bg-brand-cyan/15' : 'border-white/10 bg-white/5 opacity-60 hover:opacity-100'
+                    className={`flex items-center gap-2 rounded-2xl border-2 px-3 py-2 text-left text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-30 ${
+                      active && count !== 0 ? 'border-brand-cyan bg-brand-cyan/15' : 'border-white/10 bg-white/5 opacity-60 hover:opacity-100'
                     }`}
                   >
                     <span className="text-xl" aria-hidden>

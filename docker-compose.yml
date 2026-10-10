@@ -1,0 +1,34 @@
+# Despliegue con PostgreSQL:  docker compose up -d --build
+# Define PUBLIC_URL con la dirección por la que los celulares accederán (dominio o IP del servidor).
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: trivia
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cambia-esta-clave}
+      POSTGRES_DB: trivia
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U trivia"]
+      interval: 5s
+      retries: 10
+
+  app:
+    build:
+      context: .
+      args:
+        DATABASE_URL: postgresql://trivia:${POSTGRES_PASSWORD:-cambia-esta-clave}@db:5432/trivia?schema=public
+    environment:
+      DATABASE_URL: postgresql://trivia:${POSTGRES_PASSWORD:-cambia-esta-clave}@db:5432/trivia?schema=public
+      PUBLIC_URL: ${PUBLIC_URL:-}
+      TRUST_PROXY: ${TRUST_PROXY:-0}
+    ports:
+      - "3001:3001"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  pgdata:
