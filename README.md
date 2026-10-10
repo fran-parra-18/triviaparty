@@ -38,22 +38,22 @@ Juego de preguntas multijugador en tiempo real para fiestas: una **pantalla prin
 | Configuración: cantidad, tiempo (10/15/20/30/60 s), categorías, dificultad (incluida progresiva), mín./máx. de jugadores, puntuación, incorporaciones tardías, resultados entre preguntas, orden aleatorio y avance automático | ✅ |
 | Pausa, reanudar, terminar antes de tiempo, expulsar jugadores, cerrar sala, pantalla completa, sonidos con silencio y atajos de teclado | ✅ |
 | Reconexión de jugador y anfitrión | ✅ Probada |
-| Banco de preguntas | ✅ **2.139 preguntas reales en las 16 categorías**, validadas con `npm run questions:validate` (0 errores; los avisos restantes se revisaron a mano). |
+| Banco de preguntas | ✅ **2.550 preguntas reales en las 16 categorías**, validadas con `npm run questions:validate` (0 errores; los avisos restantes se revisaron a mano). |
 | Despliegue con Docker / PostgreSQL | ⚠️ Archivos preparados (`Dockerfile`, `docker-compose.yml`, migraciones de PostgreSQL), **no probados** en esta máquina (no tenía Docker ni PostgreSQL). |
 
 Preguntas por categoría (fácil / media / difícil):
 
 | Categoría | Total | | Categoría | Total |
 |---|---|---|---|---|
-| 🏛️ Historia | 140 (60/63/17) | | 🎨 Arte y cultura | 130 (45/62/23) |
-| 🌍 Geografía | 160 (58/71/31) | | 🍽️ Gastronomía | 130 (46/65/19) |
+| 🏛️ Historia | 217 (66/114/37) | | 🎨 Arte y cultura | 130 (45/62/23) |
+| 🌍 Geografía | 160 (58/71/31) | | 🍽️ Gastronomía | 213 (66/116/31) |
 | 🔬 Ciencia y naturaleza | 132 (43/62/27) | | 🐾 Animales | 130 (42/55/33) |
 | 💻 Tecnología e informática | 130 (49/58/23) | | 🚀 Espacio y astronomía | 130 (33/57/40) |
-| 🎬 Cine y televisión | 130 (57/55/18) | | 💡 Inventos y descubrimientos | 143 (19/80/44) |
-| 🎵 Música | 130 (42/71/17) | | 🧠 Cultura general | 137 (63/60/14) |
-| ⚽ Deportes | 130 (54/62/14) | | 🤯 Datos curiosos del mundo | 129 (14/79/36) |
+| 🎬 Cine y televisión | 204 (71/98/35) | | 💡 Inventos y descubrimientos | 143 (19/80/44) |
+| 🎵 Música | 225 (54/125/46) | | 🧠 Cultura general | 137 (63/60/14) |
+| ⚽ Deportes | 212 (66/111/35) | | 🤯 Datos curiosos del mundo | 129 (13/79/37) |
 | 📚 Literatura | 132 (32/76/24) | | 🏆 Récords y hechos sorprendentes | 126 (14/68/44) |
-| **Total** | **2.139 (671/1.044/424)** | | | |
+| **Total** | **2.550 (734/1.292/524)** | | | |
 
 Para consultar el recuento real en cualquier momento: `npm run questions:validate` (archivos) o `npm run questions:stats` (base de datos).
 
