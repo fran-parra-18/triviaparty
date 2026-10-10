@@ -696,8 +696,9 @@ export class Room {
       stats,
       questions: summaries,
       highlights: {
-        hardestQuestion: byRate[0] ?? null,
-        easiestQuestion: byRate.length > 1 ? byRate[byRate.length - 1]! : null,
+        hardestQuestion: byRate.length > 1 && byRate[byRate.length - 1]!.correctRate > byRate[0]!.correctRate ? byRate[0]! : null,
+        easiestQuestion:
+          byRate.length > 1 && byRate[byRate.length - 1]!.correctRate > byRate[0]!.correctRate ? byRate[byRate.length - 1]! : null,
         fastestAnswer: this.fastestAnswer,
         bestStreak: streakLeader && streakLeader.bestStreak > 1 ? { name: streakLeader.name, streak: streakLeader.bestStreak } : null,
       },

@@ -1,0 +1,134 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-display: 'Fredoka Variable', 'Nunito Variable', system-ui, sans-serif;
+  --font-sans: 'Nunito Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  --color-night-950: #0b0620;
+  --color-night-900: #140b33;
+  --color-night-800: #1f1250;
+  --color-night-700: #2c1a6e;
+  --color-night-600: #3d2790;
+  --color-brand-pink: #ff4d8d;
+  --color-brand-violet: #7c4dff;
+  --color-brand-cyan: #22d3ee;
+  --color-brand-lime: #a3e635;
+
+  /* Colores de las cuatro opciones (con forma asociada para no depender solo del color). */
+  --color-opt-0: #d62839;
+  --color-opt-1: #2563eb;
+  --color-opt-2: #f59e0b;
+  --color-opt-3: #15803d;
+
+  --animate-pop-in: pop-in 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.3) both;
+  --animate-slide-up: slide-up 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  --animate-fade-in: fade-in 0.4s ease-out both;
+  --animate-shake: shake 0.5s ease-in-out both;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-pulse-ring: pulse-ring 1.6s ease-out infinite;
+  --animate-count: count-zoom 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  --animate-rise: rise 0.9s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+
+@keyframes pop-in {
+  0% { opacity: 0; transform: scale(0.6); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes slide-up {
+  0% { opacity: 0; transform: translateY(24px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade-in {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-10px); }
+  40% { transform: translateX(10px); }
+  60% { transform: translateX(-6px); }
+  80% { transform: translateX(6px); }
+}
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(30px, -40px) scale(1.08); }
+}
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgb(255 255 255 / 0.45); }
+  100% { box-shadow: 0 0 0 18px rgb(255 255 255 / 0); }
+}
+@keyframes count-zoom {
+  0% { opacity: 0; transform: scale(2.4); }
+  25% { opacity: 1; transform: scale(1); }
+  80% { opacity: 1; transform: scale(0.95); }
+  100% { opacity: 0; transform: scale(0.6); }
+}
+@keyframes rise {
+  0% { transform: scaleY(0); }
+  100% { transform: scaleY(1); }
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply font-sans text-white antialiased;
+    background-color: var(--color-night-950);
+    min-height: 100dvh;
+    overscroll-behavior: none;
+  }
+  button {
+    cursor: pointer;
+  }
+  button:disabled {
+    cursor: not-allowed;
+  }
+  :focus-visible {
+    outline: 3px solid var(--color-brand-cyan);
+    outline-offset: 3px;
+  }
+  h1, h2, h3 {
+    @apply font-display;
+  }
+}
+
+@utility app-bg {
+  background:
+    radial-gradient(1200px 700px at 10% -10%, rgb(124 77 255 / 0.35), transparent 60%),
+    radial-gradient(900px 600px at 110% 10%, rgb(255 77 141 / 0.25), transparent 55%),
+    radial-gradient(900px 700px at 50% 120%, rgb(34 211 238 / 0.18), transparent 60%),
+    linear-gradient(180deg, var(--color-night-900), var(--color-night-950));
+}
+@utility glass {
+  @apply rounded-3xl border border-white/10 bg-white/[0.06] shadow-xl shadow-black/30 backdrop-blur-md;
+}
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 font-display text-lg font-semibold transition
+    active:scale-[0.97] disabled:opacity-50 disabled:active:scale-100;
+}
+@utility btn-primary {
+  @apply btn bg-gradient-to-r from-brand-pink to-brand-violet text-white shadow-lg shadow-brand-violet/30 hover:brightness-110;
+}
+@utility btn-secondary {
+  @apply btn border border-white/15 bg-white/10 text-white hover:bg-white/20;
+}
+@utility btn-danger {
+  @apply btn border border-red-400/30 bg-red-500/15 text-red-100 hover:bg-red-500/30;
+}
+@utility input {
+  @apply w-full rounded-2xl border-2 border-white/15 bg-white/10 px-4 py-3 text-xl font-semibold text-white
+    placeholder:text-white/40 focus:border-brand-cyan focus:outline-none;
+}
+@utility chip {
+  @apply inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-sm font-semibold;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

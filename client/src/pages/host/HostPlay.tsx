@@ -1,0 +1,229 @@
+import type { HostView } from '@trivia/shared';
+import { useEffect, useRef, useState } from 'react';
+import { AutoAdvanceHint, CountdownNumber, Leaderboard, TimerRing, useCountdownNumber } from '../../components/game';
+import { CategoryBadge, OPTION_BG, OPTION_TEXT, OptionShape } from '../../components/ui';
+import { useOnChange, useRemaining } from '../../lib/hooks';
+import { sounds } from '../../lib/sound';
+import type { HostActions } from './HostPage';
+
+export function HostPlay({ view, actions }: { view: HostView; actions: HostActions }) {
+  const total = view.progress?.total ?? 0;
+  const index = view.progress?.index ?? 0;
+  const isLast = index >= total - 1;
+
+  const primary: Record<string, string> = {
+    countdown: 'Saltar cuenta atrás',
+    question: 'Cerrar pregunta',
+    locked: view.settings.showResultsAfterEach ? 'Revelar respuesta' : isLast ? 'Ver resultados' : 'Siguiente pregunta',
+    reveal: 'Ver clasificación',
+    leaderboard: isLast ? '🏆 Ver podio' : 'Siguiente pregunta →',
+  };
+
+  return (
+    <main className="relative flex flex-1 flex-col px-4 pb-4 md:px-8">
+      <div className="flex flex-1 flex-col">
+        {view.phase === 'countdown' && <CountdownScreen view={view} />}
+        {(view.phase === 'question' || view.phase === 'locked' || view.phase === 'reveal') && <QuestionScreen view={view} />}
+        {view.phase === 'leaderboard' && <LeaderboardScreen view={view} />}
+      </div>
+
+      {view.paused && (
+        <div className="absolute inset-0 z-20 flex items-center justify-center bg-night-950/70 backdrop-blur-sm" role="status">
+          <div className="glass animate-pop-in p-10 text-center">
+            <div className="text-7xl">⏸</div>
+            <p className="mt-3 font-display text-5xl font-bold">Partida en pausa</p>
+            <button type="button" className="btn-primary mt-6 px-10 py-4 text-2xl" onClick={() => void actions.resume()}>
+              ▶ Reanudar
+            </button>
+          </div>
+        </div>
+      )}
+
+      <footer className="relative z-30 mt-4 flex flex-wrap items-center gap-3">
+        <button
+          type="button"
+          className="btn-secondary"
+          onClick={() => void (view.paused ? actions.resume() : actions.pause())}
+          title="Pausar / reanudar (P)"
+        >
+          {view.paused ? '▶ Reanudar' : '⏸ Pausar'}
+        </button>
+        <button
+          type="button"
+          className="btn-danger"
+          onClick={() => {
+            if (confirm('¿Terminar la partida ahora y mostrar el podio?')) void actions.end();
+          }}
+        >
+          ⏹ Terminar
+        </button>
+        <span className="hidden flex-1 text-center text-sm text-white/40 md:block">
+          Espacio: siguiente · P: pausa · F: pantalla completa · M: sonido
+        </span>
+        <AutoAdvanceHint at={view.autoAdvanceAt} />
+        <button type="button" className="btn-primary ml-auto px-8 py-4 text-xl" onClick={() => void actions.next()} title="Siguiente (Espacio)">
+          {primary[view.phase] ?? 'Siguiente'}
+        </button>
+      </footer>
+    </main>
+  );
+}
+
+function CountdownScreen({ view }: { view: HostView }) {
+  const n = useCountdownNumber(view.countdownEndsAt);
+  useOnChange(n === null ? null : String(n), () => sounds.countdown());
+  const index = view.progress?.index ?? 0;
+  return (
+    <div className="flex flex-1 flex-col items-center justify-center gap-6 text-center">
+      <p className="font-display text-4xl text-white/80 md:text-5xl">
+        {index === 0 ? '¡Prepárense!' : 'Siguiente pregunta'}
+      </p>
+      <p className="font-display text-3xl font-bold text-brand-cyan">
+        Pregunta {index + 1} de {view.progress?.total}
+      </p>
+      <div className="flex h-56 items-center justify-center">
+        {view.paused ? <span className="text-8xl">⏸</span> : <CountdownNumber endsAt={view.countdownEndsAt} size="text-[12rem]" />}
+      </div>
+    </div>
+  );
+}
+
+function QuestionScreen({ view }: { view: HostView }) {
+  const q = view.question!;
+  const reveal = view.reveal;
+  const locked = view.phase === 'locked';
+  const remaining = useRemaining(view.phase === 'question' && !view.paused ? view.timer?.endsAt : null);
+  const lastTick = useRef<number | null>(null);
+
+  // Tic-tac en los últimos 5 segundos.
+  useEffect(() => {
+    const s = Math.ceil(remaining / 1000);
+    if (view.phase === 'question' && s <= 5 && s > 0 && s !== lastTick.current) {
+      lastTick.current = s;
+      sounds.urgentTick();
+    }
+  }, [remaining, view.phase]);
+
+  const maxCount = reveal ? Math.max(1, ...reveal.counts) : 1;
+  // Tamaños ligados a la altura de la pantalla: el contenido cabe en un televisor sin desplazarse.
+  const textSize =
+    q.text.length > 140 ? 'text-[clamp(1.5rem,3.8vh,3.2rem)]' : q.text.length > 80 ? 'text-[clamp(1.75rem,4.6vh,3.8rem)]' : 'text-[clamp(2rem,5.4vh,4.5rem)]';
+  const allAnswered = view.expectedCount > 0 && view.answeredCount >= view.expectedCount;
+
+  return (
+    <div className="flex flex-1 flex-col gap-[clamp(0.5rem,2vh,1.25rem)]">
+      <div className="flex items-start gap-5">
+        <div className="flex min-w-0 flex-1 flex-col gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="font-display text-2xl font-bold text-brand-cyan">
+              {q.index + 1} / {q.total}
+            </span>
+            <CategoryBadge category={q.category} difficulty={q.difficulty} />
+          </div>
+          <h1 key={q.index} className={`animate-slide-up font-display font-bold leading-tight ${textSize}`}>
+            {q.text}
+          </h1>
+        </div>
+        <div className="flex flex-col items-center gap-2">
+          {view.phase === 'question' ? (
+            <TimerRing timer={view.timer} size={150} />
+          ) : (
+            <div className="flex h-[min(150px,20vh)] w-[min(150px,20vh)] items-center justify-center rounded-full bg-white/10 text-center font-display text-2xl font-bold">
+              {locked ? (allAnswered ? '¡Listo!' : '¡Tiempo!') : '✓'}
+            </div>
+          )}
+          <AnsweredCounter answered={reveal ? reveal.answeredCount : view.answeredCount} expected={view.expectedCount} />
+        </div>
+      </div>
+
+      <div className="grid flex-1 grid-cols-1 gap-4 md:grid-cols-2">
+        {q.options.map((opt, i) => {
+          const isCorrect = reveal?.correctIndex === i;
+          const dimmed = reveal && !isCorrect;
+          return (
+            <div
+              key={`${q.index}-${i}`}
+              className={`relative flex min-h-[clamp(4rem,11vh,9rem)] animate-pop-in items-center gap-4 overflow-hidden rounded-3xl px-6 py-3 shadow-xl transition duration-500 ${OPTION_BG[i]} ${OPTION_TEXT[i]} ${
+                dimmed ? 'scale-[0.97] opacity-35 grayscale-[40%]' : ''
+              } ${isCorrect ? 'ring-8 ring-white/90' : ''}`}
+              style={{ animationDelay: `${i * 70}ms` }}
+            >
+              <OptionShape index={i} className="h-12 w-12 shrink-0 drop-shadow" />
+              <span className={`flex-1 font-display font-bold leading-tight ${opt.length > 40 ? 'text-[clamp(1.1rem,2.8vh,2.1rem)]' : 'text-[clamp(1.3rem,3.6vh,2.7rem)]'}`}>
+                {opt}
+              </span>
+              {isCorrect && <span className="animate-pop-in text-5xl" aria-label="Respuesta correcta">✔</span>}
+              {reveal && (
+                <div className="flex flex-col items-end">
+                  <span className="font-display text-3xl font-bold tabular-nums">{reveal.counts[i]}</span>
+                  <div className="mt-1 h-2 w-24 overflow-hidden rounded-full bg-black/20">
+                    <div className="h-full bg-white/90 transition-[width] duration-1000" style={{ width: `${(reveal.counts[i]! / maxCount) * 100}%` }} />
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {reveal && (
+        <div className="glass animate-slide-up flex flex-col gap-2 px-5 py-3 md:flex-row md:items-center md:gap-6">
+          <div className="flex-1">
+            <p className="text-[clamp(1.05rem,2.7vh,2rem)] leading-snug">💡 {reveal.explanation}</p>
+            {reveal.source && <p className="mt-1 text-sm text-white/50">Fuente: {reveal.source}</p>}
+          </div>
+          <div className="shrink-0 text-xl text-white/80">
+            <p>
+              <strong className="text-emerald-300">{reveal.correctCount}</strong> de {reveal.answeredCount} acertaron
+            </p>
+            {reveal.fastestCorrect && (
+              <p>
+                ⚡ Más rápido: <strong>{reveal.fastestCorrect.name}</strong> ({(reveal.fastestCorrect.ms / 1000).toFixed(1)} s)
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function AnsweredCounter({ answered, expected }: { answered: number; expected: number }) {
+  return (
+    <div className="text-center" aria-live="polite">
+      <div className="font-display text-4xl font-bold tabular-nums">
+        {answered}
+        <span className="text-white/40">/{expected}</span>
+      </div>
+      <div className="text-sm text-white/60">respuestas</div>
+    </div>
+  );
+}
+
+function LeaderboardScreen({ view }: { view: HostView }) {
+  const leader = view.leaderboard[0];
+  const leaderChanged = leader && leader.previousRank !== null && leader.previousRank !== 1;
+  const firstLeader = leader && leader.previousRank === null && (view.progress?.index ?? 0) === 0 && leader.score > 0;
+  const [showBanner, setShowBanner] = useState(true);
+  useEffect(() => {
+    setShowBanner(true);
+    const t = setTimeout(() => setShowBanner(false), 3500);
+    return () => clearTimeout(t);
+  }, [view.progress?.index]);
+
+  return (
+    <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-5">
+      <h1 className="text-center text-5xl font-bold">Clasificación</h1>
+      {leader && (leaderChanged || firstLeader) && showBanner && (
+        <div className="animate-pop-in rounded-3xl bg-gradient-to-r from-amber-300 to-orange-400 px-6 py-4 text-center font-display text-3xl font-bold text-night-950 shadow-xl">
+          👑 ¡{leader.name} {leaderChanged ? 'toma la delantera' : 'va en cabeza'}!
+        </div>
+      )}
+      {view.leaderboard.length === 0 ? (
+        <p className="text-center text-2xl text-white/60">Todavía no hay puntos.</p>
+      ) : (
+        <Leaderboard entries={view.leaderboard} max={8} />
+      )}
+    </div>
+  );
+}

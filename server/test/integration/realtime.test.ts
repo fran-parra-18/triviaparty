@@ -256,7 +256,7 @@ describe('seguridad y permisos', () => {
     expect(JSON.parse(meta).totalQuestions).toBeGreaterThan(0);
     expect((await fetch(`${server.url}/api/rooms/${code}`)).status).toBe(200);
     expect((await fetch(`${server.url}/api/rooms/NOPE`)).status).toBe(404);
-    const net = await (await fetch(`${server.url}/api/network`)).json();
+    const net = (await (await fetch(`${server.url}/api/network`)).json()) as { lanAddresses: unknown };
     expect(Array.isArray(net.lanAddresses)).toBe(true);
   });
 });
