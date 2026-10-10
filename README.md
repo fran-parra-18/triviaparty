@@ -94,9 +94,9 @@ Haz doble clic en **`Iniciar Trivia Party.bat`**, en la carpeta del proyecto. El
 2. instala las dependencias la primera vez;
 3. compila el juego si no está compilado o si el código cambió desde la última vez;
 4. prepara la base de datos y las preguntas (sin duplicar nada);
-5. abre una ventana **«Trivia Party - servidor»** con el servidor en el puerto 3001 y abre `http://localhost:3001/host` en el navegador.
+5. inicia el servidor en segundo plano, sin ventana, en el puerto 3001 y abre `http://localhost:3001/host` en el navegador. La ventana del lanzador se cierra sola.
 
-Para apagar el juego, cierra la ventana del servidor. Si haces doble clic con el juego ya abierto, solo abre el navegador. Puedes crear un acceso directo al `.bat` en el escritorio.
+Para apagar el juego, haz doble clic en **`Apagar Trivia Party.bat`**; si no lo apagas, sigue funcionando hasta que apagues o reinicies la PC. Si haces doble clic en el lanzador con el juego ya abierto, solo abre el navegador. Los mensajes del servidor quedan en `server/logs/servidor.log`, útil si algo falla. Para tener un acceso directo con el logo en el escritorio, ejecuta una vez `powershell -ExecutionPolicy Bypass -File scripts/crear-acceso-directo.ps1`.
 
 ## Jugador líder (controlar desde el celular)
 

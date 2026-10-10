@@ -78,14 +78,16 @@ call node dist\cli\import.js data\questions --quiet
 if errorlevel 1 (popd & goto :fallo)
 popd
 
-rem --- Arrancar el servidor en su propia ventana ---
+rem --- Arrancar el servidor en segundo plano, sin ventana (la salida va a server\logs\servidor.log) ---
 echo   [4/4] Iniciando el servidor...
-start "Trivia Party - servidor (cierra esta ventana para apagar el juego)" /D "%~dp0server" cmd /k "set NODE_ENV=production&& set PORT=%PORT%&& node dist\index.js"
+if not exist "server\logs\" mkdir "server\logs"
+set "NODE_ENV=production"
+powershell -NoProfile -Command "Start-Process -WindowStyle Hidden -WorkingDirectory '%~dp0server' -FilePath cmd.exe -ArgumentList '/c','node dist\index.js > logs\servidor.log 2>&1'"
 
 rem --- Esperar a que responda y abrir el navegador ---
 powershell -NoProfile -Command "for ($i = 0; $i -lt 60; $i++) { try { Invoke-WebRequest -UseBasicParsing -TimeoutSec 2 http://127.0.0.1:%PORT%/api/health | Out-Null; exit 0 } catch { Start-Sleep -Milliseconds 500 } }; exit 1"
 if errorlevel 1 (
-  echo   [ERROR] El servidor no respondio. Revisa la ventana "Trivia Party - servidor".
+  echo   [ERROR] El servidor no respondio. Revisa el archivo server\logs\servidor.log
   pause
   exit /b 1
 )
@@ -93,7 +95,8 @@ if errorlevel 1 (
 echo.
 echo   Listo. Abriendo %URL%
 echo   Los celulares deben estar en la misma red Wi-Fi y escanear el QR de la pantalla.
-echo   Para apagar el juego, cierra la ventana "Trivia Party - servidor".
+echo   El juego queda funcionando en segundo plano; esta ventana se cierra sola.
+echo   Para apagarlo, haz doble clic en "Apagar Trivia Party.bat".
 if not "%TRIVIA_NO_BROWSER%"=="1" start "" "%URL%"
 ping -n 6 127.0.0.1 >nul
 exit /b 0
