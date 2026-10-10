@@ -1,0 +1,44 @@
+{
+  "name": "@trivia/server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch --clear-screen=false src/index.ts",
+    "build": "node scripts/prisma.mjs generate && tsup",
+    "start": "node scripts/prisma.mjs migrate deploy && node dist/index.js",
+    "start:only": "node dist/index.js",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prisma": "node scripts/prisma.mjs",
+    "db:generate": "node scripts/prisma.mjs generate",
+    "db:migrate": "node scripts/prisma.mjs migrate deploy && node scripts/prisma.mjs generate",
+    "db:migrate:dev": "node scripts/prisma.mjs migrate dev",
+    "db:seed": "tsx src/cli/import.ts data/questions",
+    "db:studio": "node scripts/prisma.mjs studio",
+    "questions:validate": "tsx src/cli/validate.ts data/questions",
+    "questions:import": "tsx src/cli/import.ts",
+    "questions:export": "tsx src/cli/export.ts",
+    "questions:stats": "tsx src/cli/stats.ts",
+    "simulate": "tsx src/cli/simulate.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "6.19.3",
+    "@trivia/shared": "*",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.2.1",
+    "helmet": "^8.1.0",
+    "socket.io": "^4.8.1",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/node": "^22.18.0",
+    "prisma": "6.19.3",
+    "socket.io-client": "^4.8.1",
+    "tsup": "^8.5.0",
+    "tsx": "^4.20.6",
+    "vitest": "^5.0.3"
+  }
+}

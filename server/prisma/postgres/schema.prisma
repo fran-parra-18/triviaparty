@@ -1,0 +1,57 @@
+// Esquema para PostgreSQL (producción). Debe mantenerse con los mismos modelos que prisma/schema.prisma.
+// scripts/prisma.mjs elige el esquema automáticamente según DATABASE_URL.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id        String     @id
+  name      String
+  emoji     String
+  sortOrder Int        @default(0)
+  questions Question[]
+}
+
+model Question {
+  id             String   @id
+  text           String
+  option0        String
+  option1        String
+  option2        String
+  option3        String
+  answerIndex    Int
+  explanation    String
+  categoryId     String
+  category       Category @relation(fields: [categoryId], references: [id])
+  difficulty     String // facil | media | dificil
+  source         String?
+  tags           String   @default("") // etiquetas separadas por comas
+  /// Enunciado normalizado (minúsculas, sin tildes ni signos) para detectar duplicados.
+  normalizedText String   @unique
+  active         Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([categoryId, difficulty, active])
+}
+
+model GameRecord {
+  id            String   @id
+  roomCode      String
+  gameNumber    Int
+  startedAt     DateTime
+  endedAt       DateTime
+  endedEarly    Boolean  @default(false)
+  questionCount Int
+  playerCount   Int
+  settingsJson  String
+  resultsJson   String
+
+  @@index([endedAt])
+}

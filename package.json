@@ -1,0 +1,37 @@
+{
+  "name": "trivia-party",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Juego de preguntas multijugador en tiempo real: una pantalla anfitriona y los celulares como controles.",
+  "workspaces": [
+    "shared",
+    "server",
+    "client"
+  ],
+  "scripts": {
+    "setup": "npm install && npm run db:migrate && npm run db:seed",
+    "dev": "concurrently -k -n server,client -c magenta,cyan \"npm run dev -w server\" \"npm run dev -w client\"",
+    "build": "npm run build -w client && npm run build -w server",
+    "start": "npm run start -w server",
+    "test": "npm run test -w server",
+    "typecheck": "npm run typecheck -w shared && npm run typecheck -w server && npm run typecheck -w client",
+    "db:migrate": "npm run db:migrate -w server",
+    "db:seed": "npm run db:seed -w server",
+    "questions:validate": "npm run questions:validate -w server",
+    "questions:import": "npm run questions:import -w server --",
+    "questions:export": "npm run questions:export -w server --",
+    "questions:stats": "npm run questions:stats -w server",
+    "simulate": "npm run simulate -w server --"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "typescript": "~5.9.3"
+  },
+  "engines": {
+    "node": ">=20.19"
+  },
+  "overrides": {
+    "esbuild": "^0.28.2",
+    "deepmerge-ts": "^8.0.0"
+  }
+}
