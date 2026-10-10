@@ -14,11 +14,11 @@ echo   ==========================================
 echo.
 
 rem --- Si el juego ya esta funcionando, solo abrimos el navegador ---
-powershell -NoProfile -Command "try { Invoke-WebRequest -UseBasicParsing -TimeoutSec 2 http://localhost:%PORT%/api/health | Out-Null; exit 0 } catch { exit 1 }"
+powershell -NoProfile -Command "try { Invoke-WebRequest -UseBasicParsing -TimeoutSec 2 http://127.0.0.1:%PORT%/api/health | Out-Null; exit 0 } catch { exit 1 }"
 if %errorlevel%==0 (
   echo   El juego ya esta en marcha. Abriendo el navegador...
   if not "%TRIVIA_NO_BROWSER%"=="1" start "" "%URL%"
-  timeout /t 3 >nul
+  ping -n 4 127.0.0.1 >nul
   exit /b 0
 )
 
@@ -74,7 +74,7 @@ echo   [3/4] Preparando la base de datos y las preguntas...
 pushd server
 call node scripts\prisma.mjs migrate deploy >nul
 if errorlevel 1 (popd & goto :fallo)
-call node dist\cli\import.js data\questions
+call node dist\cli\import.js data\questions --quiet
 if errorlevel 1 (popd & goto :fallo)
 popd
 
@@ -83,7 +83,7 @@ echo   [4/4] Iniciando el servidor...
 start "Trivia Party - servidor (cierra esta ventana para apagar el juego)" /D "%~dp0server" cmd /k "set NODE_ENV=production&& set PORT=%PORT%&& node dist\index.js"
 
 rem --- Esperar a que responda y abrir el navegador ---
-powershell -NoProfile -Command "for ($i = 0; $i -lt 60; $i++) { try { Invoke-WebRequest -UseBasicParsing -TimeoutSec 2 http://localhost:%PORT%/api/health | Out-Null; exit 0 } catch { Start-Sleep -Milliseconds 500 } }; exit 1"
+powershell -NoProfile -Command "for ($i = 0; $i -lt 60; $i++) { try { Invoke-WebRequest -UseBasicParsing -TimeoutSec 2 http://127.0.0.1:%PORT%/api/health | Out-Null; exit 0 } catch { Start-Sleep -Milliseconds 500 } }; exit 1"
 if errorlevel 1 (
   echo   [ERROR] El servidor no respondio. Revisa la ventana "Trivia Party - servidor".
   pause
@@ -95,7 +95,7 @@ echo   Listo. Abriendo %URL%
 echo   Los celulares deben estar en la misma red Wi-Fi y escanear el QR de la pantalla.
 echo   Para apagar el juego, cierra la ventana "Trivia Party - servidor".
 if not "%TRIVIA_NO_BROWSER%"=="1" start "" "%URL%"
-timeout /t 5 >nul
+ping -n 6 127.0.0.1 >nul
 exit /b 0
 
 :fallo

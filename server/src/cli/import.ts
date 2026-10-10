@@ -5,6 +5,7 @@
  * --dry-run       muestra qué se haría sin escribir.
  * --prune         elimina de la BD las preguntas que no estén en los archivos importados.
  * --allow-errors  importa las preguntas válidas aunque otras tengan errores.
+ * --quiet         no muestra los avisos de revisión (los errores sí).
  */
 import { loadEnvFiles, readConfig } from '../config';
 import { loadAndValidate, parseArgs, printDistribution, printIssues } from './common';
@@ -26,7 +27,7 @@ try {
   const { records, files, report } = loadAndValidate(positional);
   console.log(`Archivos: ${files.length} · Registros leídos: ${records.length} · Válidos: ${report.valid.length}`);
   printIssues('✖ Errores', report.errors, limit);
-  printIssues('⚠ Avisos', report.warnings, Math.min(limit, 15));
+  if (!flags.has('quiet')) printIssues('⚠ Avisos', report.warnings, Math.min(limit, 15));
   if (report.errors.length && !flags.has('allow-errors')) {
     console.error('\n✖ Hay errores de validación. Corrígelos o usa --allow-errors para importar solo las válidas.');
     process.exit(1);

@@ -13,6 +13,7 @@ Juego de preguntas multijugador en tiempo real para fiestas: una **pantalla prin
 ## Índice
 
 1. [Estado actual](#estado-actual)
+   - [Inicio rápido con doble clic](#inicio-rápido-con-doble-clic-windows) · [Jugador líder](#jugador-líder-controlar-desde-el-celular)
 2. [Arquitectura](#arquitectura)
 3. [Requisitos](#requisitos)
 4. [Instalación y ejecución local](#instalación-y-ejecución-local)
@@ -83,6 +84,26 @@ client/   React 19 + Vite 7 + Tailwind CSS 4 + React Router
 - Nada más para desarrollo: la base SQLite se crea sola. PostgreSQL es opcional.
 
 ---
+
+## Inicio rápido con doble clic (Windows)
+
+Haz doble clic en **`Iniciar Trivia Party.bat`**, en la carpeta del proyecto. El lanzador:
+
+1. comprueba que Node.js esté instalado (si no, indica dónde descargarlo);
+2. instala las dependencias la primera vez;
+3. compila el juego si no está compilado o si el código cambió desde la última vez;
+4. prepara la base de datos y las preguntas (sin duplicar nada);
+5. abre una ventana **«Trivia Party - servidor»** con el servidor en el puerto 3001 y abre `http://localhost:3001/host` en el navegador.
+
+Para apagar el juego, cierra la ventana del servidor. Si haces doble clic con el juego ya abierto, solo abre el navegador. Puedes crear un acceso directo al `.bat` en el escritorio.
+
+## Jugador líder (controlar desde el celular)
+
+Para no levantarse del sillón en cada pregunta, el anfitrión puede elegir a un **líder** tocando 👑 junto a su nombre en la sala de espera, o con el selector 👑 de la cabecera en cualquier momento. Solo hay un líder a la vez, y el anfitrión puede quitarlo o cambiarlo.
+
+Desde su celular, el líder puede **comenzar la partida, revelar la respuesta, mostrar la clasificación, pasar a la siguiente pregunta o al podio, pausar o reanudar y «Jugar otra vez»**.
+
+Por juego limpio, el líder **no puede cerrar una pregunta abierta**: como también juega, podría responder rápido y dejar sin tiempo a los demás. La pregunta se cierra sola cuando todos responden o se agota el tiempo. Tampoco puede terminar la partida, expulsar jugadores, cambiar la configuración ni cerrar la sala. El servidor valida cada una de estas restricciones.
 
 ## Instalación y ejecución local
 
