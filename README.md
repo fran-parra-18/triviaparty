@@ -38,7 +38,7 @@ Juego de preguntas multijugador en tiempo real para fiestas: una **pantalla prin
 | Configuración: cantidad, tiempo (10/15/20/30/60 s), categorías, dificultad (incluida progresiva), mín./máx. de jugadores, puntuación, incorporaciones tardías, resultados entre preguntas, orden aleatorio y avance automático | ✅ |
 | Pausa, reanudar, terminar antes de tiempo, expulsar jugadores, cerrar sala, pantalla completa, sonidos con silencio y atajos de teclado | ✅ |
 | Reconexión de jugador y anfitrión | ✅ Probada |
-| Banco de preguntas | ⚠️ **1.604 preguntas reales en 12 de 16 categorías.** Faltan *Inventos y descubrimientos*, *Cultura general*, *Datos curiosos* y *Récords* (aparecen deshabilitadas en la configuración). **Todavía no hay 2.000.** |
+| Banco de preguntas | ✅ **2.139 preguntas reales en las 16 categorías**, validadas con `npm run questions:validate` (0 errores; los avisos restantes se revisaron a mano). |
 | Despliegue con Docker / PostgreSQL | ⚠️ Archivos preparados (`Dockerfile`, `docker-compose.yml`, migraciones de PostgreSQL), **no probados** en esta máquina (no tenía Docker ni PostgreSQL). |
 
 Preguntas por categoría (fácil / media / difícil):
@@ -49,10 +49,11 @@ Preguntas por categoría (fácil / media / difícil):
 | 🌍 Geografía | 160 (58/71/31) | | 🍽️ Gastronomía | 130 (46/65/19) |
 | 🔬 Ciencia y naturaleza | 132 (43/62/27) | | 🐾 Animales | 130 (42/55/33) |
 | 💻 Tecnología e informática | 130 (49/58/23) | | 🚀 Espacio y astronomía | 130 (33/57/40) |
-| 🎬 Cine y televisión | 130 (57/55/18) | | 💡 Inventos y descubrimientos | 0 |
-| 🎵 Música | 130 (42/71/17) | | 🧠 Cultura general | 0 |
-| ⚽ Deportes | 130 (54/62/14) | | 🤯 Datos curiosos del mundo | 0 |
-| 📚 Literatura | 132 (32/76/24) | | 🏆 Récords y hechos sorprendentes | 0 |
+| 🎬 Cine y televisión | 130 (57/55/18) | | 💡 Inventos y descubrimientos | 143 (19/80/44) |
+| 🎵 Música | 130 (42/71/17) | | 🧠 Cultura general | 137 (63/60/14) |
+| ⚽ Deportes | 130 (54/62/14) | | 🤯 Datos curiosos del mundo | 129 (14/79/36) |
+| 📚 Literatura | 132 (32/76/24) | | 🏆 Récords y hechos sorprendentes | 126 (14/68/44) |
+| **Total** | **2.139 (671/1.044/424)** | | | |
 
 Para consultar el recuento real en cualquier momento: `npm run questions:validate` (archivos) o `npm run questions:stats` (base de datos).
 
@@ -368,7 +369,7 @@ Define `DATABASE_URL` (SQLite en un disco persistente o PostgreSQL), `PUBLIC_URL
 
 ## Limitaciones conocidas
 
-- **Banco incompleto:** 1.604 de las 2.000 preguntas previstas; 4 categorías vacías. Se completará por lotes con el mismo formato.
+- **Datos que cambian con el tiempo:** algunas preguntas (récords deportivos, edificios más altos, monedas) son correctas a fecha de 2026, y su explicación indica el año cuando conviene. Habrá que revisarlas de vez en cuando.
 - **Las salas viven en memoria:** si el servidor se reinicia, las partidas en curso se pierden. Las preguntas y el historial están en la base de datos. Por eso tampoco se puede escalar a varias instancias sin añadir un almacén compartido (por ejemplo, Redis y el adaptador de Socket.IO).
 - El despliegue con Docker y PostgreSQL está preparado pero **no se ha ejecutado** en este entorno.
 - En el entorno de pruebas no se usaron teléfonos físicos. El acceso desde otros dispositivos se verificó abriendo el cliente por la IP de la red local (`192.168.0.100`) en pestañas independientes con vista móvil. Conviene hacer la prueba descrita en [Jugar desde celulares](#jugar-desde-celulares) con teléfonos reales.
