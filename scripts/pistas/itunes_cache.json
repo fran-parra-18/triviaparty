@@ -1121,5 +1121,1207 @@
   "album": "X 100PRE",
   "year": "2018",
   "country": "US"
+ },
+ "ABBA|Mamma Mia": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/b6/11/b6/b611b634-d2ea-3413-19be-b3c19daddfe5/mzaf_11228048896593074702.plus.aac.p.m4a",
+  "track": "Mamma Mia",
+  "artist": "ABBA",
+  "album": "ABBA (Bonus Track Version)",
+  "year": "1975",
+  "country": "US"
+ },
+ "Queen|We Will Rock You": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/0a/a9/f3/0aa9f3af-4672-fb3b-42d8-6d56a9a4c69b/mzaf_16030082968131796908.plus.aac.p.m4a",
+  "track": "We Will Rock You",
+  "artist": "Queen",
+  "album": "News Of The World (Deluxe Edition)",
+  "year": "1977",
+  "country": "US"
+ },
+ "Electric Light Orchestra|Mr. Blue Sky": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/0e/a6/2b/0ea62b1a-a7b6-fc36-fddd-5da9ed19fdd6/mzaf_13125678449795276861.plus.aac.p.m4a",
+  "track": "Mr. Blue Sky",
+  "artist": "Electric Light Orchestra",
+  "album": "All Over the World: The Very Best of Electric Light Orchestra",
+  "year": "1977",
+  "country": "US"
+ },
+ "Supertramp|The Logical Song": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/ec/5a/ae/ec5aaedf-7493-6df9-f18f-8c0388ad67d3/mzaf_7892337859087768596.plus.aac.p.m4a",
+  "track": "The Logical Song",
+  "artist": "Supertramp",
+  "album": "Breakfast in America (Deluxe Edition) [2010 Remaster]",
+  "year": "1979",
+  "country": "US"
+ },
+ "Lynyrd Skynyrd|Sweet Home Alabama": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/3c/6d/b5/3c6db5f7-9d5f-0207-f0ae-c64a70ffd186/mzaf_17818188901638567993.plus.aac.p.m4a",
+  "track": "Sweet Home Alabama",
+  "artist": "Lynyrd Skynyrd",
+  "album": "All Time Greatest Hits",
+  "year": "1974",
+  "country": "US"
+ },
+ "Deep Purple|Smoke on the Water": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/2a/94/17/2a941713-19fc-1f9c-05ac-ed94771785db/mzaf_15446383104230611946.plus.aac.p.m4a",
+  "track": "Smoke On the Water",
+  "artist": "Deep Purple",
+  "album": "Machine Head",
+  "year": "1972",
+  "country": "US"
+ },
+ "Black Sabbath|Paranoid": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/be/9d/07/be9d07a7-0e2b-7973-a503-87e12c564d22/mzaf_11577128408735924283.plus.aac.p.m4a",
+  "track": "Paranoid",
+  "artist": "Black Sabbath",
+  "album": "Paranoid",
+  "year": "1970",
+  "country": "US"
+ },
+ "Carpenters|Top of the World": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/d6/c4/e8/d6c4e8a8-57a0-a876-fb65-c93101cc3742/mzaf_15272250500871244137.plus.aac.p.m4a",
+  "track": "Top of the World",
+  "artist": "Carpenters",
+  "album": "Gold: Greatest Hits",
+  "year": "1972",
+  "country": "US"
+ },
+ "Marvin Gaye|Let's Get It On": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/aa/88/40/aa884016-f860-cd11-e4ed-4fe50d509ff9/mzaf_14524715883435750084.plus.aac.p.m4a",
+  "track": "Let's Get It On",
+  "artist": "Marvin Gaye",
+  "album": "Love Songs Number 1's",
+  "year": "1973",
+  "country": "US"
+ },
+ "Barry White|You're the First, the Last, My Everything": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/9b/29/8a/9b298aa6-f24f-86ad-81a5-a2e70110249f/mzaf_883404797640702228.plus.aac.p.m4a",
+  "track": "You're the First, the Last, My Everything",
+  "artist": "Barry White",
+  "album": "Can't Get Enough",
+  "year": "1974",
+  "country": "US"
+ },
+ "KC and the Sunshine Band|That's the Way (I Like It)": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/f1/a0/d0/f1a0d006-a761-8e67-8aa1-98a8d754a929/mzaf_10082656111990187415.plus.aac.p.m4a",
+  "track": "That's the Way (I Like It)",
+  "artist": "KC and the Sunshine Band",
+  "album": "KC and the Sunshine Band",
+  "year": "1975",
+  "country": "US"
+ },
+ "CHIC|Le Freak": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/76/18/dd/7618dd92-b61f-65c7-a1a5-6d08dc7d8b2d/mzaf_10536878235644314919.plus.aac.p.m4a",
+  "track": "Le Freak (2018 Remaster)",
+  "artist": "Chic",
+  "album": "C'est Chic (2018 Remaster)",
+  "year": "1978",
+  "country": "US"
+ },
+ "Ramones|Blitzkrieg Bop": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/07/66/3f/07663f2e-8f1a-c22f-a688-a8599002214c/mzaf_1731743994284736681.plus.aac.p.m4a",
+  "track": "Blitzkrieg Bop",
+  "artist": "Ramones",
+  "album": "Ramones (40th Anniversary Deluxe Edition)",
+  "year": "1976",
+  "country": "US"
+ },
+ "Sex Pistols|Anarchy in the U.K.": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/09/1f/ae/091fae54-cbb2-2eae-fe91-1609f46f6107/mzaf_1736805652157209529.plus.aac.p.m4a",
+  "track": "Anarchy In the U.K.",
+  "artist": "Sex Pistols",
+  "album": "Never Mind the Bollocks, Here's the Sex Pistols",
+  "year": "1977",
+  "country": "US"
+ },
+ "Simon & Garfunkel|Bridge over Troubled Water": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/e7/9b/60/e79b60c4-4971-aed9-92aa-db57d453cd42/mzaf_12057489393656620288.plus.aac.p.m4a",
+  "track": "Bridge Over Troubled Water",
+  "artist": "Simon & Garfunkel",
+  "album": "Bridge Over Troubled Water",
+  "year": "1970",
+  "country": "US"
+ },
+ "The Beatles|Let It Be": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/60/76/fd/6076fd8f-422a-d5e3-7b02-5953bc93cfbd/mzaf_3945462995290301839.plus.aac.p.m4a",
+  "track": "Let It Be",
+  "artist": "The Beatles",
+  "album": "Let It Be",
+  "year": "1970",
+  "country": "US"
+ },
+ "Raphael|Qué Sabe Nadie": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/92/e7/b3/92e7b366-9155-8ac1-0d43-8483e1bedade/mzaf_3354973914289217576.plus.aac.p.m4a",
+  "track": "Qué Sabe Nadie",
+  "artist": "Raphael",
+  "album": "Raphael: 30 Éxitos Insuperables",
+  "year": "1981",
+  "country": "US"
+ },
+ "Juan Gabriel|No Tengo Dinero": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/e9/a6/f0/e9a6f085-e21e-b5c9-4ae0-491639cec995/mzaf_16416104587816795710.plus.aac.p.m4a",
+  "track": "No Tengo Dinero",
+  "artist": "Juan Gabriel",
+  "album": "Mis Número 1... 40 Aniversario",
+  "year": "1984",
+  "country": "US"
+ },
+ "León Gieco|Sólo le Pido a Dios": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/3b/7e/53/3b7e53ff-27c0-adee-4404-a5f40d80f094/mzaf_17201436340883264277.plus.aac.p.m4a",
+  "track": "Sólo Le Pido a Dios",
+  "artist": "León Gieco",
+  "album": "Grandes Éxitos: Leon Gieco",
+  "year": "1994",
+  "country": "US"
+ },
+ "Billy Joel|Piano Man": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/b5/9b/40/b59b40e2-da43-4d2a-9e85-51f09ebedc3b/mzaf_17284150486262234531.plus.aac.p.m4a",
+  "track": "Piano Man",
+  "artist": "Billy Joel",
+  "album": "The Essential Billy Joel",
+  "year": "1973",
+  "country": "US"
+ },
+ "Queen|Radio Ga Ga": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/22/44/a4/2244a42e-ee43-91e7-26ab-a503deb7a3ab/mzaf_3715210312009688603.plus.aac.p.m4a",
+  "track": "Radio Ga Ga",
+  "artist": "Queen",
+  "album": "The Works (Deluxe Edition)",
+  "year": "1984",
+  "country": "US"
+ },
+ "Michael Jackson|Beat It": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/88/cd/46/88cd46bd-dba7-1dc2-a63b-e8c111ac4fc3/mzaf_4042555053237612653.plus.aac.p.m4a",
+  "track": "Beat It",
+  "artist": "Michael Jackson",
+  "album": "Thriller",
+  "year": "1982",
+  "country": "US"
+ },
+ "Van Halen|Jump": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/89/fa/f1/89faf128-b7de-808a-6893-4fc730dcfbe4/mzaf_10903024022773138434.plus.aac.p.m4a",
+  "track": "Jump",
+  "artist": "Van Halen",
+  "album": "1984",
+  "year": "1983",
+  "country": "US"
+ },
+ "Journey|Don't Stop Believin'": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/0f/e9/54/0fe95410-dc38-8696-0259-f61d869e9fca/mzaf_13616088119456591905.plus.aac.p.m4a",
+  "track": "Don't Stop Believin' (2024 Remaster)",
+  "artist": "Journey",
+  "album": "Greatest Hits (2024 Remaster)",
+  "year": "1981",
+  "country": "US"
+ },
+ "Kenny Loggins|Footloose": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/22/18/68/2218688a-ff36-7277-56de-c6b221d691c8/mzaf_12250270063124855744.plus.aac.p.m4a",
+  "track": "Footloose",
+  "artist": "Kenny Loggins",
+  "album": "Footloose (Original Motion Picture Soundtrack)",
+  "year": "1984",
+  "country": "US"
+ },
+ "Irene Cara|Flashdance... What a Feeling": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/2e/fa/e7/2efae7f9-ed70-308a-78f9-6f2639585e7b/mzaf_10744251162106940532.plus.aac.p.m4a",
+  "track": "Flashdance...What a Feeling",
+  "artist": "Irene Cara",
+  "album": "What a Feeling - EP",
+  "year": "1983",
+  "country": "US"
+ },
+ "Ray Parker Jr.|Ghostbusters": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/70/1f/f1/701ff165-58e2-75eb-464b-fec3483f93bd/mzaf_15159076127980316987.plus.aac.p.m4a",
+  "track": "Ghostbusters",
+  "artist": "Ray Parker Jr.",
+  "album": "Ghostbusters (Original Motion Picture Soundtrack)",
+  "year": "2010",
+  "country": "US"
+ },
+ "Pet Shop Boys|West End Girls": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/b5/90/09/b5900978-bbfb-7e6c-93d8-0fe4713211da/mzaf_16813858284806810472.plus.aac.p.m4a",
+  "track": "West End Girls",
+  "artist": "Pet Shop Boys",
+  "album": "Please: Further Listening 1984-1986 (Deluxe Edition) [2018 Remaster]",
+  "year": "1986",
+  "country": "US"
+ },
+ "Depeche Mode|Just Can't Get Enough": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/df/01/a6/df01a693-b844-6575-c41f-4410397c51b6/mzaf_16786502216973236959.plus.aac.p.m4a",
+  "track": "Just Can't Get Enough",
+  "artist": "Depeche Mode",
+  "album": "Speak and Spell (Deluxe)",
+  "year": "1981",
+  "country": "US"
+ },
+ "Soft Cell|Tainted Love": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/24/21/ba/2421ba35-1d77-9a2b-2e6e-d83af784eec3/mzaf_12069175805349111010.plus.aac.p.m4a",
+  "track": "Tainted Love",
+  "artist": "Soft Cell",
+  "album": "Tainted Love / Where Did Our Love Go - Single",
+  "year": "1981",
+  "country": "US"
+ },
+ "U2|With or Without You": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/73/9f/b8/739fb89d-05fc-a158-d34d-578d07213262/mzaf_15599762317871907296.plus.aac.p.m4a",
+  "track": "With or Without You",
+  "artist": "U2",
+  "album": "U218 Singles (Deluxe Edition)",
+  "year": "1987",
+  "country": "US"
+ },
+ "The Cure|Just Like Heaven": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/86/96/49/8696498e-c448-fd66-7d3f-b02fe43ea12d/mzaf_6925694512417375942.plus.aac.p.m4a",
+  "track": "Just Like Heaven",
+  "artist": "The Cure",
+  "album": "Kiss Me, Kiss Me, Kiss Me",
+  "year": "1987",
+  "country": "US"
+ },
+ "Mecano|Me Cuesta Tanto Olvidarte": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/a5/58/ca/a558ca2f-f57e-2ce8-2d44-0e4706df4b51/mzaf_7261490933278674635.plus.aac.p.m4a",
+  "track": "Me Cuesta Tanto Olvidarte",
+  "artist": "Mecano",
+  "album": "Entre el Cielo y el Suelo (Bonus Tracks Edition)",
+  "year": "1986",
+  "country": "US"
+ },
+ "Alaska y Dinarama|A Quién le Importa": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/36/fc/94/36fc94fb-3e54-0cf6-0297-225f1aaec9a6/mzaf_613746751505836067.plus.aac.p.m4a",
+  "track": "A Quién Le Importa",
+  "artist": "Alaska y Dinarama",
+  "album": "No Es Pecado (Remastered)",
+  "year": "1986",
+  "country": "US"
+ },
+ "Sumo|Mañana en el Abasto": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/60/bd/18/60bd18bc-65e8-b5d6-31ac-8b877045bab6/mzaf_16957329675078771107.plus.aac.p.m4a",
+  "track": "Mañana en el Abasto",
+  "artist": "Sumo",
+  "album": "After Chabon",
+  "year": "1987",
+  "country": "US"
+ },
+ "Juan Gabriel|Querida": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/62/10/d5/6210d5c2-9d1a-cf40-04c8-338835de5efe/mzaf_1940084315551518563.plus.aac.p.m4a",
+  "track": "Querida",
+  "artist": "Juan Gabriel",
+  "album": "Recuerdos II",
+  "year": "1972",
+  "country": "US"
+ },
+ "Rocío Dúrcal|Amor Eterno": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/2a/b3/48/2ab348a5-467b-13d3-b089-ba06011394b2/mzaf_12729615537664982981.plus.aac.p.m4a",
+  "track": "Amor Eterno",
+  "artist": "Rocío Dúrcal",
+  "album": "Amor Eterno - Los Éxitos",
+  "year": "1986",
+  "country": "US"
+ },
+ "Men at Work|Down Under": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/76/1c/6e/761c6e1d-1b95-e87f-bcec-41afc0836a9a/mzaf_11800999298773408397.plus.aac.p.m4a",
+  "track": "Down Under",
+  "artist": "Men At Work",
+  "album": "Business As Usual",
+  "year": "1981",
+  "country": "US"
+ },
+ "Kim Wilde|Kids in America": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/3f/6e/cf/3f6ecf1a-8038-0313-36a3-5b2949142155/mzaf_932783320149738969.plus.aac.p.m4a",
+  "track": "Kids In America (2020 Remaster)",
+  "artist": "Kim Wilde",
+  "album": "Kim Wilde (2020 Expanded & Remastered Edition)",
+  "year": "1981",
+  "country": "US"
+ },
+ "Stevie Wonder|I Just Called to Say I Love You": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/a7/e0/8b/a7e08ba4-683d-08eb-fb2f-c739aeb97b8d/mzaf_2611392445438035747.plus.aac.p.m4a",
+  "track": "I Just Called to Say I Love You (Single Version)",
+  "artist": "Stevie Wonder",
+  "album": "The Definitive Collection",
+  "year": "2002",
+  "country": "US"
+ },
+ "Shakira|Estoy Aquí": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/e6/1a/e6/e61ae6dc-71a0-c343-5e2a-b674afe5a454/mzaf_6838942877118141285.plus.aac.p.m4a",
+  "track": "Estoy Aquí",
+  "artist": "Shakira",
+  "album": "Pies Descalzos",
+  "year": "1995",
+  "country": "US"
+ },
+ "Thalía|Piel Morena": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/a6/ce/6a/a6ce6ad1-32c3-29f9-2cfc-ea3b13ba442b/mzaf_11521349218108012368.plus.aac.p.m4a",
+  "track": "Piel Morena",
+  "artist": "Thalia",
+  "album": "En Éxtasis",
+  "year": "1995",
+  "country": "US"
+ },
+ "Natalia Oreiro|Me Muero de Amor": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/6c/a6/9e/6ca69ece-31d9-1fba-4c20-5554b2e9aca8/mzaf_7871960558574531704.plus.aac.p.m4a",
+  "track": "Me Muero de Amor",
+  "artist": "Natalia Oreiro",
+  "album": "Natalia Oreiro",
+  "year": "1998",
+  "country": "US"
+ },
+ "Café Tacvba|Las Flores": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/28/b1/8b/28b18bc6-dec5-b5b9-8386-cf7bac6da341/mzaf_9617320568573824694.plus.aac.p.m4a",
+  "track": "Las Flores",
+  "artist": "Café Tacvba",
+  "album": "Re",
+  "year": "1994",
+  "country": "US"
+ },
+ "Los Rodríguez|Sin Documentos": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/26/16/d0/2616d00e-13bd-2470-b1d1-0530e1082502/mzaf_13022111238885125634.plus.aac.p.m4a",
+  "track": "Sin Documentos",
+  "artist": "Los Rodríguez",
+  "album": "Sin Documentos",
+  "year": "1993",
+  "country": "US"
+ },
+ "Héroes del Silencio|Entre Dos Tierras": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/c6/c8/25/c6c82525-eddb-98dc-d363-a8983b7eedac/mzaf_6287803120614849579.plus.aac.p.m4a",
+  "track": "Entre Dos Tierras",
+  "artist": "Héroes del Silencio",
+  "album": "Senderos de Traición",
+  "year": "1990",
+  "country": "US"
+ },
+ "Gloria Estefan|Mi Tierra": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/bd/21/10/bd211078-b9d6-34a2-d4a4-e5312a0165c4/mzaf_10779794490994308295.plus.aac.p.m4a",
+  "track": "Mi Tierra",
+  "artist": "Gloria Estefan",
+  "album": "Mi Tierra",
+  "year": "1993",
+  "country": "US"
+ },
+ "Michael Jackson|Black or White": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/69/01/0c/69010c8e-2ff7-2809-589d-6f304400a359/mzaf_3468624104964279051.plus.aac.p.m4a",
+  "track": "Black or White",
+  "artist": "Michael Jackson",
+  "album": "The Essential Michael Jackson",
+  "year": "1991",
+  "country": "US"
+ },
+ "Madonna|Vogue": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/35/ab/23/35ab2302-3f06-a322-e306-e86ecf6e6999/mzaf_7353725739896737621.plus.aac.p.m4a",
+  "track": "Vogue",
+  "artist": "Madonna",
+  "album": "The Immaculate Collection",
+  "year": "1990",
+  "country": "US"
+ },
+ "Guns N' Roses|November Rain": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/67/6b/0c/676b0cc6-2f6e-555a-b4f1-a514ab21adb4/mzaf_10772491023997849447.plus.aac.p.m4a",
+  "track": "November Rain",
+  "artist": "Guns N' Roses",
+  "album": "Use Your Illusion I",
+  "year": "1991",
+  "country": "US"
+ },
+ "R.E.M.|Losing My Religion": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/06/ee/70/06ee70ca-c0f6-783c-1935-e0be0f3228d4/mzaf_1437283987200939868.plus.aac.p.m4a",
+  "track": "Losing My Religion",
+  "artist": "R.E.M.",
+  "album": "In Time: The Best of R.E.M. 1988-2003",
+  "year": "1991",
+  "country": "US"
+ },
+ "No Doubt|Don't Speak": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/87/52/52/8752529c-0125-c053-6c2c-73d1646adff6/mzaf_5525794060908135243.plus.aac.p.m4a",
+  "track": "Don't Speak",
+  "artist": "No Doubt",
+  "album": "Tragic Kingdom",
+  "year": "1995",
+  "country": "US"
+ },
+ "Blur|Song 2": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/0d/7b/06/0d7b068e-914f-b01a-ef1e-fd21e9b106c6/mzaf_2441215755969695380.plus.aac.p.m4a",
+  "track": "Song 2 (2012 Remaster)",
+  "artist": "Blur",
+  "album": "Blur",
+  "year": "1997",
+  "country": "US"
+ },
+ "Chumbawamba|Tubthumping": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/b6/85/a8/b685a898-b48e-14a3-50d3-43009162fa0d/mzaf_5688414155772340127.plus.aac.p.m4a",
+  "track": "Tubthumping (Radio Edit)",
+  "artist": "Chumbawamba",
+  "album": "Drew's Famous Hits of the 90's",
+  "year": "1997",
+  "country": "US"
+ },
+ "Shania Twain|Man! I Feel Like a Woman!": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/99/5a/c9/995ac911-a854-5116-97c4-c497380c0de3/mzaf_17795781825956372203.plus.aac.p.m4a",
+  "track": "Man! I Feel Like a Woman!",
+  "artist": "Shania Twain",
+  "album": "Come On Over",
+  "year": "1997",
+  "country": "US"
+ },
+ "Lou Bega|Mambo No. 5": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/95/12/14/951214ff-a3f2-7b9c-094c-385b382b5a14/mzaf_6010878480642586774.plus.aac.p.m4a",
+  "track": "Mambo No. 5 (a Little Bit of...)",
+  "artist": "Lou Bega",
+  "album": "A Little Bit of Mambo",
+  "year": "1999",
+  "country": "US"
+ },
+ "Selena|Amor Prohibido": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/e9/e0/88/e9e08860-e087-16bd-a507-42899ae205dd/mzaf_7786993142762889875.plus.aac.p.m4a",
+  "track": "Amor Prohibido",
+  "artist": "Selena",
+  "album": "Amor Prohibido (Bonus Track Version)",
+  "year": "1994",
+  "country": "US"
+ },
+ "Paulina Rubio|Y Yo Sigo Aquí": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/53/95/3e/53953e2b-a427-4ba9-1f14-78f45828f909/mzaf_14326275166016876135.plus.aac.p.m4a",
+  "track": "Y Yo Sigo Aquí",
+  "artist": "Paulina Rubio",
+  "album": "Paulina",
+  "year": "2000",
+  "country": "US"
+ },
+ "Belinda|Ángel": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/6a/43/61/6a436176-6d09-b2ef-f1dd-21e306236381/mzaf_14468104629948382766.plus.aac.p.m4a",
+  "track": "Ángel (Once In Your Lifetime)",
+  "artist": "Belinda",
+  "album": "Belinda",
+  "year": "2003",
+  "country": "US"
+ },
+ "Don Omar|Dile": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/bc/74/ac/bc74ac55-2090-82f5-a17f-c1df01b53431/mzaf_9478164458814610720.plus.aac.p.m4a",
+  "track": "Dile",
+  "artist": "Don Omar",
+  "album": "The Last Don",
+  "year": "2003",
+  "country": "US"
+ },
+ "Aventura|Obsesión": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/7c/7f/29/7c7f293a-bab2-7741-50a9-6639895bea26/mzaf_18419148381556148823.plus.aac.p.m4a",
+  "track": "Obsesión",
+  "artist": "Aventura",
+  "album": "We Broke the Rules",
+  "year": "2002",
+  "country": "US"
+ },
+ "Maná|Labios Compartidos": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/37/ad/d2/37add219-5f37-e42b-2240-6d57d6639c92/mzaf_13929915549265598944.plus.aac.p.m4a",
+  "track": "Labios Compartidos",
+  "artist": "Maná",
+  "album": "Amar Es Combatir",
+  "year": "2006",
+  "country": "US"
+ },
+ "Kudai|Sin Despertar": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/54/4d/e3/544de31f-da31-f60c-6dca-67355baacad9/mzaf_1774243143748080564.plus.aac.p.m4a",
+  "track": "Sin Despertar",
+  "artist": "Kudai",
+  "album": "Kudai: Grandes Éxitos",
+  "year": "2004",
+  "country": "US"
+ },
+ "Belanova|Me Pregunto": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/cf/f9/8d/cff98d30-d4de-0398-d9b2-835b1697ed02/mzaf_15605251125389695286.plus.aac.p.m4a",
+  "track": "Me Pregunto",
+  "artist": "Belanova",
+  "album": "Dulce Beat",
+  "year": "2005",
+  "country": "US"
+ },
+ "Los Piojos|Como Alí": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/f7/97/bb/f797bb8e-0cf5-03fc-d634-32589b026d98/mzaf_10709922526651981248.plus.aac.p.m4a",
+  "track": "Como Alí",
+  "artist": "Los Piojos",
+  "album": "Máquina de Sangre",
+  "year": "2003",
+  "country": "US"
+ },
+ "Gustavo Cerati|Crimen": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/8f/25/88/8f25889c-9a8a-7302-095a-1c95b7f76d1c/mzaf_15027897288780939545.plus.aac.p.m4a",
+  "track": "Crimen",
+  "artist": "Gustavo Cerati",
+  "album": "Ahí Vamos",
+  "year": "2006",
+  "country": "US"
+ },
+ "Britney Spears|Toxic": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/ae/c4/7f/aec47f56-842d-49b4-558b-7a7523fd6728/mzaf_6693111381462300599.plus.aac.p.m4a",
+  "track": "Toxic",
+  "artist": "Britney Spears",
+  "album": "In the Zone",
+  "year": "2003",
+  "country": "US"
+ },
+ "Christina Aguilera|Beautiful": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/1f/a2/cf/1fa2cfca-5eb6-c361-02fd-665280d57212/mzaf_14355860194011638271.plus.aac.p.m4a",
+  "track": "Beautiful",
+  "artist": "Christina Aguilera",
+  "album": "Stripped",
+  "year": "2002",
+  "country": "US"
+ },
+ "Justin Timberlake|SexyBack": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/1a/f4/7b/1af47ba3-a363-5716-4dd9-6aea4fe35e3f/mzaf_13609262275263691829.plus.aac.p.m4a",
+  "track": "SexyBack (feat. Timbaland)",
+  "artist": "Justin Timberlake",
+  "album": "FutureSex/LoveSounds (Deluxe Edition)",
+  "year": "2006",
+  "country": "US"
+ },
+ "Kelly Clarkson|Since U Been Gone": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/8d/e7/24/8de72427-cabf-27c4-563f-5be2e83da122/mzaf_8282882240981789361.plus.aac.p.m4a",
+  "track": "Since U Been Gone",
+  "artist": "Kelly Clarkson",
+  "album": "Breakaway",
+  "year": "2004",
+  "country": "US"
+ },
+ "The White Stripes|Seven Nation Army": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/fe/2d/58/fe2d587f-6344-3fb3-43f7-d318a6253dcc/mzaf_16825320951570507954.plus.aac.p.m4a",
+  "track": "Seven Nation Army",
+  "artist": "The White Stripes",
+  "album": "Elephant",
+  "year": "2003",
+  "country": "US"
+ },
+ "Franz Ferdinand|Take Me Out": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/be/e8/b9/bee8b9cc-c37f-ea31-1372-5a77d974200c/mzaf_9120925538604726257.plus.aac.p.m4a",
+  "track": "Take Me Out",
+  "artist": "Franz Ferdinand",
+  "album": "Franz Ferdinand",
+  "year": "2004",
+  "country": "US"
+ },
+ "Green Day|Boulevard of Broken Dreams": null,
+ "Alicia Keys|Fallin'": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/39/22/91/392291b5-39f1-8189-3a9b-924361e70776/mzaf_5017281125172140671.plus.aac.p.m4a",
+  "track": "Fallin'",
+  "artist": "Alicia Keys",
+  "album": "Songs In A Minor",
+  "year": "2001",
+  "country": "US"
+ },
+ "Norah Jones|Don't Know Why": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/a6/5a/a9/a65aa9fe-7eb7-70d4-d1a8-8757db1f0a89/mzaf_3340636523536486480.plus.aac.p.m4a",
+  "track": "Don't Know Why",
+  "artist": "Norah Jones",
+  "album": "Come Away With Me (Super Deluxe Edition)",
+  "year": "2002",
+  "country": "US"
+ },
+ "Dido|Thank You": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/c9/b3/ed/c9b3ed28-4209-f550-3170-e633b200f105/mzaf_7244198289293517571.plus.aac.p.m4a",
+  "track": "Thank You",
+  "artist": "Dido",
+  "album": "No Angel",
+  "year": "1999",
+  "country": "MX"
+ },
+ "Taio Cruz|Break Your Heart": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/d5/c1/47/d5c14762-74bc-9dc4-57c3-81f26ff139f2/mzaf_126670557198026225.plus.aac.p.m4a",
+  "track": "Break Your Heart (feat. Ludacris)",
+  "artist": "Taio Cruz",
+  "album": "Rokstarr (Bonus Track Version)",
+  "year": "2009",
+  "country": "US"
+ },
+ "Daddy Yankee|Con Calma": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/af/a7/2f/afa72fb6-95dc-2da3-27c3-67279e463a46/mzaf_14450408858283120883.plus.aac.p.m4a",
+  "track": "Con Calma (feat. Snow)",
+  "artist": "Daddy Yankee",
+  "album": "Con Calma (feat. Snow) - Single",
+  "year": "2018",
+  "country": "US"
+ },
+ "Ozuna|Se Preparó": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/18/92/25/189225f6-4508-fd3f-4c3f-301fc010c9e7/mzaf_76636309500302740.plus.aac.p.m4a",
+  "track": "Se Preparó",
+  "artist": "Ozuna",
+  "album": "Odisea",
+  "year": "2017",
+  "country": "US"
+ },
+ "Sebastián Yatra|Traicionera": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/8b/07/8d/8b078df0-0b85-52ce-bb89-6ee9783ff340/mzaf_8784743862075976437.plus.aac.p.m4a",
+  "track": "Traicionera",
+  "artist": "Sebastián Yatra",
+  "album": "Traicionera - Single",
+  "year": "2016",
+  "country": "US"
+ },
+ "CNCO|Reggaetón Lento (Bailemos)": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/e5/82/1f/e5821fc8-8fb3-f397-87b5-19b9cef919f3/mzaf_6414692203120622044.plus.aac.p.m4a",
+  "track": "Reggaetón Lento (Bailemos)",
+  "artist": "CNCO",
+  "album": "Primera Cita",
+  "year": "2016",
+  "country": "US"
+ },
+ "Prince Royce|Darte un Beso": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/f5/2b/6a/f52b6a1b-15c6-8d4d-26b4-5bcdb6283e01/mzaf_15861746941852248745.plus.aac.p.m4a",
+  "track": "Darte un Beso",
+  "artist": "Prince Royce",
+  "album": "Soy el Mismo",
+  "year": "2013",
+  "country": "US"
+ },
+ "Romeo Santos|Propuesta Indecente": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/5b/f9/0e/5bf90e88-15a8-4777-489e-12c9472b41cd/mzaf_15984668273820895131.plus.aac.p.m4a",
+  "track": "Propuesta Indecente",
+  "artist": "Romeo Santos",
+  "album": "Fórmula, Vol. 2 (Deluxe Edition)",
+  "year": "2013",
+  "country": "US"
+ },
+ "Marc Anthony|Vivir Mi Vida": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/10/fd/bf/10fdbf20-d17d-a8a2-6058-c1ef9f221068/mzaf_9159790581568803090.plus.aac.p.m4a",
+  "track": "Vivir Mi Vida",
+  "artist": "Marc Anthony",
+  "album": "3.0",
+  "year": "2013",
+  "country": "US"
+ },
+ "Justin Bieber|Sorry": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/66/eb/29/66eb29c0-c2f9-d9df-8af3-3bf2562c9d7c/mzaf_4099789285264521999.plus.aac.p.m4a",
+  "track": "Sorry",
+  "artist": "Justin Bieber",
+  "album": "Purpose (Deluxe)",
+  "year": "2015",
+  "country": "US"
+ },
+ "Katy Perry|Roar": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/21/a8/76/21a87607-1fe3-2bd2-753c-0b4b73c22b90/mzaf_9666996724668759977.plus.aac.p.m4a",
+  "track": "Roar",
+  "artist": "Katy Perry",
+  "album": "PRISM (Deluxe Version)",
+  "year": "2013",
+  "country": "US"
+ },
+ "Rihanna|Diamonds": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/26/97/fb/2697fb36-8ef2-9d18-0a2e-6545947b4445/mzaf_9032202105098805603.plus.aac.p.m4a",
+  "track": "Diamonds",
+  "artist": "Rihanna",
+  "album": "Diamonds - Single",
+  "year": "2012",
+  "country": "US"
+ },
+ "Lady Gaga|Shallow": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/0c/cc/ed/0ccced59-6e6f-f0a0-0c9a-d20bfd475052/mzaf_26600833784075363.plus.aac.p.m4a",
+  "track": "Shallow",
+  "artist": "Lady Gaga & Bradley Cooper",
+  "album": "A Star Is Born Soundtrack",
+  "year": "2018",
+  "country": "US"
+ },
+ "Coldplay|Hymn for the Weekend": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/e7/42/c4/e742c45e-9146-d929-e127-c3dc1709a447/mzaf_9706755351441691351.plus.aac.p.m4a",
+  "track": "Hymn for the Weekend",
+  "artist": "Coldplay",
+  "album": "A Head Full of Dreams",
+  "year": "2015",
+  "country": "US"
+ },
+ "OneRepublic|Counting Stars": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/b0/db/7f/b0db7fbe-f8ff-1f67-fe72-ca8185ffbca2/mzaf_15298650366584767800.plus.aac.p.m4a",
+  "track": "Counting Stars",
+  "artist": "OneRepublic",
+  "album": "Native (Deluxe)",
+  "year": "2013",
+  "country": "US"
+ },
+ "Hozier|Take Me to Church": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/fb/95/fe/fb95fea4-aab2-151d-7e2d-a3b2740de243/mzaf_5007348610386911589.plus.aac.p.m4a",
+  "track": "Take Me to Church",
+  "artist": "Hozier",
+  "album": "Hozier (Expanded Edition)",
+  "year": "2013",
+  "country": "US"
+ },
+ "Clean Bandit|Rather Be": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/6f/24/52/6f245275-39f8-9db6-d83d-c35c5b7a938f/mzaf_8852741377634550874.plus.aac.p.m4a",
+  "track": "Rather Be (feat. Jess Glynne)",
+  "artist": "Clean Bandit",
+  "album": "I Cry When I Laugh",
+  "year": "2014",
+  "country": "US"
+ },
+ "Mark Ronson|Uptown Funk": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/91/99/1f/91991fe5-aa77-87e4-edbc-6d68c95e5f18/mzaf_10685317694850942114.plus.aac.p.m4a",
+  "track": "Uptown Funk (feat. Bruno Mars)",
+  "artist": "Mark Ronson",
+  "album": "Uptown Special",
+  "year": "2014",
+  "country": "US"
+ },
+ "Harry Styles|Sign of the Times": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/bd/58/37/bd5837c2-3b3b-5f32-c292-fc0af38f6ea6/mzaf_10433939766410649853.plus.aac.p.m4a",
+  "track": "Sign of the Times",
+  "artist": "Harry Styles",
+  "album": "Harry Styles",
+  "year": "2017",
+  "country": "US"
+ },
+ "One Direction|What Makes You Beautiful": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/c4/a6/fa/c4a6fa2b-710c-4eee-c32d-583ae013d99d/mzaf_9620667473679053888.plus.aac.p.m4a",
+  "track": "What Makes You Beautiful",
+  "artist": "One Direction",
+  "album": "Up All Night (Deluxe Version)",
+  "year": "2011",
+  "country": "US"
+ },
+ "Lana Del Rey|Summertime Sadness": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/d1/64/e3/d164e3bb-aeb5-effb-a09c-d3775441c5b8/mzaf_3133376794831917475.plus.aac.p.m4a",
+  "track": "Summertime Sadness",
+  "artist": "Lana Del Rey",
+  "album": "Born to Die",
+  "year": "2012",
+  "country": "US"
+ },
+ "Kendrick Lamar|HUMBLE.": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/1f/2e/37/1f2e37be-bdd0-d770-6ea4-091011a6aade/mzaf_2360827885900940865.plus.aac.p.m4a",
+  "track": "HUMBLE.",
+  "artist": "Kendrick Lamar",
+  "album": "DAMN.",
+  "year": "2017",
+  "country": "US"
+ },
+ "BTS|Dynamite": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/a3/a0/a6/a3a0a6b5-4715-b872-1aff-21e42634d9cd/mzaf_7224423421767640589.plus.aac.p.m4a",
+  "track": "Dynamite",
+  "artist": "BTS",
+  "album": "BE",
+  "year": "2020",
+  "country": "US"
+ },
+ "BTS|Boy With Luv": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/0b/8d/84/0b8d84e5-5273-ae21-0c6e-591af6097294/mzaf_16252906211188582302.plus.aac.p.m4a",
+  "track": "Boy With Luv (feat. Halsey)",
+  "artist": "BTS",
+  "album": "MAP OF THE SOUL : PERSONA",
+  "year": "2019",
+  "country": "US"
+ },
+ "BTS|Spring Day": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/ba/76/d5/ba76d586-0dac-c800-f08d-467aef7dc9c0/mzaf_12707603572181808804.plus.aac.p.m4a",
+  "track": "Spring Day",
+  "artist": "BTS",
+  "album": "YOU NEVER WALK ALONE",
+  "year": "2017",
+  "country": "US"
+ },
+ "BTS|Butter": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/80/c8/46/80c84615-efb7-b538-d818-226cf7803358/mzaf_11498582023380901573.plus.aac.p.m4a",
+  "track": "Butter",
+  "artist": "BTS",
+  "album": "Proof",
+  "year": "2021",
+  "country": "US"
+ },
+ "BLACKPINK|DDU-DU DDU-DU": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/55/1e/1a/551e1aca-9847-6730-9c3f-3297ae3605b8/mzaf_5850823266050053080.plus.aac.p.m4a",
+  "track": "DDU-DU DDU-DU",
+  "artist": "BLACKPINK",
+  "album": "SQUARE UP - EP",
+  "year": "2018",
+  "country": "US"
+ },
+ "BLACKPINK|How You Like That": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/8f/b2/b1/8fb2b1a2-2498-9490-82f8-0226abfa9dc9/mzaf_9379484322617408629.plus.aac.p.m4a",
+  "track": "How You Like That",
+  "artist": "BLACKPINK",
+  "album": "THE ALBUM",
+  "year": "2020",
+  "country": "US"
+ },
+ "BLACKPINK|Pink Venom": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/ad/b1/5f/adb15f40-9ec1-a74e-e089-9457c56f6b79/mzaf_11352619383618142718.plus.aac.p.m4a",
+  "track": "Pink Venom",
+  "artist": "BLACKPINK",
+  "album": "Pink Venom - Single",
+  "year": "2022",
+  "country": "US"
+ },
+ "TWICE|TT": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/47/46/d2/4746d202-db33-8a12-7b0a-294b7ad8179a/mzaf_3164023858517556590.plus.aac.p.m4a",
+  "track": "TT",
+  "artist": "TWICE",
+  "album": "Twicecoaster: Lane 1",
+  "year": "2016",
+  "country": "US"
+ },
+ "TWICE|FANCY": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/e4/f5/f7/e4f5f7d3-ffff-70e6-69a5-eb8e9263327d/mzaf_3167851399749861261.plus.aac.p.m4a",
+  "track": "FANCY",
+  "artist": "TWICE",
+  "album": "FANCY YOU - EP",
+  "year": "2019",
+  "country": "US"
+ },
+ "EXO|Growl": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/5c/4a/33/5c4a33ea-7ac7-e4f7-3416-7f7f64f2f26f/mzaf_13482719509545056838.plus.aac.p.m4a",
+  "track": "Growl",
+  "artist": "EXO",
+  "album": "The 1st Album 'XOXO' (Repackage)",
+  "year": "2013",
+  "country": "US"
+ },
+ "EXO|Love Shot": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/70/b5/0d/70b50d39-ec5f-8774-5af5-07f45b9db1a6/mzaf_18100303014437396047.plus.aac.p.m4a",
+  "track": "Love Shot",
+  "artist": "EXO",
+  "album": "LOVE SHOT – The 5th Album Repackage - EP",
+  "year": "2018",
+  "country": "US"
+ },
+ "BIGBANG|FANTASTIC BABY": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/cd/bb/12/cdbb1223-d62d-99be-9c3d-201ff2d263d0/mzaf_18112077062612208211.plus.aac.p.m4a",
+  "track": "Fantastic Baby",
+  "artist": "BIGBANG",
+  "album": "Alive",
+  "year": "2012",
+  "country": "US"
+ },
+ "BIGBANG|BANG BANG BANG": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/24/38/ec/2438ecc2-0771-6cef-c35f-57966425d0c9/mzaf_4471959493015191793.plus.aac.p.m4a",
+  "track": "BANG BANG BANG",
+  "artist": "BIGBANG",
+  "album": "MADE",
+  "year": "2015",
+  "country": "US"
+ },
+ "Stray Kids|God's Menu": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/29/8b/19/298b194d-c062-6a13-eb3b-c0f91388ba90/mzaf_13266351117531950466.plus.aac.p.m4a",
+  "track": "God's Menu",
+  "artist": "Stray Kids",
+  "album": "IN LIFE",
+  "year": "2020",
+  "country": "US"
+ },
+ "Stray Kids|S-Class": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/90/f5/66/90f56683-00f0-b3d0-ed97-f04cf2cb49a5/mzaf_12039515172804921382.plus.aac.p.m4a",
+  "track": "S-Class",
+  "artist": "Stray Kids",
+  "album": "5-STAR",
+  "year": "2023",
+  "country": "US"
+ },
+ "NewJeans|Hype Boy": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/85/f3/08/85f30899-e93c-35e2-4742-df57fc2d3552/mzaf_14134842621180071043.plus.aac.p.m4a",
+  "track": "Hype Boy",
+  "artist": "NewJeans",
+  "album": "NewJeans 1st EP 'New Jeans'",
+  "year": "2022",
+  "country": "US"
+ },
+ "NewJeans|Super Shy": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/a0/0c/47/a00c4790-3bbe-c669-fc8b-d8779508b512/mzaf_4170831274187670095.plus.aac.p.m4a",
+  "track": "Super Shy",
+  "artist": "NewJeans",
+  "album": "NewJeans 'Super Shy' - Single",
+  "year": "2023",
+  "country": "US"
+ },
+ "aespa|Next Level": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/43/1e/0a/431e0a24-2c04-e738-2632-87462a20984d/mzaf_3158159453623406671.plus.aac.p.m4a",
+  "track": "Next Level",
+  "artist": "aespa",
+  "album": "Next Level - Single",
+  "year": "2021",
+  "country": "US"
+ },
+ "aespa|Supernova": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/f6/cc/58/f6cc5863-c60a-caac-e7f8-bd66b414a917/mzaf_8631809138360097160.plus.aac.p.m4a",
+  "track": "Supernova",
+  "artist": "aespa",
+  "album": "Armageddon - The 1st Album",
+  "year": "2024",
+  "country": "US"
+ },
+ "(G)I-DLE|TOMBOY": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/da/37/14/da3714a4-b9cd-78ea-590e-bae5af9f3856/mzaf_9300426931010299319.plus.aac.p.m4a",
+  "track": "TOMBOY",
+  "artist": "i-dle",
+  "album": "I NEVER DIE",
+  "year": "2022",
+  "country": "US"
+ },
+ "ITZY|WANNABE": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/ac/3b/4e/ac3b4ed6-eedb-58a3-9dd1-f3ae260d6bb3/mzaf_6540732533273065104.plus.aac.p.m4a",
+  "track": "WANNABE",
+  "artist": "ITZY",
+  "album": "IT'z ME",
+  "year": "2020",
+  "country": "US"
+ },
+ "Red Velvet|Psycho": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/01/0d/cb/010dcb95-4d2e-c56d-66b6-aa32d244d604/mzaf_10666588273897692200.plus.aac.p.m4a",
+  "track": "Psycho",
+  "artist": "Red Velvet",
+  "album": "‘The ReVe Festival’ Finale - EP",
+  "year": "2019",
+  "country": "US"
+ },
+ "SEVENTEEN|Super": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/76/9c/dd/769cdd57-1dc9-aff1-8af2-de134b7e0498/mzaf_9327909714451142276.plus.aac.p.m4a",
+  "track": "Super",
+  "artist": "SEVENTEEN",
+  "album": "FML",
+  "year": "2023",
+  "country": "US"
+ },
+ "IVE|LOVE DIVE": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/b1/71/d4/b171d4a4-0446-b7d6-d778-7de6ee31f779/mzaf_13755854455583478875.plus.aac.p.m4a",
+  "track": "LOVE DIVE",
+  "artist": "IVE",
+  "album": "LOVE DIVE - Single",
+  "year": "2022",
+  "country": "US"
+ },
+ "IVE|I AM": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/7d/58/dc/7d58dcfe-20ae-643e-d160-2bbb49628383/mzaf_15653119750983230833.plus.aac.p.m4a",
+  "track": "I AM",
+  "artist": "IVE",
+  "album": "I've IVE",
+  "year": "2023",
+  "country": "US"
+ },
+ "LE SSERAFIM|ANTIFRAGILE": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/9c/5b/33/9c5b33cb-f6c0-1cf5-61c4-ac465bce2b7b/mzaf_16974808219393622487.plus.aac.p.m4a",
+  "track": "ANTIFRAGILE",
+  "artist": "LE SSERAFIM",
+  "album": "ANTIFRAGILE - EP",
+  "year": "2022",
+  "country": "US"
+ },
+ "NCT 127|Kick It": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/25/ed/cb/25edcb7c-f961-0184-edc6-6cc12b138367/mzaf_16906388691841535583.plus.aac.p.m4a",
+  "track": "Kick It",
+  "artist": "NCT 127",
+  "album": "NCT #127 Neo Zone - The 2nd Album",
+  "year": "2020",
+  "country": "US"
+ },
+ "SHINee|Ring Ding Dong": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/ca/10/fd/ca10fd6f-aa22-f664-7a60-9daf7c69d10e/mzaf_3998207225984436680.plus.aac.p.m4a",
+  "track": "Ring Ding Dong",
+  "artist": "SHINee",
+  "album": "2009, Year Of Us - EP",
+  "year": "2009",
+  "country": "US"
+ },
+ "Girls' Generation|Gee": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/04/e6/bb/04e6bbf7-fb5f-dfde-efea-c1ae60e206f6/mzaf_5800170755931136448.plus.aac.p.m4a",
+  "track": "Gee",
+  "artist": "Girls' Generation",
+  "album": "Gee - EP",
+  "year": "2009",
+  "country": "US"
+ },
+ "Wonder Girls|Nobody": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/8b/8e/ef/8b8eef3e-ee1e-23ab-951a-fa29f4b70a48/mzaf_11412424461222179962.plus.aac.p.m4a",
+  "track": "Nobody",
+  "artist": "Wonder Girls",
+  "album": "The Wonder Years - Trilogy",
+  "year": "2008",
+  "country": "US"
+ },
+ "2NE1|I Am the Best": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/1b/6d/b9/1b6db974-d044-8542-c4ee-6ce596e297dd/mzaf_7786719545856345605.plus.aac.p.m4a",
+  "track": "I Am the Best",
+  "artist": "2NE1",
+  "album": "I Am the Best - Single",
+  "year": "2011",
+  "country": "US"
+ },
+ "MAMAMOO|HIP": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/89/93/b4/8993b489-76c7-ad89-2082-5b1fb956de92/mzaf_9994482183691329431.plus.aac.p.m4a",
+  "track": "HIP",
+  "artist": "MAMAMOO",
+  "album": "reality in BLACK",
+  "year": "2019",
+  "country": "US"
+ },
+ "ATEEZ|BOUNCY (K-HOT CHILLI PEPPERS)": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/06/71/42/06714261-4569-2c21-08eb-24e14a1c43e9/mzaf_11114569860201605765.plus.aac.p.m4a",
+  "track": "BOUNCY (K-HOT CHILLI PEPPERS)",
+  "artist": "ATEEZ",
+  "album": "THE WORLD EP.2 : OUTLAW",
+  "year": "2023",
+  "country": "US"
+ },
+ "TOMORROW X TOGETHER|Sugar Rush Ride": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/1b/5f/41/1b5f41a2-ca62-45f4-073a-f4159ca38998/mzaf_10714123989841007440.plus.aac.p.m4a",
+  "track": "Sugar Rush Ride",
+  "artist": "TOMORROW X TOGETHER",
+  "album": "The Name Chapter: TEMPTATION - EP",
+  "year": "2023",
+  "country": "US"
+ },
+ "ENHYPEN|Bite Me": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/e8/9f/e3/e89fe360-6090-7678-0960-cb0b026c19ad/mzaf_9495917859370982012.plus.aac.p.m4a",
+  "track": "Bite Me",
+  "artist": "ENHYPEN",
+  "album": "DARK BLOOD - EP",
+  "year": "2023",
+  "country": "US"
+ },
+ "Jung Kook|Seven": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/87/fc/7c/87fc7ced-ace9-2ec4-2e8a-c9a64c841a15/mzaf_3965990725450677139.plus.aac.p.m4a",
+  "track": "Seven (Clean Ver.)",
+  "artist": "Jung Kook & Latto",
+  "album": "GOLDEN",
+  "year": "2023",
+  "country": "US"
+ },
+ "Jimin|Like Crazy": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/1c/56/c8/1c56c82f-72e2-f4dc-7260-4b8a2c531abe/mzaf_12790315781597171613.plus.aac.p.m4a",
+  "track": "Like Crazy",
+  "artist": "Jimin",
+  "album": "FACE - EP",
+  "year": "2023",
+  "country": "US"
+ },
+ "LISA|MONEY": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/61/5d/e4/615de4e4-c725-4586-8d93-7c39dd6282af/mzaf_14385100010317311463.plus.aac.p.m4a",
+  "track": "MONEY",
+  "artist": "LISA",
+  "album": "LALISA - Single",
+  "year": "2021",
+  "country": "US"
+ },
+ "ROSÉ|APT.": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/7a/15/38/7a1538f3-f41a-a2eb-0f24-8eb6712ee043/mzaf_7740628412097685267.plus.aac.p.m4a",
+  "track": "APT.",
+  "artist": "ROSÉ & Bruno Mars",
+  "album": "APT. - Single",
+  "year": "2024",
+  "country": "US"
+ },
+ "IU|Blueming": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/15/08/47/150847d9-2c85-b6b5-a2eb-b61ceb4517e0/mzaf_168895178236497376.plus.aac.p.m4a",
+  "track": "Blueming",
+  "artist": "IU",
+  "album": "Love Poem - EP",
+  "year": "2019",
+  "country": "US"
+ },
+ "SUPER JUNIOR|Sorry, Sorry": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/41/83/14/418314c8-75b8-a609-0206-57e55a77a7e3/mzaf_870384710444515739.plus.aac.p.m4a",
+  "track": "Sorry, Sorry",
+  "artist": "SUPER JUNIOR",
+  "album": "Sorry, Sorry",
+  "year": "2009",
+  "country": "US"
+ },
+ "PSY|Gentleman": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/77/03/39/7703394e-01e5-c92c-9d27-0230165c0f6c/mzaf_12471215859757514803.plus.aac.p.m4a",
+  "track": "Gentleman",
+  "artist": "PSY",
+  "album": "Gentleman - Single",
+  "year": "2013",
+  "country": "US"
+ },
+ "SUNMI|Gashina": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/61/f1/64/61f16445-5329-d90e-fb43-90d4132e4399/mzaf_14227780221588233007.plus.aac.p.m4a",
+  "track": "Gashina",
+  "artist": "SUNMI",
+  "album": "Gashina - Single",
+  "year": "2017",
+  "country": "US"
+ },
+ "FIFTY FIFTY|Cupid": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/89/34/e3/8934e3f9-28bf-fae8-d862-7fafc9a7bec5/mzaf_15174989071406241005.plus.aac.p.m4a",
+  "track": "Cupid",
+  "artist": "FIFTY FIFTY",
+  "album": "The Beginning: Cupid - Single",
+  "year": "2022",
+  "country": "US"
+ },
+ "STAYC|ASAP": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/d0/b6/ff/d0b6ffe9-97d4-07c6-46ad-61e22e9428ac/mzaf_7296089137293118693.plus.aac.p.m4a",
+  "track": "ASAP",
+  "artist": "STAYC",
+  "album": "STAYDOM - EP",
+  "year": "2021",
+  "country": "US"
+ },
+ "ILLIT|Magnetic": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/e8/7e/67/e87e6795-4ada-2f65-d562-1fd2a3eddfdf/mzaf_11263458879279601822.plus.aac.p.m4a",
+  "track": "Magnetic",
+  "artist": "ILLIT",
+  "album": "SUPER REAL ME - EP",
+  "year": "2024",
+  "country": "US"
+ },
+ "BABYMONSTER|SHEESH": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/e8/0e/20/e80e2080-c1e6-f616-bec0-82fbd530da09/mzaf_402899695312688427.plus.aac.p.m4a",
+  "track": "SHEESH",
+  "artist": "BABYMONSTER",
+  "album": "BABYMONS7ER - EP",
+  "year": "2024",
+  "country": "US"
+ },
+ "G-DRAGON|Crooked": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/8f/78/c4/8f78c476-6cb4-d876-55fc-0eb0dd4ecae2/mzaf_5567243227308723376.plus.aac.p.m4a",
+  "track": "CROOKED",
+  "artist": "G-DRAGON",
+  "album": "COUP D'ETAT",
+  "year": "2013",
+  "country": "US"
+ },
+ "Brown Eyed Girls|Abracadabra": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/d6/89/1c/d6891c16-3987-223a-7896-60f914edf894/mzaf_18297540114418114036.plus.aac.p.m4a",
+  "track": "Abracadabra",
+  "artist": "Brown Eyed Girls",
+  "album": "Sound G.",
+  "year": "2009",
+  "country": "US"
+ },
+ "Ricky Martin|La Copa de la Vida": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/35/8e/dc/358edc05-b207-1a6f-f183-bcb2288aad9b/mzaf_12404296569441119115.plus.aac.p.m4a",
+  "track": "La Copa de la Vída (La Canción Oficial de la Copa Mundíal, Francia '98)",
+  "artist": "Ricky Martin",
+  "album": "Vuelve",
+  "year": "1998",
+  "country": "US"
+ },
+ "Caifanes|Afuera": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/1a/4e/b7/1a4eb710-3341-49c3-a3dc-2b437ed0f38f/mzaf_6533915292203955276.plus.aac.p.m4a",
+  "track": "Afuera",
+  "artist": "Caifanes",
+  "album": "El Nervio del Volcán",
+  "year": "1994",
+  "country": "US"
+ },
+ "Rata Blanca|Mujer Amante": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/2a/55/b6/2a55b667-1481-d5b8-d158-9afd6fc8bef8/mzaf_3849382202245515479.plus.aac.p.m4a",
+  "track": "Mujer Amante",
+  "artist": "Rata Blanca",
+  "album": "Magos, Espadas Y Rosas",
+  "year": "1986",
+  "country": "MX"
+ },
+ "KARA|Mister": null,
+ "Muse|Supermassive Black Hole": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/76/4a/63/764a63c0-9533-97ce-51a5-31a23b57f2eb/mzaf_3187296926844362175.plus.aac.p.m4a",
+  "track": "Supermassive Black Hole",
+  "artist": "Muse",
+  "album": "Black Holes and Revelations",
+  "year": "2006",
+  "country": "US"
+ },
+ "T-ara|Roly-Poly": {
+  "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/22/81/81/22818108-f67e-233f-f5fe-b4c3b29087f8/mzaf_18027937626619316311.plus.aac.p.m4a",
+  "track": "ROLY-POLY",
+  "artist": "T-ara",
+  "album": "John Travolta Wanna Be",
+  "year": "2011",
+  "country": "US"
  }
 }

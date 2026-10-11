@@ -9,11 +9,13 @@ EXTRA = {
  "Ricky Martin|Livin' la Vida Loca": {'exclude': r'spanish'},
  'Radiohead|Creep': {'term': 'Radiohead Pablo Honey Creep', 'album': 'Pablo Honey'},
  'Haddaway|What Is Love': {'allow_mix': True},
+ 'Green Day|Boulevard of Broken Dreams': {'term': 'Green Day American Idiot Boulevard of Broken Dreams'},
+ '(G)I-DLE|TOMBOY': {'artist': 'i-dle', 'term': 'i-dle TOMBOY'},
 }
 
 CACHE = os.path.join(os.path.dirname(__file__), 'itunes_cache.json')
 cache = json.load(open(CACHE, encoding='utf-8')) if os.path.exists(CACHE) else {}
-BAD = re.compile(r'\b(unplugged|live|en vivo|directo|remix|remixed|karaoke|instrumental|acoustic|acústico|demo|cover|tribute|tributo|re-?recorded|sped up|slowed|mtv|remixes|mix)\b', re.I)
+BAD = re.compile(r'\b(unplugged|live|en vivo|directo|remix|remixed|karaoke|instrumental|acoustic|acústico|acústica|acustica|japanese|spanglish|demo|cover|tribute|tributo|re-?recorded|sped up|slowed|mtv|remixes|mix)\b', re.I)
 
 def norm(s):
     return re.sub(r'[^a-z0-9]', '', unicodedata.normalize('NFD', s).encode('ascii', 'ignore').decode().lower())

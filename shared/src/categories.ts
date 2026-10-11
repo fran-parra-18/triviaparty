@@ -20,6 +20,7 @@ export const CATEGORIES = [
   { id: 'pistas-90s', name: 'Pistas musicales 90s', emoji: '🎧' },
   { id: 'pistas-2000s', name: 'Pistas musicales 2000s', emoji: '🎧' },
   { id: 'pistas-2010s', name: 'Pistas musicales 2010s', emoji: '🎧' },
+  { id: 'pistas-kpop', name: 'Pistas musicales K-pop', emoji: '🎤' },
 ] as const;
 
 export type CategoryId = (typeof CATEGORIES)[number]['id'];

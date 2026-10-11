@@ -38,7 +38,7 @@ Juego de preguntas multijugador en tiempo real para fiestas: una **pantalla prin
 | Configuración: cantidad, tiempo (10/15/20/30/60 s), categorías, dificultad (incluida progresiva), mín./máx. de jugadores, puntuación, incorporaciones tardías, resultados entre preguntas, orden aleatorio y avance automático | ✅ |
 | Pausa, reanudar, terminar antes de tiempo, expulsar jugadores, cerrar sala, pantalla completa, sonidos con silencio y atajos de teclado | ✅ |
 | Reconexión de jugador y anfitrión | ✅ Probada |
-| Banco de preguntas | ✅ **2.900 preguntas reales en 21 categorías**: 2.750 de texto en 16 categorías y 150 con audio en 5 categorías de pistas musicales (70s, 80s, 90s, 2000s y 2010s, 30 cada una), validadas con `npm run questions:validate` (0 errores; los avisos restantes se revisaron a mano). |
+| Banco de preguntas | ✅ **3.050 preguntas reales en 22 categorías**: 2.750 de texto en 16 categorías y 300 con audio en 6 categorías de pistas musicales (70s, 80s, 90s, 2000s, 2010s y K-pop, 50 cada una), validadas con `npm run questions:validate` (0 errores; los avisos restantes se revisaron a mano). |
 | Despliegue con Docker / PostgreSQL | ⚠️ Archivos preparados (`Dockerfile`, `docker-compose.yml`, migraciones de PostgreSQL), **no probados** en esta máquina (no tenía Docker ni PostgreSQL). |
 
 Preguntas por categoría (fácil / media / difícil):
@@ -53,10 +53,10 @@ Preguntas por categoría (fácil / media / difícil):
 | 🎵 Música | 225 (54/125/46) | | 🧠 Cultura general | 137 (63/60/14) |
 | ⚽ Deportes | 212 (66/111/35) | | 🤯 Datos curiosos del mundo | 129 (13/79/37) |
 | 📚 Literatura | 132 (32/76/24) | | 🏆 Récords y hechos sorprendentes | 126 (14/68/44) |
-| 🎧 Pistas musicales 70s | 30 (8/19/3) | | 🎧 Pistas musicales 80s | 30 (13/16/1) |
-| 🎧 Pistas musicales 90s | 30 (13/16/1) | | 🎧 Pistas musicales 2000s | 30 (13/15/2) |
-| 🎧 Pistas musicales 2010s | 30 (11/18/1) | | | |
-| **Total** | **2.900 (835/1.481/584)** | | | |
+| 🎧 Pistas musicales 70s | 50 (12/35/3) | | 🎧 Pistas musicales 80s | 50 (18/28/4) |
+| 🎧 Pistas musicales 90s | 50 (17/31/2) | | 🎧 Pistas musicales 2000s | 50 (15/29/6) |
+| 🎧 Pistas musicales 2010s | 50 (16/32/2) | | 🎤 Pistas musicales K-pop | 50 (6/26/18) |
+| **Total** | **3.050 (861/1.578/611)** | | | |
 
 Para consultar el recuento real en cualquier momento: `npm run questions:validate` (archivos) o `npm run questions:stats` (base de datos).
 
@@ -225,11 +225,11 @@ Las preguntas viven en `server/data/questions/*.json`, un archivo por categoría
 }
 ```
 
-- `category` puede ir en el archivo (como valor por defecto) o en cada pregunta. Los ids válidos son: `historia, geografia, ciencia, tecnologia, cine, musica, deportes, literatura, arte, gastronomia, animales, espacio, inventos, cultura-general, curiosidades, records, pistas-70s, pistas-80s, pistas-90s, pistas-2000s, pistas-2010s`.
+- `category` puede ir en el archivo (como valor por defecto) o en cada pregunta. Los ids válidos son: `historia, geografia, ciencia, tecnologia, cine, musica, deportes, literatura, arte, gastronomia, animales, espacio, inventos, cultura-general, curiosidades, records, pistas-70s, pistas-80s, pistas-90s, pistas-2000s, pistas-2010s, pistas-kpop`.
 - `answer`: índice de 0 a 3 o letra de la A a la D. `difficulty`: `facil`, `media` o `dificil` (también acepta *fácil*, *difícil*, *easy*, *medium* y *hard*).
 - `id` es opcional: si falta, se genera uno estable a partir del enunciado.
 - También se admite un arreglo simple de preguntas.
-- `audio` (opcional): URL `https://` de un fragmento que la pantalla principal reproduce durante la pregunta (por ejemplo, «¿Quién canta esta canción?»). Las preguntas con audio pueden repetir el mismo enunciado, porque las distingue el fragmento. Las de las categorías `pistas-*` usan las vistas previas de 30 s de iTunes: se buscaron con la API pública de búsqueda de iTunes, comprobando que el artista y el título coincidieran con la grabación original de estudio (no en vivo, remix ni covers).
+- `audio` (opcional): URL `https://` de un fragmento que la pantalla principal reproduce durante la pregunta (por ejemplo, «¿Quién canta esta canción?»). Las preguntas con audio pueden repetir el mismo enunciado, porque las distingue el fragmento. Las de las categorías `pistas-*` (generadas con los scripts de `scripts/pistas/`) usan las vistas previas de 30 s de iTunes: se buscaron con la API pública de búsqueda de iTunes, comprobando que el artista y el título coincidieran con la grabación original de estudio (no en vivo, remix ni covers).
 
 ### Formato CSV
 

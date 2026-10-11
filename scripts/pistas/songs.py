@@ -152,3 +152,7 @@ SONGS = {
 ("Nicky Jam","Hasta el Amanecer",W,["Nicky Jam","Maluma","J Balvin","Ozuna"],"Es de Nicky Jam (2016), uno de los grandes éxitos del reguetón de esos años.","media",["reguetón","latino"]),
 ],
 }
+
+from songs_more import MORE
+for _cat, _songs in MORE.items():
+    SONGS.setdefault(_cat, []).extend(_songs)
