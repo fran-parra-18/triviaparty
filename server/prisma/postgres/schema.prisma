@@ -32,6 +32,8 @@ model Question {
   difficulty     String // facil | media | dificil
   source         String?
   tags           String   @default("") // etiquetas separadas por comas
+  /// Fragmento de audio (https) que reproduce la pantalla principal; null en preguntas de texto.
+  audioUrl       String?
   /// Enunciado normalizado (minúsculas, sin tildes ni signos) para detectar duplicados.
   normalizedText String   @unique
   active         Boolean  @default(true)

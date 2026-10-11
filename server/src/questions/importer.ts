@@ -42,6 +42,7 @@ function sameContent(q: NormalizedQuestion, row: Record<string, unknown>) {
     row.difficulty === q.difficulty &&
     (row.source ?? null) === q.source &&
     row.tags === q.tags.join(',') &&
+    (row.audioUrl ?? null) === q.audioUrl &&
     row.active === true
   );
 }
@@ -100,6 +101,7 @@ export async function importQuestions(
     difficulty: q.difficulty,
     source: q.source,
     tags: q.tags.join(','),
+    audioUrl: q.audioUrl,
     normalizedText: q.normalizedText,
     active: true,
   });

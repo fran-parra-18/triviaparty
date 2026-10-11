@@ -38,7 +38,7 @@ Juego de preguntas multijugador en tiempo real para fiestas: una **pantalla prin
 | Configuración: cantidad, tiempo (10/15/20/30/60 s), categorías, dificultad (incluida progresiva), mín./máx. de jugadores, puntuación, incorporaciones tardías, resultados entre preguntas, orden aleatorio y avance automático | ✅ |
 | Pausa, reanudar, terminar antes de tiempo, expulsar jugadores, cerrar sala, pantalla completa, sonidos con silencio y atajos de teclado | ✅ |
 | Reconexión de jugador y anfitrión | ✅ Probada |
-| Banco de preguntas | ✅ **2.750 preguntas reales en las 16 categorías**, validadas con `npm run questions:validate` (0 errores; los avisos restantes se revisaron a mano). |
+| Banco de preguntas | ✅ **2.760 preguntas reales en las 17 categorías** (10 de ellas con audio, en «Pistas musicales 80s»), validadas con `npm run questions:validate` (0 errores; los avisos restantes se revisaron a mano). |
 | Despliegue con Docker / PostgreSQL | ⚠️ Archivos preparados (`Dockerfile`, `docker-compose.yml`, migraciones de PostgreSQL), **no probados** en esta máquina (no tenía Docker ni PostgreSQL). |
 
 Preguntas por categoría (fácil / media / difícil):
@@ -53,7 +53,8 @@ Preguntas por categoría (fácil / media / difícil):
 | 🎵 Música | 225 (54/125/46) | | 🧠 Cultura general | 137 (63/60/14) |
 | ⚽ Deportes | 212 (66/111/35) | | 🤯 Datos curiosos del mundo | 129 (13/79/37) |
 | 📚 Literatura | 132 (32/76/24) | | 🏆 Récords y hechos sorprendentes | 126 (14/68/44) |
-| **Total** | **2.750 (777/1.397/576)** | | | |
+| | | | 🎧 Pistas musicales 80s | 10 (5/5/0) |
+| **Total** | **2.760 (782/1.402/576)** | | | |
 
 Para consultar el recuento real en cualquier momento: `npm run questions:validate` (archivos) o `npm run questions:stats` (base de datos).
 
@@ -222,10 +223,11 @@ Las preguntas viven en `server/data/questions/*.json`, un archivo por categoría
 }
 ```
 
-- `category` puede ir en el archivo (como valor por defecto) o en cada pregunta. Los ids válidos son: `historia, geografia, ciencia, tecnologia, cine, musica, deportes, literatura, arte, gastronomia, animales, espacio, inventos, cultura-general, curiosidades, records`.
+- `category` puede ir en el archivo (como valor por defecto) o en cada pregunta. Los ids válidos son: `historia, geografia, ciencia, tecnologia, cine, musica, deportes, literatura, arte, gastronomia, animales, espacio, inventos, cultura-general, curiosidades, records, pistas-80s`.
 - `answer`: índice de 0 a 3 o letra de la A a la D. `difficulty`: `facil`, `media` o `dificil` (también acepta *fácil*, *difícil*, *easy*, *medium* y *hard*).
 - `id` es opcional: si falta, se genera uno estable a partir del enunciado.
 - También se admite un arreglo simple de preguntas.
+- `audio` (opcional): URL `https://` de un fragmento que la pantalla principal reproduce durante la pregunta (por ejemplo, «¿Quién canta esta canción?»). Las preguntas con audio pueden repetir el mismo enunciado, porque las distingue el fragmento. Las de `pistas-80s` usan las vistas previas de 30 s de iTunes: se buscaron con la API pública de búsqueda de iTunes, comprobando que el artista y el título coincidieran con la grabación original de estudio (no en vivo, remix ni covers).
 
 ### Formato CSV
 
@@ -369,6 +371,7 @@ Define `DATABASE_URL` (SQLite en un disco persistente o PostgreSQL), `PUBLIC_URL
 
 ## Limitaciones conocidas
 
+- **Pistas musicales:** necesitan internet en la PC de la pantalla principal, porque el fragmento se descarga de iTunes (los celulares no reproducen nada). Si Apple cambia o retira una vista previa, esa pregunta se quedará sin sonido y habrá que volver a buscar su enlace. El navegador puede bloquear el sonido si nadie hizo clic en la página: en ese caso aparece el botón «Tocar para escuchar».
 - **Datos que cambian con el tiempo:** algunas preguntas (récords deportivos, edificios más altos, monedas) son correctas a fecha de 2026, y su explicación indica el año cuando conviene. Habrá que revisarlas de vez en cuando.
 - **Las salas viven en memoria:** si el servidor se reinicia, las partidas en curso se pierden. Las preguntas y el historial están en la base de datos. Por eso tampoco se puede escalar a varias instancias sin añadir un almacén compartido (por ejemplo, Redis y el adaptador de Socket.IO).
 - El despliegue con Docker y PostgreSQL está preparado pero **no se ha ejecutado** en este entorno.

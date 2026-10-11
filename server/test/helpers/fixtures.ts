@@ -34,6 +34,7 @@ export function makeQuestion(i: number, overrides: Partial<NormalizedQuestion> =
     difficulty: (['facil', 'media', 'dificil'] as const)[i % 3]!,
     source: null,
     tags: [],
+    audioUrl: null,
     normalizedText: `pregunta de prueba numero ${i}`,
     ...overrides,
   };

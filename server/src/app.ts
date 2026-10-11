@@ -61,6 +61,8 @@ export function createTriviaApp({ config, repository, prisma, clientDist, realti
           imgSrc: ["'self'", 'data:', 'blob:'],
           fontSrc: ["'self'", 'data:'],
           connectSrc: ["'self'", 'ws:', 'wss:'],
+          // Fragmentos de las preguntas de pistas musicales (vistas previas de iTunes).
+          mediaSrc: ["'self'", 'https://*.itunes.apple.com', 'https://*.mzstatic.com'],
           // En la red local se usa HTTP: forzar HTTPS rompería la carga desde los teléfonos.
           upgradeInsecureRequests: null,
         },

@@ -28,8 +28,17 @@
   --animate-pulse-ring: pulse-ring 1.6s ease-out infinite;
   --animate-count: count-zoom 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
   --animate-rise: rise 0.9s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+  --animate-equalizer: equalizer 0.9s ease-in-out infinite alternate;
 }
 
+@keyframes equalizer {
+  from {
+    height: 0.4rem;
+  }
+  to {
+    height: 2rem;
+  }
+}
 @keyframes pop-in {
   0% { opacity: 0; transform: scale(0.6); }
   100% { opacity: 1; transform: scale(1); }

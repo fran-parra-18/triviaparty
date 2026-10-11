@@ -73,6 +73,16 @@ export const questionInputSchema = z.object({
     .nullable()
     .transform((v) => (v && v.trim() ? v.trim().slice(0, 300) : null)),
   tags: tagsInput,
+  /** URL https de un fragmento de audio (preguntas de pistas musicales). */
+  audio: z
+    .string()
+    .trim()
+    .url('audio: debe ser una URL')
+    .regex(/^https:\/\//, 'audio: debe empezar por https://')
+    .max(500)
+    .optional()
+    .nullable()
+    .transform((v) => v || null),
 });
 
 export type QuestionInput = z.input<typeof questionInputSchema>;
@@ -89,6 +99,7 @@ export interface NormalizedQuestion {
   difficulty: Difficulty;
   source: string | null;
   tags: string[];
+  audioUrl: string | null;
   normalizedText: string;
 }
 
@@ -109,7 +120,8 @@ export function deriveId(category: string, normalized: string): string {
 }
 
 export function toNormalized(q: ParsedQuestionInput): NormalizedQuestion {
-  const normalizedText = normalizeText(q.question);
+  // Las preguntas de audio comparten enunciado («¿Quién canta esta canción?»): las distingue el audio.
+  const normalizedText = normalizeText(q.audio ? `${q.question} ${q.audio}` : q.question);
   return {
     id: q.id ?? deriveId(q.category, normalizedText),
     text: q.question,
@@ -120,6 +132,7 @@ export function toNormalized(q: ParsedQuestionInput): NormalizedQuestion {
     difficulty: q.difficulty,
     source: q.source,
     tags: q.tags,
+    audioUrl: q.audio,
     normalizedText,
   };
 }

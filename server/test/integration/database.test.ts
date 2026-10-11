@@ -2,6 +2,7 @@ import { execSync } from 'node:child_process';
 import { rmSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { PrismaClient } from '@prisma/client';
+import { CATEGORIES } from '@trivia/shared';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { Room } from '../../src/game/Room';
 import { importQuestions } from '../../src/questions/importer';
@@ -37,7 +38,7 @@ describe('base de datos (SQLite + migraciones de Prisma)', () => {
     const second = await importQuestions(prisma, bank);
     expect(second).toMatchObject({ created: 0, updated: 0, unchanged: bank.length });
     expect(await prisma.question.count()).toBe(bank.length);
-    expect(await prisma.category.count()).toBe(16);
+    expect(await prisma.category.count()).toBe(CATEGORIES.length);
   });
 
   it('actualiza por id y rechaza un enunciado duplicado con otro id', async () => {

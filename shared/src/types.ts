@@ -39,6 +39,8 @@ export interface QuestionView {
   options: [string, string, string, string];
   category: CategoryId;
   difficulty: Difficulty;
+  /** Fragmento de audio que la pantalla principal reproduce (preguntas de pistas musicales). */
+  audioUrl: string | null;
 }
 
 export interface RevealView {
@@ -119,6 +121,8 @@ export interface HostView {
   question: QuestionView | null;
   timer: TimerView | null;
   countdownEndsAt: number | null;
+  /** Audio de la próxima pregunta, para precargarlo durante la cuenta regresiva. */
+  nextAudioUrl: string | null;
   answeredCount: number;
   expectedCount: number;
   reveal: RevealView | null;

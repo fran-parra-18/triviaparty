@@ -1,6 +1,7 @@
 import { nextActionLabel, type HostView } from '@trivia/shared';
 import { useEffect, useRef, useState } from 'react';
 import { AutoAdvanceHint, CountdownNumber, Leaderboard, TimerRing, useCountdownNumber } from '../../components/game';
+import { MusicIndicator, useMusicClip } from '../../components/MusicClip';
 import { CategoryBadge, OPTION_BG, OPTION_TEXT, OptionShape } from '../../components/ui';
 import { useOnChange, useRemaining } from '../../lib/hooks';
 import { sounds } from '../../lib/sound';
@@ -8,12 +9,14 @@ import type { HostActions } from './HostPage';
 
 export function HostPlay({ view, actions }: { view: HostView; actions: HostActions }) {
   const primaryLabel = nextActionLabel(view.phase, view.progress, view.settings.showResultsAfterEach);
+  // Vive aquí (no en QuestionScreen) para que el fragmento siga sonando al pasar de la pregunta a la revelación.
+  const clip = useMusicClip(view);
 
   return (
     <main className="relative flex flex-1 flex-col px-4 pb-4 md:px-8">
       <div className="flex flex-1 flex-col">
         {view.phase === 'countdown' && <CountdownScreen view={view} />}
-        {(view.phase === 'question' || view.phase === 'locked' || view.phase === 'reveal') && <QuestionScreen view={view} />}
+        {(view.phase === 'question' || view.phase === 'locked' || view.phase === 'reveal') && <QuestionScreen view={view} clip={clip} />}
         {view.phase === 'leaderboard' && <LeaderboardScreen view={view} />}
       </div>
 
@@ -78,7 +81,7 @@ function CountdownScreen({ view }: { view: HostView }) {
   );
 }
 
-function QuestionScreen({ view }: { view: HostView }) {
+function QuestionScreen({ view, clip }: { view: HostView; clip: ReturnType<typeof useMusicClip> }) {
   const q = view.question!;
   const reveal = view.reveal;
   const locked = view.phase === 'locked';
@@ -113,6 +116,9 @@ function QuestionScreen({ view }: { view: HostView }) {
           <h1 key={q.index} className={`animate-slide-up font-display font-bold leading-tight ${textSize}`}>
             {q.text}
           </h1>
+          <div className="self-start">
+            <MusicIndicator clip={clip} />
+          </div>
         </div>
         <div className="flex flex-col items-center gap-2">
           {view.phase === 'question' ? (

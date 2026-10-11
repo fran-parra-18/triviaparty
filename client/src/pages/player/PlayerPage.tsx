@@ -389,6 +389,7 @@ function AnswerPad({ view, onAnswer }: { view: PlayerView; onAnswer: (index: num
       </div>
       <TimerBar timer={view.timer} />
       <p className={`font-display font-bold leading-snug ${q.text.length > 110 ? 'text-lg' : 'text-xl'}`}>{q.text}</p>
+      {q.audioUrl && <p className="-mt-1 text-sm text-brand-cyan">🎧 Escucha el fragmento en la pantalla principal</p>}
       <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 min-[380px]:grid-cols-2">
         {q.options.map((opt, i) => (
           <button

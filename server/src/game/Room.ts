@@ -41,6 +41,7 @@ export interface GameQuestion {
   source: string | null;
   category: CategoryId;
   difficulty: Difficulty;
+  audioUrl: string | null;
 }
 
 interface AnswerRecord {
@@ -352,6 +353,7 @@ export class Room {
           source: r.source,
           category: r.categoryId,
           difficulty: r.difficulty,
+          audioUrl: r.audioUrl,
         };
       });
       this.notice =
@@ -738,6 +740,7 @@ export class Room {
       options: [...q.options] as [string, string, string, string],
       category: q.category,
       difficulty: q.difficulty,
+      audioUrl: q.audioUrl,
     };
   }
 
@@ -795,6 +798,7 @@ export class Room {
       question: this.questionView(),
       timer: this.timerView(),
       countdownEndsAt: this.timerKind === 'countdown' && !this.paused ? this.timerDeadline : null,
+      nextAudioUrl: this.phase === 'countdown' ? (this.questions[this.currentIndex + 1]?.audioUrl ?? null) : null,
       answeredCount: this.answers.size,
       expectedCount: connected,
       reveal: this.publicReveal(),

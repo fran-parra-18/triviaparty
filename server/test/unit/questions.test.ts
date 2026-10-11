@@ -104,3 +104,30 @@ describe('banco de preguntas incluido', () => {
     expect(new Set(bank.map((q) => q.normalizedText)).size).toBe(bank.length);
   });
 });
+
+describe('preguntas de audio', () => {
+  const clip = (n: number) => ({
+    question: '¿Quién canta esta canción?',
+    options: [`Artista ${n}`, 'Otro artista', 'Una banda', 'Un solista'],
+    answer: 0,
+    explanation: 'Explicación suficientemente larga para la prueba.',
+    category: 'pistas-80s',
+    difficulty: 'facil',
+    audio: `https://audio.example.com/clip-${n}.m4a`,
+  });
+
+  it('acepta el mismo enunciado con audios distintos y guarda la URL', () => {
+    const report = validateRecords(parseJson(JSON.stringify([clip(1), clip(2)]), 'audio.json'));
+    expect(report.errors).toEqual([]);
+    expect(report.valid.map((q) => q.audioUrl)).toEqual(['https://audio.example.com/clip-1.m4a', 'https://audio.example.com/clip-2.m4a']);
+  });
+
+  it('rechaza audios que no son https', () => {
+    const report = validateRecords(parseJson(JSON.stringify([{ ...clip(1), audio: 'http://audio.example.com/a.m4a' }]), 'audio.json'));
+    expect(report.errors.length).toBeGreaterThan(0);
+  });
+
+  it('las preguntas del banco tienen audio solo en las categorías de pistas musicales', () => {
+    for (const q of loadBank()) expect(!!q.audioUrl).toBe(q.categoryId.startsWith('pistas-'));
+  });
+});

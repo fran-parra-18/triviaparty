@@ -14,6 +14,7 @@ export interface QuestionRecord extends QuestionMeta {
   answerIndex: number;
   explanation: string;
   source: string | null;
+  audioUrl: string | null;
 }
 
 export type CategoryStats = Record<string, { total: number } & Record<Difficulty, number>>;
@@ -55,6 +56,7 @@ export class PrismaQuestionRepository implements QuestionRepository {
         answerIndex: r.answerIndex,
         explanation: r.explanation,
         source: r.source,
+        audioUrl: r.audioUrl,
       }));
   }
 
@@ -91,6 +93,7 @@ export class InMemoryQuestionRepository implements QuestionRepository {
       answerIndex: q.answerIndex,
       explanation: q.explanation,
       source: q.source,
+      audioUrl: q.audioUrl,
     }));
   }
 
