@@ -11,6 +11,17 @@ export function HostPlay({ view, actions }: { view: HostView; actions: HostActio
   const primaryLabel = nextActionLabel(view.phase, view.progress, view.settings.showResultsAfterEach);
   // Vive aquí (no en QuestionScreen) para que el fragmento siga sonando al pasar de la pregunta a la revelación.
   const clip = useMusicClip(view);
+  const { replay } = clip;
+
+  // R: repetir el fragmento de las pistas musicales.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.target as HTMLElement).closest('input, select, textarea, [role="dialog"]')) return;
+      if (e.key.toLowerCase() === 'r') replay();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [replay]);
 
   return (
     <main className="relative flex flex-1 flex-col px-4 pb-4 md:px-8">
@@ -51,7 +62,7 @@ export function HostPlay({ view, actions }: { view: HostView; actions: HostActio
           ⏹ Terminar
         </button>
         <span className="hidden flex-1 text-center text-sm text-white/40 md:block">
-          Espacio: siguiente · P: pausa · F: pantalla completa · M: sonido
+          Espacio: siguiente · P: pausa · F: pantalla completa · M: sonido{clip.active && ' · R: repetir'}
         </span>
         <AutoAdvanceHint at={view.autoAdvanceAt} />
         <button type="button" className="btn-primary ml-auto px-8 py-4 text-xl" onClick={() => void actions.next()} title="Siguiente (Espacio)">

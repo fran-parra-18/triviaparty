@@ -9,6 +9,9 @@ export const NAME_MAX_LENGTH = 20;
 export const TIME_OPTIONS = [10, 15, 20, 30, 60] as const;
 export type TimeOption = (typeof TIME_OPTIONS)[number];
 
+/** Tiempo mínimo de las preguntas con audio: lo que dura la vista previa de iTunes. */
+export const AUDIO_MIN_SECONDS = 30;
+
 export const QUESTION_COUNT_MIN = 3;
 export const QUESTION_COUNT_MAX = 100;
 

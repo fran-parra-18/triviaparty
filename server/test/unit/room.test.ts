@@ -313,3 +313,43 @@ describe('Room — flujo de partida', () => {
     expectGameError(() => room.updateSettings({ timePerQuestion: 15 }), 'INVALID_STATE');
   });
 });
+
+describe('Room — pistas musicales', () => {
+  const audioBank = Array.from({ length: 5 }, (_, i) =>
+    makeQuestion(100 + i, { categoryId: 'pistas-80s', audioUrl: `https://audio.example.com/${i}.m4a` }),
+  );
+
+  function makeAudioRoom(timePerQuestion: number) {
+    const room = new Room(
+      'ABCDEF',
+      { repository: new InMemoryQuestionRepository(audioBank), hardMaxPlayers: 10, onChange: vi.fn(), onGameFinished: vi.fn() },
+      { questionCount: 3, timePerQuestion, categories: ['pistas-80s'] },
+    );
+    room.attachHost('host-socket');
+    room.addPlayer('Ana', 's1');
+    return room;
+  }
+
+  it('las preguntas con audio duran al menos 30 s aunque se haya elegido menos', async () => {
+    const room = makeAudioRoom(10);
+    await openFirstQuestion(room);
+    expect(room.hostView().timer?.durationMs).toBe(30_000);
+    expect(room.hostView().question?.audioUrl).toMatch(/^https:/);
+    vi.advanceTimersByTime(29_999);
+    expect(room.phase).toBe('question');
+    vi.advanceTimersByTime(2);
+    expect(room.phase).toBe('locked');
+  });
+
+  it('respeta un tiempo mayor elegido por el anfitrión', async () => {
+    const room = makeAudioRoom(60);
+    await openFirstQuestion(room);
+    expect(room.hostView().timer?.durationMs).toBe(60_000);
+  });
+
+  it('anuncia el audio de la próxima pregunta durante la cuenta regresiva para precargarlo', async () => {
+    const room = makeAudioRoom(10);
+    await room.start();
+    expect(room.hostView().nextAudioUrl).toMatch(/^https:/);
+  });
+});

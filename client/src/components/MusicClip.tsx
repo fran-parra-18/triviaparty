@@ -12,6 +12,7 @@ const VOLUME = 0.8;
 export function useMusicClip(view: HostView) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [blocked, setBlocked] = useState(false);
+  const [ended, setEnded] = useState(false);
   const [muted] = useMuted();
 
   const url = view.question?.audioUrl ?? null;
@@ -24,6 +25,19 @@ export function useMusicClip(view: HostView) {
     audioRef.current.preload = 'auto';
     audioRef.current.volume = VOLUME;
   }
+
+  useEffect(() => {
+    const a = audioRef.current;
+    if (!a) return;
+    const onEnded = () => setEnded(true);
+    const onPlay = () => setEnded(false);
+    a.addEventListener('ended', onEnded);
+    a.addEventListener('play', onPlay);
+    return () => {
+      a.removeEventListener('ended', onEnded);
+      a.removeEventListener('play', onPlay);
+    };
+  }, []);
 
   // Precarga el fragmento de la próxima pregunta durante la cuenta regresiva.
   useEffect(() => {
@@ -39,6 +53,7 @@ export function useMusicClip(view: HostView) {
     if (!a || !url) return;
     if (a.src !== url) a.src = url;
     a.currentTime = 0;
+    setEnded(false);
   }, [clipKey, url]);
 
   useEffect(() => {
@@ -60,7 +75,24 @@ export function useMusicClip(view: HostView) {
     void audioRef.current?.play().then(() => setBlocked(false), () => setBlocked(true));
   };
 
-  return { active: !!url, playing: shouldPlay && !blocked, blocked: shouldPlay && blocked, muted, retry };
+  /** Vuelve a reproducir el fragmento desde el principio. */
+  const replay = () => {
+    const a = audioRef.current;
+    if (!a || !shouldPlay) return;
+    a.currentTime = 0;
+    retry();
+  };
+
+  return {
+    active: !!url,
+    playing: shouldPlay && !blocked && !ended,
+    blocked: shouldPlay && blocked,
+    ended: shouldPlay && ended,
+    canReplay: shouldPlay && !blocked,
+    muted,
+    retry,
+    replay,
+  };
 }
 
 /** Indicador visual del fragmento: ecualizador animado o botón si el navegador bloqueó el audio. */
@@ -74,19 +106,26 @@ export function MusicIndicator({ clip }: { clip: ReturnType<typeof useMusicClip>
     );
   }
   return (
-    <div className="glass flex items-center gap-3 px-5 py-2" aria-label={clip.muted ? 'Sonido desactivado' : 'Reproduciendo fragmento'}>
-      <span className="flex h-8 items-end gap-1" aria-hidden>
-        {[0, 1, 2, 3, 4].map((i) => (
-          <span
-            key={i}
-            className={`w-1.5 rounded-full bg-brand-cyan ${clip.playing ? 'animate-equalizer' : 'h-2'}`}
-            style={{ animationDelay: `${i * 120}ms` }}
-          />
-        ))}
-      </span>
-      <span className="font-display text-xl font-semibold">
-        {clip.muted ? '🔇 Sonido apagado (pulsa M)' : clip.playing ? '🎧 ¡Escuchen!' : '🎧 Fragmento en pausa'}
-      </span>
+    <div className="flex flex-wrap items-center gap-3">
+      <div className="glass flex items-center gap-3 px-5 py-2" aria-label={clip.muted ? 'Sonido desactivado' : 'Reproduciendo fragmento'}>
+        <span className="flex h-8 items-end gap-1" aria-hidden>
+          {[0, 1, 2, 3, 4].map((i) => (
+            <span
+              key={i}
+              className={`w-1.5 rounded-full bg-brand-cyan ${clip.playing ? 'animate-equalizer' : 'h-2'}`}
+              style={{ animationDelay: `${i * 120}ms` }}
+            />
+          ))}
+        </span>
+        <span className="font-display text-xl font-semibold">
+          {clip.muted ? '🔇 Sonido apagado (pulsa M)' : clip.playing ? '🎧 ¡Escuchen!' : clip.ended ? '🎧 Fragmento terminado' : '🎧 Fragmento en pausa'}
+        </span>
+      </div>
+      {clip.canReplay && (
+        <button type="button" className="btn-secondary px-5 py-2 text-lg" onClick={clip.replay} title="Repetir el fragmento (R)">
+          🔁 Repetir
+        </button>
+      )}
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import {
+  AUDIO_MIN_SECONDS,
   CATEGORIES,
   CATEGORY_IDS,
   SCORING_PRESETS,
@@ -150,6 +151,9 @@ export function SettingsPanel({ view, actions, onClose }: { view: HostView; acti
                   </Pill>
                 ))}
               </div>
+              {draft.timePerQuestion < AUDIO_MIN_SECONDS && draft.categories.some((c) => c.startsWith('pistas-')) && (
+                <p className="mt-2 text-sm text-white/60">🎧 Las pistas musicales duran {AUDIO_MIN_SECONDS} s, lo que dura el fragmento.</p>
+              )}
             </Field>
           </div>
 

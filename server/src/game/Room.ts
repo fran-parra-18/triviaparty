@@ -2,6 +2,7 @@ import {
   AUTO_LEADERBOARD_DELAY_MS,
   AUTO_NEXT_DELAY_MS,
   AUTO_REVEAL_DELAY_MS,
+  AUDIO_MIN_SECONDS,
   BETWEEN_QUESTIONS_COUNTDOWN_MS,
   COUNTDOWN_MS,
   DEFAULT_SETTINGS,
@@ -370,7 +371,6 @@ export class Room {
       this.final = null;
       this.paused = false;
       for (const p of this.players.values()) Object.assign(p, freshStats(), { joinedLate: false });
-      this.questionDurationMs = this.settings.timePerQuestion * 1000;
       this.phase = 'countdown';
       this.schedule('countdown', COUNTDOWN_MS, () => this.openQuestion(0));
       this.touch();
@@ -388,6 +388,9 @@ export class Room {
     this.answers.clear();
     this.reveal = null;
     this.usedQuestionIds.add(q.id);
+    // Las preguntas con audio duran al menos lo que el fragmento, para poder escucharlo entero.
+    const seconds = q.audioUrl ? Math.max(this.settings.timePerQuestion, AUDIO_MIN_SECONDS) : this.settings.timePerQuestion;
+    this.questionDurationMs = seconds * 1000;
     this.schedule('question', this.questionDurationMs, () => this.closeQuestion());
     this.changed();
   }
