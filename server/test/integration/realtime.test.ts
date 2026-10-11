@@ -1,5 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import type { HostView, PlayerView } from '@trivia/shared';
+import { CATEGORY_IDS, type HostView, type PlayerView } from '@trivia/shared';
+
+/** Solo categorías de texto: las de audio duran 30 s y alterarían los tiempos de las pruebas. */
+const TEXT_CATEGORIES = CATEGORY_IDS.filter((c) => !c.startsWith('pistas-'));
 import { emit, startTestServer, trackState, type TestSocket } from '../helpers/server';
 
 type Server = Awaited<ReturnType<typeof startTestServer>>;
@@ -15,7 +18,7 @@ afterEach(async () => {
 async function createRoom(settings: object = {}) {
   const host = await server.connect();
   const hostState = trackState<HostView>(host, 'host:state');
-  const res = await emit(host, 'host:create', { settings: { questionCount: 3, timePerQuestion: 10, ...settings } });
+  const res = await emit(host, 'host:create', { settings: { questionCount: 3, timePerQuestion: 10, categories: TEXT_CATEGORIES, ...settings } });
   expect(res.ok).toBe(true);
   if (!res.ok) throw new Error(res.message);
   await hostState.waitFor((v) => v.code === res.code);

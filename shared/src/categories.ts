@@ -15,7 +15,11 @@ export const CATEGORIES = [
   { id: 'cultura-general', name: 'Cultura general', emoji: '🧠' },
   { id: 'curiosidades', name: 'Datos curiosos del mundo', emoji: '🤯' },
   { id: 'records', name: 'Récords y hechos sorprendentes', emoji: '🏆' },
+  { id: 'pistas-70s', name: 'Pistas musicales 70s', emoji: '🎧' },
   { id: 'pistas-80s', name: 'Pistas musicales 80s', emoji: '🎧' },
+  { id: 'pistas-90s', name: 'Pistas musicales 90s', emoji: '🎧' },
+  { id: 'pistas-2000s', name: 'Pistas musicales 2000s', emoji: '🎧' },
+  { id: 'pistas-2010s', name: 'Pistas musicales 2010s', emoji: '🎧' },
 ] as const;
 
 export type CategoryId = (typeof CATEGORIES)[number]['id'];
