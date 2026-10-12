@@ -6,13 +6,11 @@ import {
   TIME_OPTIONS,
   type CategoryId,
   type DifficultyMode,
+  DIFFICULTY_LABELS,
   type GameSettings,
-  type HostView,
   type ScoringPreset,
 } from '@trivia/shared';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { STORAGE_KEYS, writeJson } from '../../lib/storage';
-import type { HostActions } from './HostPage';
 
 interface Meta {
   totalQuestions: number;
@@ -36,8 +34,35 @@ const SCORING_OPTIONS: { value: ScoringPreset; label: string; hint: string }[] =
   { value: 'personalizado', label: 'Personalizado', hint: 'Tú eliges los valores' },
 ];
 
-export function SettingsPanel({ view, actions, onClose }: { view: HostView; actions: HostActions; onClose: () => void }) {
-  const [draft, setDraft] = useState<GameSettings>(view.settings);
+const DIFFICULTY_MODE_LABELS = { mixta: 'Dificultad mixta', progresiva: 'Dificultad progresiva', ...DIFFICULTY_LABELS };
+
+/** Resumen de una línea: «10 preguntas · 20 s · Todas las categorías · Dificultad mixta». */
+export function settingsSummary(s: GameSettings): string {
+  const categories =
+    s.categories.length === CATEGORIES.length
+      ? 'Todas las categorías'
+      : s.categories.length === 1
+        ? (CATEGORIES.find((c) => c.id === s.categories[0])?.name ?? '1 categoría')
+        : `${s.categories.length} categorías`;
+  return `${s.questionCount} preguntas · ${s.timePerQuestion} s · ${categories} · ${DIFFICULTY_MODE_LABELS[s.difficulty]}`;
+}
+
+/**
+ * Panel de configuración de la partida. Lo usan la pantalla principal y el celular del líder;
+ * `onSave` envía los cambios al servidor y devuelve si se aceptaron.
+ */
+export function SettingsPanel({
+  settings,
+  playedGames,
+  onSave,
+  onClose,
+}: {
+  settings: GameSettings;
+  playedGames: number;
+  onSave: (settings: GameSettings) => Promise<boolean>;
+  onClose: () => void;
+}) {
+  const [draft, setDraft] = useState<GameSettings>(settings);
   const [meta, setMeta] = useState<Meta | null>(null);
   const [saving, setSaving] = useState(false);
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -78,12 +103,9 @@ export function SettingsPanel({ view, actions, onClose }: { view: HostView; acti
 
   const save = async () => {
     setSaving(true);
-    const ok = await actions.updateSettings(draft);
+    const ok = await onSave(draft);
     setSaving(false);
-    if (ok) {
-      writeJson(STORAGE_KEYS.hostSettings, draft);
-      onClose();
-    }
+    if (ok) onClose();
   };
 
   const hardMax = meta?.limits.hardMaxPlayers ?? 100;
@@ -214,7 +236,7 @@ export function SettingsPanel({ view, actions, onClose }: { view: HostView; acti
               <p className={`mt-2 text-sm ${available < draft.questionCount ? 'text-amber-300' : 'text-white/60'}`}>
                 {available} preguntas disponibles con estos filtros
                 {available < draft.questionCount && ' — la partida tendrá menos preguntas de las elegidas'}
-                {view.history.length > 0 && ' (las ya jugadas en esta sesión no se repiten)'}.
+                {playedGames > 0 && ' (las ya jugadas en esta sesión no se repiten)'}.
               </p>
             )}
           </Field>

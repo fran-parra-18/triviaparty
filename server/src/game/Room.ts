@@ -877,6 +877,8 @@ export class Room {
       leaderboard: this.leaderboard.slice(0, 5),
       final,
       showResultsAfterEach: this.settings.showResultsAfterEach,
+      settings: p.id === this.leaderId ? this.settings : null,
+      playedGames: this.history.length,
       gameNumber: this.gameNumber,
       serverNow: Date.now(),
     };

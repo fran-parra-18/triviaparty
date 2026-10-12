@@ -1,7 +1,8 @@
-import { ROOM_CODE_LENGTH, nextActionLabel, type LeaderAction, type PlayerView } from '@trivia/shared';
+import { ROOM_CODE_LENGTH, nextActionLabel, type GameSettings, type LeaderAction, type PlayerView } from '@trivia/shared';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { CountdownNumber, Podium, TimerBar, fireConfetti, useCountdownNumber } from '../../components/game';
+import { SettingsPanel, settingsSummary } from '../../components/SettingsPanel';
 import { Avatar, CategoryBadge, ConnectionBanner, Logo, OPTION_BG, OPTION_NAMES, OPTION_TEXT, OptionShape, Screen, SoundToggle, Spinner, Toast } from '../../components/ui';
 import { usePlayerSession } from '../../hooks/usePlayerSession';
 import { formatPoints, ordinal, useConnection, useCountUp, useOnChange } from '../../lib/hooks';
@@ -20,7 +21,7 @@ export function PlayerPage() {
       <ConnectionBanner {...conn} />
       <Toast message={session.error} onClose={session.clearError} />
       {view ? (
-        <PlayerGame view={view} onAnswer={session.answer} onLeave={session.leave} onControl={session.control} />
+        <PlayerGame view={view} onAnswer={session.answer} onLeave={session.leave} onControl={session.control} onUpdateSettings={session.updateSettings} />
       ) : (
         <div className="relative z-10 flex min-h-dvh flex-col items-center justify-center gap-6 px-5 py-8">
           <Link to="/" aria-label="Inicio">
@@ -147,11 +148,13 @@ function PlayerGame({
   onAnswer,
   onLeave,
   onControl,
+  onUpdateSettings,
 }: {
   view: PlayerView;
   onAnswer: (index: number, choice: number) => Promise<boolean>;
   onLeave: () => Promise<void>;
   onControl: (action: LeaderAction) => Promise<boolean>;
+  onUpdateSettings: (settings: GameSettings) => Promise<boolean>;
 }) {
   return (
     <div className="relative z-10 flex h-dvh flex-col">
@@ -183,14 +186,23 @@ function PlayerGame({
           <PhaseView view={view} onAnswer={onAnswer} onLeave={onLeave} />
         )}
       </main>
-      {view.me.isLeader && <LeaderBar view={view} onControl={onControl} />}
+      {view.me.isLeader && <LeaderBar view={view} onControl={onControl} onUpdateSettings={onUpdateSettings} />}
     </div>
   );
 }
 
 /** Controles del jugador líder: maneja la partida desde el celular sin tocar la PC. */
-function LeaderBar({ view, onControl }: { view: PlayerView; onControl: (action: LeaderAction) => Promise<boolean> }) {
+function LeaderBar({
+  view,
+  onControl,
+  onUpdateSettings,
+}: {
+  view: PlayerView;
+  onControl: (action: LeaderAction) => Promise<boolean>;
+  onUpdateSettings: (settings: GameSettings) => Promise<boolean>;
+}) {
   const [busy, setBusy] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const run = async (action: LeaderAction) => {
     if (busy) return;
     setBusy(true);
@@ -206,7 +218,13 @@ function LeaderBar({ view, onControl }: { view: PlayerView; onControl: (action: 
   return (
     <div className="border-t border-amber-300/30 bg-night-900/95 px-4 pt-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]" role="toolbar" aria-label="Controles del líder">
       <div className="mb-1 text-center text-xs font-semibold uppercase tracking-wider text-amber-300">👑 Controlas la partida</div>
+      {!active && view.settings && <p className="mb-2 text-center text-xs text-white/60">{settingsSummary(view.settings)}</p>}
       <div className="flex gap-2">
+        {!active && view.settings && (
+          <button type="button" className="btn-secondary px-4" disabled={busy} onClick={() => setShowSettings(true)}>
+            ⚙️ Configurar
+          </button>
+        )}
         {view.phase === 'lobby' && (
           <button
             type="button"
@@ -251,6 +269,14 @@ function LeaderBar({ view, onControl }: { view: PlayerView; onControl: (action: 
           </>
         )}
       </div>
+      {showSettings && view.settings && (
+        <SettingsPanel
+          settings={view.settings}
+          playedGames={view.playedGames}
+          onSave={onUpdateSettings}
+          onClose={() => setShowSettings(false)}
+        />
+      )}
     </div>
   );
 }
@@ -301,7 +327,7 @@ function LobbyWait({ view, onLeave }: { view: PlayerView; onLeave: () => Promise
       </p>
       <p className="text-white/60">
         {view.me.isLeader
-          ? 'Eres el líder: podrás comenzar y avanzar la partida desde este celular.'
+          ? 'Eres el líder: podrás configurar, comenzar y avanzar la partida desde este celular.'
           : view.gameNumber > 0
             ? 'Esperando la siguiente partida…'
             : 'Mira la pantalla principal: el anfitrión iniciará la partida enseguida.'}

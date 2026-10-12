@@ -1,12 +1,10 @@
-import { CATEGORIES, DIFFICULTY_LABELS, type HostView } from '@trivia/shared';
+import type { HostView } from '@trivia/shared';
 import { useState } from 'react';
 import { QrCode } from '../../components/game';
+import { SettingsPanel, settingsSummary } from '../../components/SettingsPanel';
 import { Avatar } from '../../components/ui';
 import { useJoinBase } from '../../lib/joinUrl';
 import type { HostActions } from './HostPage';
-import { SettingsPanel } from './SettingsPanel';
-
-const DIFFICULTY_MODE_LABELS = { mixta: 'Dificultad mixta', progresiva: 'Dificultad progresiva', ...DIFFICULTY_LABELS };
 
 export function HostLobby({ view, actions }: { view: HostView; actions: HostActions }) {
   const join = useJoinBase();
@@ -16,12 +14,6 @@ export function HostLobby({ view, actions }: { view: HostView; actions: HostActi
   const displayHost = join.base.replace(/^https?:\/\//, '');
   const connected = view.players.filter((p) => p.connected).length;
   const s = view.settings;
-  const catSummary =
-    s.categories.length === CATEGORIES.length
-      ? 'Todas las categorías'
-      : s.categories.length === 1
-        ? CATEGORIES.find((c) => c.id === s.categories[0])?.name
-        : `${s.categories.length} categorías`;
 
   return (
     <main className="flex flex-1 flex-col gap-5 px-4 pb-5 md:px-8">
@@ -127,7 +119,7 @@ export function HostLobby({ view, actions }: { view: HostView; actions: HostActi
           ⚙️ Configurar partida
         </button>
         <p className="flex-1 text-center text-lg text-white/75 md:text-left">
-          {s.questionCount} preguntas · {s.timePerQuestion} s · {catSummary} · {DIFFICULTY_MODE_LABELS[s.difficulty]}
+          {settingsSummary(s)}
           {view.history.length > 0 && <span className="text-white/50"> · Partida n.º {view.history.length + 1}</span>}
         </p>
         {!view.minPlayersMet && (
@@ -147,7 +139,14 @@ export function HostLobby({ view, actions }: { view: HostView; actions: HostActi
         </button>
       </footer>
 
-      {showSettings && <SettingsPanel view={view} actions={actions} onClose={() => setShowSettings(false)} />}
+      {showSettings && (
+        <SettingsPanel
+          settings={view.settings}
+          playedGames={view.history.length}
+          onSave={actions.updateSettings}
+          onClose={() => setShowSettings(false)}
+        />
+      )}
     </main>
   );
 }

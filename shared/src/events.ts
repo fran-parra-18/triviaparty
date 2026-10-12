@@ -31,6 +31,8 @@ export interface ClientToServerEvents {
   'player:leave': (payload: Record<string, never>, ack: Ack) => void;
   /** Acciones de control permitidas al jugador líder. */
   'player:control': (payload: { action: LeaderAction }, ack: Ack) => void;
+  /** El líder cambia la configuración desde su celular (solo antes de empezar o al terminar). */
+  'player:updateSettings': (payload: { settings: unknown }, ack: Ack) => void;
 
   // ── Utilidades ──
   /** Sincronización de reloj: devuelve la hora del servidor. */

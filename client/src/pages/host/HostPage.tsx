@@ -5,7 +5,7 @@ import { BackgroundBlobs, ConnectionBanner, FullscreenToggle, Logo, Screen, Soun
 import { useHostSession } from '../../hooks/useHostSession';
 import { useConnection, useOnChange } from '../../lib/hooks';
 import { setMuted, sounds, useMuted } from '../../lib/sound';
-import { STORAGE_KEYS, readJson } from '../../lib/storage';
+import { STORAGE_KEYS, readJson, writeJson } from '../../lib/storage';
 import { HostFinal } from './HostFinal';
 import { HostLobby } from './HostLobby';
 import { HostPlay } from './HostPlay';
@@ -84,6 +84,10 @@ function CreateRoom({ onCreate }: { onCreate: (s?: Partial<GameSettings>) => Pro
 function HostGame({ view, actions }: { view: HostView; actions: HostActions }) {
   const [muted] = useMuted();
   const { toggle: toggleFullscreen } = useFullscreen();
+
+  // Recuerda la configuración para la próxima sala, la cambie el anfitrión o el líder desde su celular.
+  const settingsJson = JSON.stringify(view.settings);
+  useEffect(() => writeJson(STORAGE_KEYS.hostSettings, JSON.parse(settingsJson)), [settingsJson]);
 
   // Sonidos al cambiar de fase.
   useOnChange(`${view.gameNumber}:${view.phase}:${view.progress?.index ?? -1}`, () => {

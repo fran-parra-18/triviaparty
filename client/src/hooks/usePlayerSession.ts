@@ -1,4 +1,4 @@
-import type { LeaderAction, PlayerView } from '@trivia/shared';
+import type { GameSettings, LeaderAction, PlayerView } from '@trivia/shared';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { observeServerTime } from '../lib/clock';
 import { errorText, getSocket, request } from '../lib/socket';
@@ -119,6 +119,13 @@ export function usePlayerSession(urlCode: string | null) {
     return res.ok;
   }, []);
 
+  /** El líder cambia la configuración de la partida desde el celular. */
+  const updateSettings = useCallback(async (settings: GameSettings) => {
+    const res = await request('player:updateSettings', { settings });
+    if (!res.ok) setError(errorText(res));
+    return res.ok;
+  }, []);
+
   const leave = useCallback(async () => {
     await request('player:leave', {});
     forget();
@@ -143,6 +150,7 @@ export function usePlayerSession(urlCode: string | null) {
     join,
     answer,
     control,
+    updateSettings,
     leave,
     reset,
     reconnectHere: () => {

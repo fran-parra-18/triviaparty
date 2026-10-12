@@ -182,6 +182,10 @@ export interface PlayerView {
     totalPlayers: number;
   } | null;
   showResultsAfterEach: boolean;
+  /** Configuración de la partida: solo se envía al líder, que puede cambiarla desde el celular. */
+  settings: GameSettings | null;
+  /** Partidas ya jugadas en esta sesión (sus preguntas no se repiten). */
+  playedGames: number;
   gameNumber: number;
   serverNow: number;
 }

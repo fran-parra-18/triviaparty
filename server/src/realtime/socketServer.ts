@@ -6,6 +6,7 @@ import {
   kickPayloadSchema,
   leaderControlPayloadSchema,
   setLeaderPayloadSchema,
+  updateSettingsPayloadSchema,
   rejoinPayloadSchema,
   type ClientToServerEvents,
   type ServerToClientEvents,
@@ -241,7 +242,14 @@ export function registerSocketHandlers(io: IoServer, manager: RoomManager, opts:
       room.submitAnswer(playerId, questionIndex, choice);
     });
 
-    // El líder puede manejar el avance de la partida desde su celular (no terminarla ni configurarla).
+    // El líder puede configurar la partida desde el celular, con las mismas reglas que el anfitrión.
+    handle('player:updateSettings', (payload) => {
+      const { room, playerId } = requirePlayer();
+      if (!room.isLeader(playerId)) throw new GameError('NOT_ALLOWED', 'Solo el líder de la partida puede hacer esto.');
+      room.updateSettings(parse(updateSettingsPayloadSchema, payload).settings);
+    });
+
+    // El líder puede manejar el avance de la partida desde su celular (no terminarla).
     handle('player:control', async (payload) => {
       const { room, playerId } = requirePlayer();
       if (!room.isLeader(playerId)) throw new GameError('NOT_ALLOWED', 'Solo el líder de la partida puede hacer esto.');

@@ -179,7 +179,7 @@ describe('jugador líder', () => {
       await emit(leader.socket, 'player:control', { action: 'next' }); // siguiente / podio
     }
     await hostState.waitFor((v) => v.phase === 'finished');
-    // El líder no puede terminar ni configurar: esas acciones siguen siendo del anfitrión.
+    // El líder no puede terminar la partida: eso sigue siendo del anfitrión.
     expect(await emit(leader.socket, 'host:end', {})).toMatchObject({ ok: false, error: 'NOT_ALLOWED' });
     expect((await emit(leader.socket, 'player:control', { action: 'playAgain' })).ok).toBe(true);
     await hostState.waitFor((v) => v.phase === 'lobby' && v.leaderId === leader.playerId);
@@ -190,6 +190,31 @@ describe('jugador líder', () => {
     expect(await emit(leader.socket, 'player:control', { action: 'start' })).toMatchObject({ ok: false, error: 'NOT_ALLOWED' });
     // Un jugador no puede nombrarse líder a sí mismo.
     expect(await emit(other.socket, 'host:setLeader', { playerId: other.playerId })).toMatchObject({ ok: false, error: 'NOT_ALLOWED' });
+  });
+
+  it('el líder configura la partida desde su celular; los demás no pueden y nadie la cambia en curso', async () => {
+    const { host, hostState, code } = await createRoom({ questionCount: 3 });
+    const leader = await joinPlayer(code, 'Lía');
+    const other = await joinPlayer(code, 'Otro');
+    const change = { questionCount: 5, timePerQuestion: 30, categories: ['historia', 'geografia'] };
+
+    expect(await emit(leader.socket, 'player:updateSettings', { settings: change })).toMatchObject({ ok: false, error: 'NOT_ALLOWED' });
+    await emit(host, 'host:setLeader', { playerId: leader.playerId });
+    const lv = await leader.state.waitFor((v) => v.me.isLeader && v.settings !== null);
+    expect(lv.settings!.questionCount).toBe(3);
+    // Solo el líder recibe la configuración.
+    expect((await other.state.waitFor((v) => v.players.length === 2)).settings).toBeNull();
+
+    expect(await emit(other.socket, 'player:updateSettings', { settings: change })).toMatchObject({ ok: false, error: 'NOT_ALLOWED' });
+    expect(await emit(leader.socket, 'player:updateSettings', { settings: { questionCount: 999 } })).toMatchObject({ ok: false, error: 'INVALID_PAYLOAD' });
+    expect((await emit(leader.socket, 'player:updateSettings', { settings: change })).ok).toBe(true);
+    const hv = await hostState.waitFor((v) => v.settings.questionCount === 5);
+    expect(hv.settings).toMatchObject(change);
+    await leader.state.waitFor((v) => v.settings?.timePerQuestion === 30);
+
+    await emit(leader.socket, 'player:control', { action: 'start' });
+    await hostState.waitFor((v) => v.phase === 'countdown' || v.phase === 'question');
+    expect(await emit(leader.socket, 'player:updateSettings', { settings: { questionCount: 10 } })).toMatchObject({ ok: false, error: 'INVALID_STATE' });
   });
 });
 

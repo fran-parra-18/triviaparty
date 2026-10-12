@@ -106,9 +106,9 @@ Para apagar el juego, haz doble clic en **`Apagar Trivia Party.bat`**; si no lo 
 
 Para no levantarse del sillón en cada pregunta, el anfitrión puede elegir a un **líder** tocando 👑 junto a su nombre en la sala de espera, o con el selector 👑 de la cabecera en cualquier momento. Solo hay un líder a la vez, y el anfitrión puede quitarlo o cambiarlo.
 
-Desde su celular, el líder puede **comenzar la partida, revelar la respuesta, mostrar la clasificación, pasar a la siguiente pregunta o al podio, pausar o reanudar y «Jugar otra vez»**.
+Desde su celular, el líder puede **configurar la partida (antes de empezar y al terminar), comenzar, revelar la respuesta, mostrar la clasificación, pasar a la siguiente pregunta o al podio, pausar o reanudar y «Jugar otra vez»**.
 
-Por juego limpio, el líder **no puede cerrar una pregunta abierta**: como también juega, podría responder rápido y dejar sin tiempo a los demás. La pregunta se cierra sola cuando todos responden o se agota el tiempo. Tampoco puede terminar la partida, expulsar jugadores, cambiar la configuración ni cerrar la sala. El servidor valida cada una de estas restricciones.
+Por juego limpio, el líder **no puede cerrar una pregunta abierta**: como también juega, podría responder rápido y dejar sin tiempo a los demás. La pregunta se cierra sola cuando todos responden o se agota el tiempo. Tampoco puede terminar la partida, expulsar jugadores ni cerrar la sala. El servidor valida cada una de estas restricciones.
 
 ## Instalación y ejecución local
 
