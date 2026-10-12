@@ -67,7 +67,6 @@ export function SettingsPanel({ view, actions, onClose }: { view: HostView; acti
 
   const toggleCategory = (id: CategoryId) => {
     const has = draft.categories.includes(id);
-    if (has && draft.categories.length === 1) return;
     set('categories', has ? draft.categories.filter((c) => c !== id) : [...draft.categories, id]);
   };
 
@@ -164,6 +163,9 @@ export function SettingsPanel({ view, actions, onClose }: { view: HostView; acti
                 <button type="button" className="text-sm text-brand-cyan underline" onClick={() => set('categories', [...CATEGORY_IDS])}>
                   Todas
                 </button>
+                <button type="button" className="text-sm text-brand-cyan underline" onClick={() => set('categories', [])}>
+                  Ninguna
+                </button>
               </div>
             }
           >
@@ -193,7 +195,11 @@ export function SettingsPanel({ view, actions, onClose }: { view: HostView; acti
                 );
               })}
             </div>
-            <p className="mt-2 text-xs text-white/50">Pulsa una categoría para incluirla o excluirla.</p>
+            {draft.categories.length === 0 ? (
+              <p className="mt-2 text-sm text-amber-300">Elige al menos una categoría para poder guardar.</p>
+            ) : (
+              <p className="mt-2 text-xs text-white/50">Pulsa una categoría para incluirla o excluirla.</p>
+            )}
           </Field>
 
           <Field label="Dificultad">
@@ -263,7 +269,7 @@ export function SettingsPanel({ view, actions, onClose }: { view: HostView; acti
           <button type="button" className="btn-secondary" onClick={onClose}>
             Cancelar
           </button>
-          <button type="button" className="btn-primary px-8" onClick={save} disabled={saving}>
+          <button type="button" className="btn-primary px-8" onClick={save} disabled={saving || draft.categories.length === 0}>
             {saving ? 'Guardando…' : 'Guardar'}
           </button>
         </div>
