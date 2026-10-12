@@ -156,3 +156,6 @@ SONGS = {
 from songs_more import MORE
 for _cat, _songs in MORE.items():
     SONGS.setdefault(_cat, []).extend(_songs)
+
+from songs_ar import AR
+SONGS.update(AR)

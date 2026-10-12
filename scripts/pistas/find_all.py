@@ -10,12 +10,16 @@ EXTRA = {
  'Radiohead|Creep': {'term': 'Radiohead Pablo Honey Creep', 'album': 'Pablo Honey'},
  'Haddaway|What Is Love': {'allow_mix': True},
  'Green Day|Boulevard of Broken Dreams': {'term': 'Green Day American Idiot Boulevard of Broken Dreams'},
+ 'Los Palmeras|Bombón Asesino': {'title': 'El Bombón', 'album': 'Un Sentimiento'},
+ 'Illya Kuryaki and the Valderramas|Abarajame': {'artist': 'Illya Kuryaki & The Valderramas', 'term': 'Illya Kuryaki Abarajame'},
+ 'Fito Páez|Y Dale Alegría a Mi Corazón': {'album': 'Tercer Mundo'},
+ 'Andrés Calamaro|Crímenes Perfectos': {'term': 'Andres Calamaro Crimenes Perfectos', 'album': 'Alta Suciedad'},
  '(G)I-DLE|TOMBOY': {'artist': 'i-dle', 'term': 'i-dle TOMBOY'},
 }
 
 CACHE = os.path.join(os.path.dirname(__file__), 'itunes_cache.json')
 cache = json.load(open(CACHE, encoding='utf-8')) if os.path.exists(CACHE) else {}
-BAD = re.compile(r'\b(unplugged|live|en vivo|directo|remix|remixed|karaoke|instrumental|acoustic|acústico|acústica|acustica|japanese|spanglish|demo|cover|tribute|tributo|re-?recorded|sped up|slowed|mtv|remixes|mix)\b', re.I)
+BAD = re.compile(r'\b(unplugged|live|en vivo|directo|remix|remixed|karaoke|instrumental|acoustic|acústico|acústica|acustica|japanese|spanglish|streaming|primera fila|euforia|25 años|demo|cover|tribute|tributo|re-?recorded|sped up|slowed|mtv|remixes|mix)\b', re.I)
 
 def norm(s):
     return re.sub(r'[^a-z0-9]', '', unicodedata.normalize('NFD', s).encode('ascii', 'ignore').decode().lower())

@@ -4,7 +4,7 @@ from songs import SONGS
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'server', 'data', 'questions')
 cache = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'itunes_cache.json'), encoding='utf-8'))
 BAD = re.compile(r'\b(unplugged|live|en vivo|remix|remixes|karaoke|instrumental|acoustic|cover|tribute)\b', re.I)
-PREFIX = {'pistas-70s': 'p70', 'pistas-80s': 'p80', 'pistas-90s': 'p90', 'pistas-2000s': 'p00', 'pistas-2010s': 'p10', 'pistas-kpop': 'pkp'}
+PREFIX = {'pistas-70s': 'p70', 'pistas-80s': 'p80', 'pistas-90s': 'p90', 'pistas-2000s': 'p00', 'pistas-2010s': 'p10', 'pistas-kpop': 'pkp', 'pistas-argentina': 'par'}
 Q = {'W': '¿Quién canta esta canción?', 'N': '¿Cómo se llama esta canción?'}
 urls = set()
 for cat, songs in SONGS.items():
