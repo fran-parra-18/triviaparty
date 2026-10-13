@@ -568,7 +568,7 @@ function ResultView({ view }: { view: PlayerView }) {
             <p className="flex flex-wrap justify-center gap-2 text-sm font-bold">
               {r.musicStage !== null && (
                 <span className="chip bg-brand-cyan/20 text-cyan-100">
-                  {['🎵 ¡La sacaste con 2 segundos!', '🎵🎵 La sacaste con 5 segundos', '🎵🎵🎵 La sacaste con el fragmento completo'][r.musicStage]}
+                  {['🎵 ¡La sacaste con 1 segundo!', '🎵🎵 La sacaste con 3 segundos', '🎵🎵🎵 La sacaste con el fragmento completo'][r.musicStage]}
                 </span>
               )}
               {r.multiplier > 1 && <span className="chip bg-amber-300/20 text-amber-200">×{r.multiplier} pregunta especial</span>}

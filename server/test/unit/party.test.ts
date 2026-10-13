@@ -275,24 +275,24 @@ describe('Room — Modo Fiesta', () => {
 });
 
 describe('Modo Musical — línea de tiempo', () => {
-  it('tramos de 2 s y 5 s con tiempo para responder, y el fragmento completo', () => {
+  it('tramos de 1 s y 3 s con tiempo para responder, y el fragmento completo', () => {
     expect(musicTimeline(10)).toEqual([
-      { startMs: 0, playMs: 2000, endMs: 12_000, points: 1500 },
-      { startMs: 12_000, playMs: 5000, endMs: 27_000, points: 1000 },
-      { startMs: 27_000, playMs: 30_000, endMs: 57_000, points: 500 },
+      { startMs: 0, playMs: 1000, endMs: 11_000, points: 1500 },
+      { startMs: 11_000, playMs: 3000, endMs: 24_000, points: 1000 },
+      { startMs: 24_000, playMs: 30_000, endMs: 54_000, points: 500 },
     ]);
   });
 
   it('ubica cada instante en su tramo', () => {
     const t = musicTimeline(10);
-    expect([0, 11_999, 12_000, 26_999, 27_000, 99_999].map((ms) => musicStageAt(t, ms))).toEqual([0, 0, 1, 1, 2, 2]);
+    expect([0, 10_999, 11_000, 23_999, 24_000, 99_999].map((ms) => musicStageAt(t, ms))).toEqual([0, 0, 1, 1, 2, 2]);
   });
 
   it('el contador de cada tramo se reinicia: se escucha y después corre el tiempo para responder', () => {
     const [first, , last] = musicTimeline(10);
-    expect(musicStageClock(first!, 1000)).toEqual({ listening: true, remainingMs: 10_000, totalMs: 10_000 });
-    expect(musicStageClock(first!, 5000)).toEqual({ listening: false, remainingMs: 7000, totalMs: 10_000 });
+    expect(musicStageClock(first!, 500)).toEqual({ listening: true, remainingMs: 10_000, totalMs: 10_000 });
+    expect(musicStageClock(first!, 5000)).toEqual({ listening: false, remainingMs: 6000, totalMs: 10_000 });
     // En el último tramo el contador corre mientras suena.
-    expect(musicStageClock(last!, 37_000)).toEqual({ listening: false, remainingMs: 20_000, totalMs: 30_000 });
+    expect(musicStageClock(last!, 34_000)).toEqual({ listening: false, remainingMs: 20_000, totalMs: 30_000 });
   });
 });

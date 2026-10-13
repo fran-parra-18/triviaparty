@@ -12,8 +12,8 @@ export const MUSIC_THINK_DEFAULT = 10;
 
 /** Los tres tramos: cuánto suena cada uno (desde el principio del fragmento) y cuánto vale acertar en él. */
 export const MUSIC_STAGE_RULES = [
-  { playMs: 2000, points: 1500, label: '2 s' },
-  { playMs: 5000, points: 1000, label: '5 s' },
+  { playMs: 1000, points: 1500, label: '1 s' },
+  { playMs: 3000, points: 1000, label: '3 s' },
   { playMs: 30000, points: 500, label: 'Completo' },
 ] as const;
 
@@ -29,7 +29,7 @@ export interface MusicStage {
 }
 
 /**
- * Línea de tiempo de una canción: 2 s + tiempo para responder, 5 s + tiempo para responder, y el
+ * Línea de tiempo de una canción: 1 s + tiempo para responder, 3 s + tiempo para responder, y el
  * fragmento completo (su contador corre mientras suena).
  * El servidor la usa para puntuar según el momento de la respuesta y los clientes para dibujarla.
  */

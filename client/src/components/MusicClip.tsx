@@ -8,7 +8,7 @@ import { getMusicVolume, musicGain, useMusicVolume, useMuted } from '../lib/soun
  * Se precarga durante la cuenta regresiva, suena mientras la pregunta está abierta y sigue
  * de fondo al revelar la respuesta; se detiene en la clasificación.
  *
- * En el Modo Musical, mientras la pregunta está abierta, suena por tramos (2 s, 5 s, completo),
+ * En el Modo Musical, mientras la pregunta está abierta, suena por tramos (1 s, 3 s, completo),
  * siempre desde el principio y sincronizado con el reloj del servidor, que es el que puntúa.
  */
 export function useMusicClip(view: HostView) {
@@ -20,6 +20,8 @@ export function useMusicClip(view: HostView) {
   const [volume] = useMusicVolume();
   /** Repetición manual del tramo actual: hasta qué segundo del fragmento suena y de qué tramo es. */
   const replayRef = useRef<{ stage: number; untilSec: number } | null>(null);
+  /** Tramo que estaba sonando, para reiniciar el fragmento cuando cambia. */
+  const stageRef = useRef<number | null>(null);
 
   const url = view.question?.audioUrl ?? null;
   const playingPhase = view.phase === 'question' || view.phase === 'locked' || view.phase === 'reveal';
@@ -77,6 +79,7 @@ export function useMusicClip(view: HostView) {
     if (a.src !== url) a.src = url;
     a.currentTime = 0;
     replayRef.current = null;
+    stageRef.current = null;
     setEnded(false);
   }, [clipKey, url]);
 
@@ -110,21 +113,31 @@ export function useMusicClip(view: HostView) {
         replayRef.current = null;
       }
       const offsetSec = (elapsed - stage.startMs) / 1000;
-      const inPlay = offsetSec >= 0 && offsetSec < stage.playMs / 1000;
-      if (!inPlay) {
+      const limitSec = stage.playMs / 1000;
+      // Al cambiar de tramo (solo o con «Siguiente tramo»), el fragmento vuelve a empezar desde el principio.
+      if (stageRef.current !== current) {
+        stageRef.current = current;
         if (!a.paused) a.pause();
+        a.currentTime = 0;
+      }
+      const inPlay = offsetSec >= 0 && offsetSec < limitSec;
+      // Se corta por la posición del propio fragmento, no por el reloj: así el tramo suena entero
+      // (1 s es 1 s) aunque el audio haya tardado un poco en arrancar.
+      if (!a.paused) {
+        if (a.currentTime >= limitSec || offsetSec >= limitSec + 1.5) a.pause();
+        else if (current === stages.length - 1 && Math.abs(a.currentTime - offsetSec) > 0.6) {
+          a.currentTime = offsetSec; // en el fragmento largo, corrige si se desfasó (por ejemplo, tras cargar lento)
+        }
         return;
       }
-      if (a.ended || (Number.isFinite(a.duration) && offsetSec >= a.duration - 0.25)) return;
-      if (a.paused) {
-        a.currentTime = offsetSec;
-        a.play().then(
-          () => setBlocked(false),
-          () => setBlocked(true),
-        );
-      } else if (Math.abs(a.currentTime - offsetSec) > 0.6) {
-        a.currentTime = offsetSec; // corrige si se desfasó (por ejemplo, tras cargar lento)
-      }
+      // En pausa: arranca el tramo (o lo retoma tras una pausa) si todavía no sonó entero.
+      if (!inPlay || a.ended || a.currentTime >= limitSec - 0.1) return;
+      if (Number.isFinite(a.duration) && offsetSec >= a.duration - 0.25) return;
+      a.currentTime = offsetSec < 0.4 ? 0 : offsetSec;
+      a.play().then(
+        () => setBlocked(false),
+        () => setBlocked(true),
+      );
     };
     tick();
     const id = window.setInterval(tick, 100);

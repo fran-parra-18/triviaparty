@@ -406,9 +406,9 @@ describe('Room — Modo Musical', () => {
     const view = room.hostView();
     expect(view.progress?.total).toBe(4);
     expect(view.question?.category).toBe('pistas-90s');
-    // 2 s + 10 para responder, 5 s + 10 para responder y el fragmento completo (30 s).
+    // 1 s + 10 para responder, 3 s + 10 para responder y el fragmento completo (30 s).
     expect(view.question?.musicStages?.map((s) => s.points)).toEqual([1500, 1000, 500]);
-    expect(view.timer?.durationMs).toBe(57_000);
+    expect(view.timer?.durationMs).toBe(54_000);
   });
 
   it('puntúa según el tramo en el que se respondió, sin castigo por fallar', async () => {
@@ -440,8 +440,8 @@ describe('Room — Modo Musical', () => {
     const room = makeMusicRoom({ music: { songCount: 3, categories: ['pistas-80s'], thinkSeconds: 20 } });
     const ana = room.addPlayer('Ana', 's1');
     await openFirstQuestion(room);
-    expect(room.hostView().timer?.durationMs).toBe(2000 + 20_000 + 5000 + 20_000 + 30_000);
-    vi.advanceTimersByTime(21_000); // todavía dentro del primer tramo (2 s + 20 para responder)
+    expect(room.hostView().timer?.durationMs).toBe(1000 + 20_000 + 3000 + 20_000 + 30_000);
+    vi.advanceTimersByTime(20_500); // todavía dentro del primer tramo (1 s + 20 para responder)
     room.submitAnswer(ana.id, 0, correctChoice(room));
     room.next();
     expect(room.playerView(ana.id)!.result!.pointsEarned).toBe(1500);
@@ -480,9 +480,9 @@ describe('Room — Modo Musical', () => {
     room.addPlayer('Beto', 's2');
     await openFirstQuestion(room);
     vi.advanceTimersByTime(3000);
-    room.skipMusicStage(); // al principio del tramo 2 (12 s)
-    expect(room.hostView().timer?.remainingMs).toBe(57_000 - 12_000);
-    room.skipMusicStage(); // al principio del tramo 3 (29 s)
+    room.skipMusicStage(); // al principio del tramo 2 (11 s)
+    expect(room.hostView().timer?.remainingMs).toBe(54_000 - 11_000);
+    room.skipMusicStage(); // al principio del tramo 3 (24 s)
     expectGameError(() => room.skipMusicStage(), 'INVALID_STATE');
     room.submitAnswer(ana.id, 0, correctChoice(room));
     vi.advanceTimersByTime(28_000);

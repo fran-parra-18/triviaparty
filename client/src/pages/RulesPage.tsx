@@ -66,7 +66,7 @@ export function RulesPage() {
             <p className="text-white/85">Es un modo aparte: solo canciones, y se puntúa distinto que en los otros modos.</p>
             <ul className="list-disc space-y-1 pl-6 text-white/85">
               <li>
-                Cada canción suena por tramos, siempre desde el principio: primero <strong>2 segundos</strong>, después <strong>5 segundos</strong> y al final
+                Cada canción suena por tramos, siempre desde el principio: primero <strong>1 segundo</strong>, después <strong>3 segundos</strong> y al final
                 el <strong>fragmento completo</strong>. Cada tramo tiene su propio contador: arranca cuando termina de sonar y se reinicia en el
                 siguiente. El anfitrión puede pasar de tramo antes si nadie la reconoce.
               </li>

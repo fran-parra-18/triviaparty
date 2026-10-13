@@ -100,7 +100,7 @@ function CountdownScreen({ view }: { view: HostView }) {
       </p>
       {music && index === 0 && (
         <p className="max-w-3xl text-2xl text-white/70">
-          Primero suenan 2 segundos, después 5 y al final el fragmento completo, y cada tramo tiene su propio contador. Cuanto antes
+          Primero suena 1 segundo, después 3 y al final el fragmento completo, y cada tramo tiene su propio contador. Cuanto antes
           respondan, más vale: 1.500, 1.000 o 500.
         </p>
       )}

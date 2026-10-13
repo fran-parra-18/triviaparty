@@ -449,7 +449,7 @@ function MusicFields({
             ))}
           </div>
           <p className="mt-2 text-sm text-white/60">
-            El contador se reinicia en cada tramo: arranca cuando terminan de sonar los 2 s y los 5 s. El último tramo dura lo que el
+            El contador se reinicia en cada tramo: arranca cuando terminan de sonar el 1 s y los 3 s. El último tramo dura lo que el
             fragmento (30 s). Cada canción dura como mucho {total} s, menos si responden todos antes.
           </p>
         </Field>
