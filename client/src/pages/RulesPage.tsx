@@ -62,6 +62,27 @@ export function RulesPage() {
           </section>
 
           <section>
+            <h2 className="mb-2 text-2xl font-bold">🎵 Modo Musical: adivina la canción</h2>
+            <p className="text-white/85">Es un modo aparte: solo canciones, y se puntúa distinto que en los otros modos.</p>
+            <ul className="list-disc space-y-1 pl-6 text-white/85">
+              <li>
+                Cada canción suena por tramos, siempre desde el principio: primero <strong>2 segundos</strong>, después <strong>5 segundos</strong> y al final
+                el <strong>fragmento completo</strong>. Entre tramo y tramo hay unos segundos de silencio para pensar.
+              </li>
+              <li>
+                Se puede responder en cualquier momento, una sola vez. Acertar en el primer tramo vale <strong>1.500</strong>, en el segundo{' '}
+                <strong>1.000</strong> y en el tercero <strong>500</strong>.
+              </li>
+              <li>Fallar no resta puntos, pero ya no puedes volver a responder esa canción. Si no estás seguro, conviene esperar al siguiente tramo.</li>
+              <li>El tramo en el que respondiste lo decide el reloj del servidor, aunque el audio se haya atrasado en la pantalla.</li>
+              <li>
+                En la configuración se eligen la cantidad de canciones, las categorías musicales y el tiempo para pensar (3, 5 u 8 segundos). No hay
+                preguntas especiales, apuestas ni 50/50.
+              </li>
+            </ul>
+          </section>
+
+          <section>
             <h2 className="mb-2 text-2xl font-bold">Premios del podio</h2>
             <p className="text-white/85">
               En todos los modos, al final se reparten premios: 🧠 El Cerebrito (más aciertos), ⚡ El Rayo (más rápido al acertar), 🔥 El Imparable (mejor racha,

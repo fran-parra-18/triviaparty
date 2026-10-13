@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { CountdownNumber, Podium, TimerBar, fireConfetti, useCountdownNumber } from '../../components/game';
 import { SettingsPanel, settingsSummary } from '../../components/SettingsPanel';
+import { MusicStageBar } from '../../components/MusicStages';
 import { AwardCard, SpecialAnnouncement, SpecialBadge } from '../../components/party';
 import { Avatar, CategoryBadge, categoryLabel, ConnectionBanner, Logo, OPTION_BG, OPTION_NAMES, OPTION_TEXT, OptionShape, Screen, SoundToggle, Spinner, Toast } from '../../components/ui';
 import { usePlayerSession } from '../../hooks/usePlayerSession';
@@ -483,9 +484,13 @@ function AnswerPad({
           <CategoryBadge category={q.category} />
         </div>
       </div>
-      <TimerBar timer={view.timer} />
+      {q.musicStages ? <MusicStageBar stages={q.musicStages} timer={view.timer} compact /> : <TimerBar timer={view.timer} />}
       <p className={`font-display font-bold leading-snug ${q.text.length > 110 ? 'text-lg' : 'text-xl'}`}>{q.text}</p>
-      {q.audioUrl && <p className="-mt-1 text-sm text-brand-cyan">🎧 Escucha el fragmento en la pantalla principal</p>}
+      {q.audioUrl && (
+        <p className="-mt-1 text-sm text-brand-cyan">
+          {q.musicStages ? '🎧 Escucha en la pantalla principal. Si fallas, ya no puedes volver a responder.' : '🎧 Escucha el fragmento en la pantalla principal'}
+        </p>
+      )}
       {q.bet && <p className="-mt-1 text-sm font-bold text-amber-200">💰 Pregunta con apuesta</p>}
       {view.fiftyFifty.available ? (
         <button
@@ -557,8 +562,13 @@ function ResultView({ view }: { view: PlayerView }) {
           <div className="mx-auto flex h-28 w-28 items-center justify-center rounded-full bg-emerald-500 text-6xl shadow-2xl shadow-emerald-500/40">✓</div>
           <p className="font-display text-4xl font-bold text-emerald-300">¡Correcto!</p>
           <p className="font-display text-3xl font-bold">+{formatPoints(r.pointsEarned)}</p>
-          {(r.multiplier > 1 || r.streakBonus > 0 || r.usedFiftyFifty) && (
+          {(r.multiplier > 1 || r.streakBonus > 0 || r.usedFiftyFifty || r.musicStage !== null) && (
             <p className="flex flex-wrap justify-center gap-2 text-sm font-bold">
+              {r.musicStage !== null && (
+                <span className="chip bg-brand-cyan/20 text-cyan-100">
+                  {['🎵 ¡La sacaste con 2 segundos!', '🎵🎵 La sacaste con 5 segundos', '🎵🎵🎵 La sacaste con el fragmento completo'][r.musicStage]}
+                </span>
+              )}
               {r.multiplier > 1 && <span className="chip bg-amber-300/20 text-amber-200">×{r.multiplier} pregunta especial</span>}
               {r.streakBonus > 0 && <span className="chip bg-orange-400/20 text-orange-200">🔥 Racha +{Math.round(r.streakBonus * 100)} %</span>}
               {r.usedFiftyFifty && <span className="chip">🃏 50/50: mitad de puntos</span>}

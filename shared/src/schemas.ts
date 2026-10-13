@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { CATEGORY_IDS } from './categories';
+import { MUSIC_CATEGORY_IDS, MUSIC_THINK_OPTIONS, isMusicCategory } from './music';
 import {
   NAME_MAX_LENGTH,
   QUESTION_COUNT_MAX,
@@ -18,6 +19,21 @@ export const scoringSchema = z.object({
   difficultyMultiplier: z.boolean().default(false),
 });
 export type ScoringSettings = z.infer<typeof scoringSchema>;
+
+/** Configuración propia del Modo Musical (independiente de la del modo clásico). */
+export const musicSettingsSchema = z.object({
+  songCount: z.number().int().min(QUESTION_COUNT_MIN).max(50).default(10),
+  categories: z
+    .array(z.enum(CATEGORY_IDS).refine(isMusicCategory, 'Solo categorías de pistas musicales'))
+    .min(1, 'Elige al menos una categoría musical')
+    .default([...MUSIC_CATEGORY_IDS]),
+  thinkSeconds: z
+    .number()
+    .int()
+    .refine((v) => (MUSIC_THINK_OPTIONS as readonly number[]).includes(v), 'Tiempo para pensar no permitido')
+    .default(5),
+});
+export type MusicSettings = z.infer<typeof musicSettingsSchema>;
 
 export const gameSettingsSchema = z
   .object({
@@ -43,6 +59,9 @@ export const gameSettingsSchema = z
     autoAdvance: z.boolean().default(false),
     /** Modo Fiesta: preguntas especiales al azar, última oportunidad y bonificación por racha. */
     partyMode: z.boolean().default(false),
+    /** Modo Musical: solo canciones, que se revelan en tramos; cuanto antes aciertas, más vale. */
+    musicMode: z.boolean().default(false),
+    music: musicSettingsSchema.default({ songCount: 10, categories: [...MUSIC_CATEGORY_IDS], thinkSeconds: 5 }),
   })
   .refine((s) => s.minPlayers <= s.maxPlayers, {
     message: 'El mínimo de jugadores no puede superar al máximo',

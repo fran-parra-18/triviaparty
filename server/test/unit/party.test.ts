@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { BET_COUNTDOWN_MS, BETWEEN_QUESTIONS_COUNTDOWN_MS, COUNTDOWN_MS, streakBonus } from '@trivia/shared';
+import { BET_COUNTDOWN_MS, BETWEEN_QUESTIONS_COUNTDOWN_MS, COUNTDOWN_MS, musicStageAt, musicTimeline, streakBonus } from '@trivia/shared';
 import { computeAwards, planBets, planSpecials, type AwardInput } from '../../src/game/party';
 import { Room } from '../../src/game/Room';
 import { InMemoryQuestionRepository } from '../../src/questions/repository';
@@ -271,5 +271,20 @@ describe('Room — Modo Fiesta', () => {
       expect(room.hostView().betting).toBeNull();
       vi.advanceTimersByTime(BETWEEN_QUESTIONS_COUNTDOWN_MS);
     }
+  });
+});
+
+describe('Modo Musical — línea de tiempo', () => {
+  it('tramos de 2 s y 5 s con tiempo para pensar, y el fragmento completo', () => {
+    expect(musicTimeline(5)).toEqual([
+      { startMs: 0, playMs: 2000, endMs: 7000, points: 1500 },
+      { startMs: 7000, playMs: 5000, endMs: 17_000, points: 1000 },
+      { startMs: 17_000, playMs: 30_000, endMs: 47_000, points: 500 },
+    ]);
+  });
+
+  it('ubica cada instante en su tramo', () => {
+    const t = musicTimeline(3);
+    expect([0, 4999, 5000, 12_999, 13_000, 99_999].map((ms) => musicStageAt(t, ms))).toEqual([0, 0, 1, 1, 2, 2]);
   });
 });

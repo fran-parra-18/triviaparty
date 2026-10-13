@@ -2,6 +2,7 @@ import { DIFFICULTY_LABELS, nextActionLabel, type HostView } from '@trivia/share
 import { useEffect, useRef, useState } from 'react';
 import { AutoAdvanceHint, CountdownNumber, Leaderboard, TimerRing, useCountdownNumber } from '../../components/game';
 import { MusicIndicator, useMusicClip } from '../../components/MusicClip';
+import { MusicStageBar } from '../../components/MusicStages';
 import { SpecialAnnouncement, SpecialBadge } from '../../components/party';
 import { Avatar, CategoryBadge, categoryLabel, OPTION_BG, OPTION_TEXT, OptionShape } from '../../components/ui';
 import { useOnChange, useRemaining } from '../../lib/hooks';
@@ -81,14 +82,20 @@ function CountdownScreen({ view }: { view: HostView }) {
     if (view.nextSpecial) sounds.special();
   }, [view.nextSpecial, view.progress?.index]);
   const index = view.progress?.index ?? 0;
+  const music = view.settings.musicMode;
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-6 text-center">
       <p className="font-display text-4xl text-white/80 md:text-5xl">
-        {index === 0 ? '¡Prepárense!' : 'Siguiente pregunta'}
+        {index === 0 ? (music ? '🎵 ¡Adivinen la canción!' : '¡Prepárense!') : music ? 'Siguiente canción' : 'Siguiente pregunta'}
       </p>
       <p className="font-display text-3xl font-bold text-brand-cyan">
-        Pregunta {index + 1} de {view.progress?.total}
+        {music ? 'Canción' : 'Pregunta'} {index + 1} de {view.progress?.total}
       </p>
+      {music && index === 0 && (
+        <p className="max-w-3xl text-2xl text-white/70">
+          Primero suenan 2 segundos, después 5 y al final el fragmento completo. Cuanto antes respondan, más vale: 1.500, 1.000 o 500.
+        </p>
+      )}
       {view.nextSpecial && <SpecialAnnouncement kind={view.nextSpecial} />}
       {view.betting && (
         <div className="glass animate-pop-in w-full max-w-3xl space-y-4 p-6">
@@ -166,6 +173,7 @@ function QuestionScreen({ view, clip }: { view: HostView; clip: ReturnType<typeo
           <div className="self-start">
             <MusicIndicator clip={clip} />
           </div>
+          {q.musicStages && view.phase === 'question' && <MusicStageBar stages={q.musicStages} timer={view.timer} />}
         </div>
         <div className="flex flex-col items-center gap-2">
           {view.phase === 'question' ? (

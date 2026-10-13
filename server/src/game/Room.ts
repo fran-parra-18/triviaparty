@@ -13,6 +13,8 @@ import {
   DEFAULT_SETTINGS,
   SCORING_PRESETS,
   gameSettingsSchema,
+  musicStageAt,
+  musicTimeline,
   streakBonus,
   type CategoryId,
   type Difficulty,
@@ -20,6 +22,7 @@ import {
   type GamePhase,
   type GameSettings,
   type HostView,
+  type MusicStage,
   type LeaderboardEntry,
   type PlayerStats,
   type PlayerView,
@@ -54,6 +57,8 @@ export interface GameQuestion {
   audioUrl: string | null;
   special: SpecialKind | null;
   bet: boolean;
+  /** Modo Musical: tramos del fragmento (null fuera de ese modo). */
+  musicStages: MusicStage[] | null;
 }
 
 interface AnswerRecord {
@@ -71,6 +76,7 @@ interface QuestionResult {
   usedFiftyFifty: boolean;
   bet: number;
   betDelta: number;
+  musicStage: number | null;
 }
 
 /** Datos visibles para los clientes; se actualizan solo al revelar resultados. */
@@ -320,6 +326,9 @@ export class Room {
     if (patch.scoring && typeof patch.scoring === 'object') {
       merged.scoring = { ...this.settings.scoring, ...(patch.scoring as object) };
     }
+    if (patch.music && typeof patch.music === 'object') {
+      merged.music = { ...this.settings.music, ...(patch.music as object) };
+    }
     const parsed = gameSettingsSchema.safeParse(merged);
     if (!parsed.success) {
       throw new GameError('INVALID_PAYLOAD', parsed.error.issues[0]?.message ?? 'Configuración inválida');
@@ -330,6 +339,9 @@ export class Room {
     settings.maxPlayers = Math.min(settings.maxPlayers, this.deps.hardMaxPlayers);
     settings.minPlayers = Math.min(settings.minPlayers, settings.maxPlayers);
     settings.categories = [...new Set(settings.categories)];
+    settings.music.categories = [...new Set(settings.music.categories)];
+    // Son modos distintos: el Modo Musical no lleva preguntas especiales, apuestas ni 50/50.
+    if (settings.musicMode) settings.partyMode = false;
     return settings;
   }
 
@@ -343,14 +355,17 @@ export class Room {
 
     this.starting = true;
     try {
-      const pool = await this.deps.repository.listMeta(this.settings.categories);
+      // El Modo Musical tiene su propia selección: canciones de las categorías musicales elegidas.
+      const music = this.settings.musicMode ? this.settings.music : null;
+      const categories = music ? music.categories : this.settings.categories;
+      const pool = await this.deps.repository.listMeta(categories);
       const ids = selectQuestionIds(
         pool,
         {
-          count: this.settings.questionCount,
-          categories: this.settings.categories,
-          difficulty: this.settings.difficulty,
-          random: this.settings.randomOrder,
+          count: music ? music.songCount : this.settings.questionCount,
+          categories,
+          difficulty: music ? 'mixta' : this.settings.difficulty,
+          random: music ? true : this.settings.randomOrder,
           excludeIds: this.usedQuestionIds,
         },
         this.rng,
@@ -378,6 +393,7 @@ export class Room {
           audioUrl: r.audioUrl,
           special: null,
           bet: false,
+          musicStages: music && r.audioUrl ? musicTimeline(music.thinkSeconds) : null,
         };
       });
       if (this.settings.partyMode) {
@@ -385,8 +401,9 @@ export class Room {
         const bets = planBets(specials, this.rng);
         this.questions.forEach((q, i) => Object.assign(q, { special: specials[i], bet: bets[i] }));
       }
+      const wanted = music ? music.songCount : this.settings.questionCount;
       this.notice =
-        this.questions.length < this.settings.questionCount
+        this.questions.length < wanted
           ? `Solo había ${this.questions.length} preguntas disponibles con esos filtros; la partida tendrá ${this.questions.length}.`
           : null;
       this.gameNumber++;
@@ -419,7 +436,8 @@ export class Room {
     // Las preguntas con audio duran al menos lo que el fragmento, para poder escucharlo entero.
     let seconds = q.audioUrl ? Math.max(this.settings.timePerQuestion, AUDIO_MIN_SECONDS) : this.settings.timePerQuestion;
     if (q.special === 'relampago') seconds = Math.max(LIGHTNING_MIN_SECONDS, Math.round(seconds / 2));
-    this.questionDurationMs = seconds * 1000;
+    // Modo Musical: la pregunta dura lo que la línea de tiempo de los tramos.
+    this.questionDurationMs = q.musicStages ? q.musicStages[q.musicStages.length - 1]!.endMs : seconds * 1000;
     this.schedule('question', this.questionDurationMs, () => this.closeQuestion());
     this.changed();
   }
@@ -494,13 +512,20 @@ export class Room {
     for (const p of this.players.values()) {
       const ans = this.answers.get(p.id);
       const correct = ans?.choice === q.correctIndex;
-      const basePoints = computePoints({
-        correct,
-        elapsedMs: ans?.elapsedMs ?? this.questionDurationMs,
-        durationMs: this.questionDurationMs,
-        difficulty: q.difficulty,
-        scoring: this.settings.scoring,
-      });
+      // Modo Musical: vale lo del tramo en el que se respondió (lo mide el reloj del servidor).
+      const musicStage = q.musicStages && ans ? musicStageAt(q.musicStages, ans.elapsedMs) : null;
+      const basePoints =
+        musicStage !== null
+          ? correct
+            ? q.musicStages![musicStage]!.points
+            : 0
+          : computePoints({
+              correct,
+              elapsedMs: ans?.elapsedMs ?? this.questionDurationMs,
+              durationMs: this.questionDurationMs,
+              difficulty: q.difficulty,
+              scoring: this.settings.scoring,
+            });
       // Modo Fiesta: multiplicador de la pregunta especial y bonificación por la racha que se traía.
       const multiplier = q.special ? SPECIAL_INFO[q.special].multiplier : 1;
       const bonus = correct && this.settings.partyMode ? streakBonus(p.streak) : 0;
@@ -517,6 +542,7 @@ export class Room {
         usedFiftyFifty,
         bet,
         betDelta: 0,
+        musicStage,
       });
       p.lastPoints = points;
       if (ans) {
@@ -863,6 +889,7 @@ export class Room {
       audioUrl: q.audioUrl,
       special: q.special,
       bet: q.bet,
+      musicStages: q.musicStages,
     };
   }
 
@@ -1034,6 +1061,7 @@ export class Room {
               usedFiftyFifty: result.usedFiftyFifty,
               bet: result.bet,
               betDelta: result.betDelta,
+              musicStage: result.musicStage,
               explanation: q.explanation,
             }
           : null,

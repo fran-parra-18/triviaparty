@@ -1,4 +1,5 @@
 import type { CategoryId, Difficulty } from './categories';
+import type { MusicStage } from './music';
 import type { AwardKind, SpecialKind } from './party';
 import type { GameSettings } from './schemas';
 
@@ -46,6 +47,8 @@ export interface QuestionView {
   special: SpecialKind | null;
   /** Pregunta con apuesta (Modo Fiesta). */
   bet: boolean;
+  /** Modo Musical: tramos en los que se revela el fragmento (null fuera de ese modo). */
+  musicStages: MusicStage[] | null;
 }
 
 /** Apuestas abiertas antes de una pregunta con apuesta (vista de la pantalla principal). */
@@ -182,6 +185,8 @@ export interface PlayerResult {
   /** Apuesta hecha (0 si no apostó) y cuánto ganó o perdió con ella. */
   bet: number;
   betDelta: number;
+  /** Modo Musical: tramo (0, 1 o 2) en el que respondió; null si no respondió o fuera de ese modo. */
+  musicStage: number | null;
   explanation: string;
 }
 

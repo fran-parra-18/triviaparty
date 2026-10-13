@@ -382,3 +382,94 @@ describe('Room — pistas musicales', () => {
     expect(room.hostView().nextAudioUrl).toMatch(/^https:/);
   });
 });
+
+describe('Room — Modo Musical', () => {
+  const songs = [
+    ...Array.from({ length: 6 }, (_, i) => makeQuestion(200 + i, { categoryId: 'pistas-80s', audioUrl: `https://audio.example.com/a${i}.m4a` })),
+    ...Array.from({ length: 6 }, (_, i) => makeQuestion(300 + i, { categoryId: 'pistas-90s', audioUrl: `https://audio.example.com/b${i}.m4a` })),
+  ];
+
+  function makeMusicRoom(settings: object = {}) {
+    const room = new Room(
+      'ABCDEF',
+      { repository: new InMemoryQuestionRepository([...bank, ...songs]), hardMaxPlayers: 10, onChange: vi.fn(), onGameFinished: vi.fn() },
+      { questionCount: 10, categories: ['historia'], musicMode: true, music: { songCount: 4, categories: ['pistas-90s'], thinkSeconds: 5 }, ...settings },
+    );
+    room.attachHost('host-socket');
+    return room;
+  }
+
+  it('usa su propia configuración: cantidad de canciones y categorías musicales', async () => {
+    const room = makeMusicRoom();
+    room.addPlayer('Ana', 's1');
+    await openFirstQuestion(room);
+    const view = room.hostView();
+    expect(view.progress?.total).toBe(4);
+    expect(view.question?.category).toBe('pistas-90s');
+    // 2 s + 5 para pensar, 5 s + 5 para pensar y el fragmento completo (30 s).
+    expect(view.question?.musicStages?.map((s) => s.points)).toEqual([1500, 1000, 500]);
+    expect(view.timer?.durationMs).toBe(47_000);
+  });
+
+  it('puntúa según el tramo en el que se respondió, sin castigo por fallar', async () => {
+    const room = makeMusicRoom();
+    const ana = room.addPlayer('Ana', 's1');
+    const beto = room.addPlayer('Beto', 's2');
+    const caro = room.addPlayer('Caro', 's3');
+    const dani = room.addPlayer('Dani', 's4');
+    await openFirstQuestion(room);
+    const right = correctChoice(room);
+    vi.advanceTimersByTime(1000);
+    room.submitAnswer(ana.id, 0, right);
+    room.submitAnswer(dani.id, 0, (right + 1) % 4);
+    vi.advanceTimersByTime(7000); // 8 s: segundo tramo
+    room.submitAnswer(beto.id, 0, right);
+    vi.advanceTimersByTime(12_000); // 20 s: tercer tramo
+    room.submitAnswer(caro.id, 0, right);
+    expect(room.phase).toBe('locked');
+    room.next();
+    const points = (id: string) => room.playerView(id)!.result!;
+    expect(points(ana.id)).toMatchObject({ pointsEarned: 1500, musicStage: 0 });
+    expect(points(beto.id)).toMatchObject({ pointsEarned: 1000, musicStage: 1 });
+    expect(points(caro.id)).toMatchObject({ pointsEarned: 500, musicStage: 2 });
+    expect(points(dani.id)).toMatchObject({ pointsEarned: 0, correct: false, musicStage: 0 });
+    expect(room.playerView(dani.id)!.me.score).toBe(0);
+  });
+
+  it('el tiempo para pensar alarga los tramos', async () => {
+    const room = makeMusicRoom({ music: { songCount: 3, categories: ['pistas-80s'], thinkSeconds: 8 } });
+    const ana = room.addPlayer('Ana', 's1');
+    await openFirstQuestion(room);
+    expect(room.hostView().timer?.durationMs).toBe(2000 + 8000 + 5000 + 8000 + 30_000);
+    vi.advanceTimersByTime(9000); // todavía dentro del primer tramo (2 s + 8 para pensar)
+    room.submitAnswer(ana.id, 0, correctChoice(room));
+    room.next();
+    expect(room.playerView(ana.id)!.result!.pointsEarned).toBe(1500);
+  });
+
+  it('no se mezcla con el Modo Fiesta ni cambia la puntuación de los otros modos', async () => {
+    const room = makeMusicRoom({ partyMode: true });
+    expect(room.settings.partyMode).toBe(false);
+    room.addPlayer('Ana', 's1');
+    await openFirstQuestion(room);
+    expect(room.hostView().question?.special).toBeNull();
+
+    const classic = new Room(
+      'GHJKMN',
+      { repository: new InMemoryQuestionRepository(songs), hardMaxPlayers: 10, onChange: vi.fn(), onGameFinished: vi.fn() },
+      { questionCount: 3, categories: ['pistas-80s'] },
+    );
+    classic.attachHost('h2');
+    classic.addPlayer('Beto', 's9');
+    await openFirstQuestion(classic);
+    expect(classic.hostView().question?.musicStages).toBeNull();
+    expect(classic.hostView().timer?.durationMs).toBe(30_000);
+  });
+
+  it('rechaza categorías que no son musicales en su configuración', () => {
+    const room = makeMusicRoom();
+    expectGameError(() => room.updateSettings({ music: { categories: ['historia'] } }), 'INVALID_PAYLOAD');
+    room.updateSettings({ music: { thinkSeconds: 3 } });
+    expect(room.settings.music).toMatchObject({ songCount: 4, thinkSeconds: 3, categories: ['pistas-90s'] });
+  });
+});
