@@ -1,9 +1,7 @@
 import { musicStageAt, type HostView } from '@trivia/shared';
 import { useEffect, useRef, useState } from 'react';
 import { msUntil } from '../lib/clock';
-import { useMuted } from '../lib/sound';
-
-const VOLUME = 0.8;
+import { getMusicVolume, musicGain, useMusicVolume, useMuted } from '../lib/sound';
 
 /**
  * Reproduce en la pantalla principal el fragmento de las preguntas de pistas musicales.
@@ -19,6 +17,7 @@ export function useMusicClip(view: HostView) {
   const [ended, setEnded] = useState(false);
   const [audioPlaying, setAudioPlaying] = useState(false);
   const [muted] = useMuted();
+  const [volume] = useMusicVolume();
   /** Repetición manual del tramo actual: hasta qué segundo del fragmento suena y de qué tramo es. */
   const replayRef = useRef<{ stage: number; untilSec: number } | null>(null);
 
@@ -34,7 +33,7 @@ export function useMusicClip(view: HostView) {
   if (!audioRef.current && typeof Audio !== 'undefined') {
     audioRef.current = new Audio();
     audioRef.current.preload = 'auto';
-    audioRef.current.volume = VOLUME;
+    audioRef.current.volume = musicGain(getMusicVolume());
   }
 
   useEffect(() => {
@@ -58,6 +57,10 @@ export function useMusicClip(view: HostView) {
       a.removeEventListener('pause', onPause);
     };
   }, []);
+
+  useEffect(() => {
+    if (audioRef.current) audioRef.current.volume = musicGain(volume);
+  }, [volume]);
 
   // Precarga el fragmento de la próxima pregunta durante la cuenta regresiva.
   useEffect(() => {

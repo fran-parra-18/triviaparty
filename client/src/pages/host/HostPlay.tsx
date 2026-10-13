@@ -70,7 +70,7 @@ export function HostPlay({ view, actions }: { view: HostView; actions: HostActio
           ⏹ Terminar
         </button>
         <span className="hidden flex-1 text-center text-sm text-white/40 md:block">
-          Espacio: siguiente · P: pausa · F: pantalla completa · M: sonido{clip.active && ' · R: repetir'}
+          Espacio: siguiente · P: pausa · F: pantalla completa · M: sonido{clip.active && ' · −/+: volumen · R: repetir'}
           {view.question?.musicStages && ' · T: siguiente tramo'}
         </span>
         <AutoAdvanceHint at={view.autoAdvanceAt} />

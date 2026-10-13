@@ -1,6 +1,6 @@
 import { CATEGORIES, DIFFICULTY_LABELS, type CategoryId, type Difficulty } from '@trivia/shared';
 import { useEffect, useState, type ReactNode } from 'react';
-import { useMuted, unlockAudio } from '../lib/sound';
+import { useMusicVolume, useMuted, unlockAudio } from '../lib/sound';
 
 export const AVATAR_COLORS = [
   '#ff4d8d', '#7c4dff', '#22d3ee', '#a3e635', '#f59e0b', '#f97316', '#10b981', '#e879f9',
@@ -95,6 +95,33 @@ export function SoundToggle({ className = '' }: { className?: string }) {
     >
       <span aria-hidden>{muted ? '🔇' : '🔊'}</span>
     </button>
+  );
+}
+
+/** Volumen de la música (fragmentos de las pistas musicales) en la pantalla principal. */
+export function MusicVolume({ className = '' }: { className?: string }) {
+  const [volume, setVolume] = useMusicVolume();
+  const [muted] = useMuted();
+  const percent = Math.round(volume * 100);
+  return (
+    <label
+      className={`glass flex items-center gap-2 px-3 py-1.5 ${muted ? 'opacity-50' : ''} ${className}`}
+      title={muted ? 'El sonido está apagado (M)' : 'Volumen de la música (teclas − y +)'}
+    >
+      <span aria-hidden>{volume === 0 ? '🔈' : '🎵'}</span>
+      <input
+        type="range"
+        min={0}
+        max={100}
+        step={5}
+        value={percent}
+        onChange={(e) => setVolume(Number(e.target.value) / 100)}
+        className="w-24 accent-brand-cyan"
+        aria-label="Volumen de la música"
+        aria-valuetext={`${percent} %`}
+      />
+      <span className="w-10 text-right text-sm tabular-nums text-white/70">{percent} %</span>
+    </label>
   );
 }
 

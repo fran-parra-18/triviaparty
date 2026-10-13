@@ -29,6 +29,7 @@ export const STORAGE_KEYS = {
   player: 'trivia.player.v1',
   lastName: 'trivia.lastName.v1',
   muted: 'trivia.muted.v1',
+  musicVolume: 'trivia.musicVolume.v1',
   hostSettings: 'trivia.hostSettings.v1',
   joinBase: 'trivia.joinBase.v1',
 } as const;

@@ -41,6 +41,44 @@ export function useMuted(): [boolean, (v: boolean) => void] {
   return [value, setMuted];
 }
 
+/**
+ * Volumen de las canciones (fragmentos de iTunes) de 0 a 1, independiente de los efectos.
+ * Se guarda en el navegador. Por defecto, a la mitad: los fragmentos vienen muy fuertes.
+ */
+export const MUSIC_VOLUME_STEP = 0.1;
+let musicVolume = clampVolume(readJson<number>(STORAGE_KEYS.musicVolume) ?? 0.5);
+const volumeListeners = new Set<() => void>();
+
+function clampVolume(v: number) {
+  return Number.isFinite(v) ? Math.min(1, Math.max(0, Math.round(v * 100) / 100)) : 0.5;
+}
+
+export function setMusicVolume(value: number) {
+  musicVolume = clampVolume(value);
+  writeJson(STORAGE_KEYS.musicVolume, musicVolume);
+  volumeListeners.forEach((l) => l());
+}
+
+export function getMusicVolume() {
+  return musicVolume;
+}
+
+export function useMusicVolume(): [number, (v: number) => void] {
+  const value = useSyncExternalStore(
+    (cb) => {
+      volumeListeners.add(cb);
+      return () => volumeListeners.delete(cb);
+    },
+    () => musicVolume,
+  );
+  return [value, setMusicVolume];
+}
+
+/** El oído percibe el volumen de forma logarítmica: con la curva cuadrática, la mitad del control suena a «la mitad». */
+export function musicGain(volume: number) {
+  return volume * volume;
+}
+
 function tone(freq: number, start: number, duration: number, type: OscillatorType = 'sine', gain = 0.15, endFreq?: number) {
   const c = audio();
   if (!c) return;

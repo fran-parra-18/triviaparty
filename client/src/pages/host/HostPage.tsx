@@ -1,10 +1,10 @@
 import { DEFAULT_SETTINGS, type GameSettings, type HostView } from '@trivia/shared';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { BackgroundBlobs, ConnectionBanner, FullscreenToggle, Logo, Screen, SoundToggle, Spinner, Toast, useFullscreen } from '../../components/ui';
+import { BackgroundBlobs, ConnectionBanner, FullscreenToggle, Logo, MusicVolume, Screen, SoundToggle, Spinner, Toast, useFullscreen } from '../../components/ui';
 import { useHostSession } from '../../hooks/useHostSession';
 import { useConnection, useOnChange } from '../../lib/hooks';
-import { setMuted, sounds, useMuted } from '../../lib/sound';
+import { MUSIC_VOLUME_STEP, getMusicVolume, setMusicVolume, setMuted, sounds, useMuted } from '../../lib/sound';
 import { STORAGE_KEYS, readJson, writeJson } from '../../lib/storage';
 import { HostFinal } from './HostFinal';
 import { HostLobby } from './HostLobby';
@@ -106,6 +106,8 @@ function HostGame({ view, actions }: { view: HostView; actions: HostActions }) {
       const key = e.key.toLowerCase();
       if (key === 'f') toggleFullscreen();
       else if (key === 'm') setMuted(!muted);
+      else if (key === '-' || key === '_') setMusicVolume(getMusicVolume() - MUSIC_VOLUME_STEP);
+      else if (key === '+' || key === '=') setMusicVolume(getMusicVolume() + MUSIC_VOLUME_STEP);
       else if (key === 'p' && view.phase !== 'lobby' && view.phase !== 'finished') {
         void (view.paused ? actions.resume() : actions.pause());
       } else if ((key === ' ' || key === 'enter') && !['lobby', 'finished'].includes(view.phase)) {
@@ -148,6 +150,7 @@ function HostGame({ view, actions }: { view: HostView; actions: HostActions }) {
               </select>
             </label>
           )}
+          <MusicVolume className="hidden sm:flex" />
           <SoundToggle />
           <FullscreenToggle />
         </div>
