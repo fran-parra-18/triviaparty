@@ -2,6 +2,7 @@ import { nextActionLabel, type HostView } from '@trivia/shared';
 import { useEffect, useRef, useState } from 'react';
 import { AutoAdvanceHint, CountdownNumber, Leaderboard, TimerRing, useCountdownNumber } from '../../components/game';
 import { MusicIndicator, useMusicClip } from '../../components/MusicClip';
+import { SpecialAnnouncement, SpecialBadge } from '../../components/party';
 import { CategoryBadge, OPTION_BG, OPTION_TEXT, OptionShape } from '../../components/ui';
 import { useOnChange, useRemaining } from '../../lib/hooks';
 import { sounds } from '../../lib/sound';
@@ -76,6 +77,9 @@ export function HostPlay({ view, actions }: { view: HostView; actions: HostActio
 function CountdownScreen({ view }: { view: HostView }) {
   const n = useCountdownNumber(view.countdownEndsAt);
   useOnChange(n === null ? null : String(n), () => sounds.countdown());
+  useEffect(() => {
+    if (view.nextSpecial) sounds.special();
+  }, [view.nextSpecial, view.progress?.index]);
   const index = view.progress?.index ?? 0;
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-6 text-center">
@@ -85,6 +89,7 @@ function CountdownScreen({ view }: { view: HostView }) {
       <p className="font-display text-3xl font-bold text-brand-cyan">
         Pregunta {index + 1} de {view.progress?.total}
       </p>
+      {view.nextSpecial && <SpecialAnnouncement kind={view.nextSpecial} />}
       <div className="flex h-56 items-center justify-center">
         {view.paused ? <span className="text-8xl">⏸</span> : <CountdownNumber endsAt={view.countdownEndsAt} size="text-[12rem]" />}
       </div>
@@ -123,6 +128,7 @@ function QuestionScreen({ view, clip }: { view: HostView; clip: ReturnType<typeo
               {q.index + 1} / {q.total}
             </span>
             <CategoryBadge category={q.category} difficulty={q.difficulty} />
+            {q.special && <SpecialBadge kind={q.special} />}
           </div>
           <h1 key={q.index} className={`animate-slide-up font-display font-bold leading-tight ${textSize}`}>
             {q.text}

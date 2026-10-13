@@ -43,6 +43,25 @@ export function RulesPage() {
           </section>
 
           <section>
+            <h2 className="mb-2 text-2xl font-bold">🎉 Modo Fiesta</h2>
+            <p className="text-white/85">Se activa en la configuración de la partida. Además de los puntos normales:</p>
+            <ul className="list-disc space-y-1 pl-6 text-white/85">
+              <li>Más o menos 1 de cada 3 o 4 preguntas es especial, y se anuncia en la cuenta regresiva:</li>
+              <li className="ml-4 list-none">⚡ <strong>Relámpago</strong>: la mitad del tiempo · ✖️2 <strong>Puntos dobles</strong> · 💣 <strong>Bomba</strong>: el triple (como mucho una por partida).</li>
+              <li>🏁 <strong>Última oportunidad</strong>: la última pregunta vale el doble, para que se pueda remontar.</li>
+              <li>🔥 <strong>Racha</strong>: cada acierto seguido suma un 10 % extra, hasta un 50 %. Al fallar, la racha vuelve a cero.</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2 className="mb-2 text-2xl font-bold">Premios del podio</h2>
+            <p className="text-white/85">
+              En todos los modos, al final se reparten premios: 🧠 El Cerebrito (más aciertos), ⚡ El Rayo (más rápido al acertar), 🔥 El Imparable (mejor racha,
+              mínimo 3), 🍀 El Suertudo (más preguntas difíciles acertadas) y 🤡 El Caótico (más respuestas incorrectas).
+            </p>
+          </section>
+
+          <section>
             <h2 className="mb-2 text-2xl font-bold">Desempates</h2>
             <p className="text-white/85">Si dos jugadores tienen los mismos puntos, se ordenan por:</p>
             <ol className="list-decimal space-y-1 pl-6 text-white/85">

@@ -86,6 +86,20 @@ export const sounds = {
     tone(300, 0, 0.25, 'sawtooth', 0.1, 200);
     tone(200, 0.2, 0.35, 'sawtooth', 0.1, 120);
   },
+  /** Aviso de pregunta especial del Modo Fiesta. */
+  special: () => {
+    [440, 554, 659, 880].forEach((f, i) => tone(f, i * 0.07, 0.14, 'square', 0.09));
+    tone(1318, 0.3, 0.4, 'triangle', 0.16);
+  },
+  /** Redoble de tambor creciente, antes de revelar al campeón (dura unos 2,4 s). */
+  drumroll: () => {
+    for (let i = 0; i < 40; i++) tone(110 + (i % 2) * 8, i * 0.06, 0.05, 'square', 0.03 + (i / 40) * 0.09);
+  },
+  /** Golpe corto al revelar cada puesto del podio. */
+  podiumHit: () => {
+    tone(196, 0, 0.18, 'triangle', 0.2);
+    tone(392, 0.02, 0.25, 'triangle', 0.12);
+  },
   fanfare: () => {
     [523, 659, 784, 1046, 784, 1046].forEach((f, i) => tone(f, i * 0.14, i === 5 ? 0.7 : 0.16, 'triangle', 0.18));
   },

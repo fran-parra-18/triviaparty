@@ -94,7 +94,7 @@ function HostGame({ view, actions }: { view: HostView; actions: HostActions }) {
     if (view.phase === 'question') sounds.go();
     else if (view.phase === 'locked') sounds.timeUp();
     else if (view.phase === 'reveal') sounds.reveal();
-    else if (view.phase === 'finished') sounds.fanfare();
+    // En 'finished' la fanfarria la toca el podio al revelar al campeón.
   });
   useOnChange(view.phase === 'lobby' ? String(view.players.length) : null, () => sounds.join());
 

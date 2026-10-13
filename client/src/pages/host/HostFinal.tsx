@@ -1,6 +1,7 @@
-import type { HostView } from '@trivia/shared';
-import { useState } from 'react';
+import { PODIUM_REVEAL_MS, type HostView } from '@trivia/shared';
+import { useEffect, useState } from 'react';
 import { Leaderboard, Podium } from '../../components/game';
+import { AwardCard } from '../../components/party';
 import { categoryLabel } from '../../components/ui';
 import { formatPoints } from '../../lib/hooks';
 import type { HostActions } from './HostPage';
@@ -8,6 +9,13 @@ import type { HostActions } from './HostPage';
 export function HostFinal({ view, actions }: { view: HostView; actions: HostActions }) {
   const final = view.final;
   const [tab, setTab] = useState<'podium' | 'stats' | 'questions'>('podium');
+  // Los premios y destacados esperan a que el podio termine de revelarse, para no adelantar nada.
+  const [revealed, setRevealed] = useState(false);
+  useEffect(() => {
+    setRevealed(false);
+    const t = setTimeout(() => setRevealed(true), PODIUM_REVEAL_MS);
+    return () => clearTimeout(t);
+  }, [view.gameNumber]);
   if (!final) return null;
   const { highlights } = final;
   const statsById = new Map(final.stats.map((s) => [s.playerId, s]));
@@ -44,9 +52,17 @@ export function HostFinal({ view, actions }: { view: HostView; actions: HostActi
         {tab === 'podium' && (
           <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
             <div className="flex flex-col justify-end">
-              {final.ranking.length > 0 ? <Podium entries={final.ranking.slice(0, 3)} /> : <p className="text-center text-2xl">No hubo jugadores.</p>}
+              {final.ranking.length > 0 ? <Podium entries={final.ranking.slice(0, 3)} suspense /> : <p className="text-center text-2xl">No hubo jugadores.</p>}
             </div>
-            <div className="glass space-y-3 p-5 text-lg">
+            <div className={`glass space-y-3 p-5 text-lg transition-opacity duration-700 ${revealed ? 'opacity-100' : 'opacity-0'}`}>
+              {revealed && final.awards.length > 0 && (
+                <div className="space-y-2 pb-2">
+                  <h2 className="text-2xl font-bold">🎖️ Premios de la noche</h2>
+                  {final.awards.map((a, i) => (
+                    <AwardCard key={a.kind} award={a} delayMs={i * 400} />
+                  ))}
+                </div>
+              )}
               <h2 className="text-2xl font-bold">Destacados</h2>
               {highlights.fastestAnswer && (
                 <p>

@@ -3,11 +3,14 @@ import {
   AUTO_NEXT_DELAY_MS,
   AUTO_REVEAL_DELAY_MS,
   AUDIO_MIN_SECONDS,
+  LIGHTNING_MIN_SECONDS,
+  SPECIAL_INFO,
   BETWEEN_QUESTIONS_COUNTDOWN_MS,
   COUNTDOWN_MS,
   DEFAULT_SETTINGS,
   SCORING_PRESETS,
   gameSettingsSchema,
+  streakBonus,
   type CategoryId,
   type Difficulty,
   type FinalView,
@@ -22,6 +25,7 @@ import {
   type QuestionView,
   type RevealView,
   type SessionHistoryEntry,
+  type SpecialKind,
   type TimerView,
 } from '@trivia/shared';
 import type { QuestionRepository } from '../questions/repository';
@@ -29,6 +33,7 @@ import { nameKey, sanitizeName } from '../security/sanitize';
 import { generateId, generateToken } from '../security/tokens';
 import { GameError } from './errors';
 import { rankPlayers } from './ranking';
+import { computeAwards, planSpecials } from './party';
 import { computePoints } from './scoring';
 import { secureRng, selectQuestionIds, shuffleOptions, type Rng } from './selection';
 
@@ -43,6 +48,7 @@ export interface GameQuestion {
   category: CategoryId;
   difficulty: Difficulty;
   audioUrl: string | null;
+  special: SpecialKind | null;
 }
 
 interface AnswerRecord {
@@ -55,6 +61,8 @@ interface QuestionResult {
   correct: boolean;
   points: number;
   elapsedMs: number | null;
+  multiplier: number;
+  streakBonus: number;
 }
 
 /** Datos visibles para los clientes; se actualizan solo al revelar resultados. */
@@ -355,8 +363,12 @@ export class Room {
           category: r.categoryId,
           difficulty: r.difficulty,
           audioUrl: r.audioUrl,
+          special: null,
         };
       });
+      if (this.settings.partyMode) {
+        planSpecials(this.questions, this.rng).forEach((special, i) => (this.questions[i]!.special = special));
+      }
       this.notice =
         this.questions.length < this.settings.questionCount
           ? `Solo había ${this.questions.length} preguntas disponibles con esos filtros; la partida tendrá ${this.questions.length}.`
@@ -389,7 +401,8 @@ export class Room {
     this.reveal = null;
     this.usedQuestionIds.add(q.id);
     // Las preguntas con audio duran al menos lo que el fragmento, para poder escucharlo entero.
-    const seconds = q.audioUrl ? Math.max(this.settings.timePerQuestion, AUDIO_MIN_SECONDS) : this.settings.timePerQuestion;
+    let seconds = q.audioUrl ? Math.max(this.settings.timePerQuestion, AUDIO_MIN_SECONDS) : this.settings.timePerQuestion;
+    if (q.special === 'relampago') seconds = Math.max(LIGHTNING_MIN_SECONDS, Math.round(seconds / 2));
     this.questionDurationMs = seconds * 1000;
     this.schedule('question', this.questionDurationMs, () => this.closeQuestion());
     this.changed();
@@ -429,14 +442,25 @@ export class Room {
     for (const p of this.players.values()) {
       const ans = this.answers.get(p.id);
       const correct = ans?.choice === q.correctIndex;
-      const points = computePoints({
+      const basePoints = computePoints({
         correct,
         elapsedMs: ans?.elapsedMs ?? this.questionDurationMs,
         durationMs: this.questionDurationMs,
         difficulty: q.difficulty,
         scoring: this.settings.scoring,
       });
-      p.results.set(this.currentIndex, { choice: ans?.choice ?? null, correct, points, elapsedMs: ans?.elapsedMs ?? null });
+      // Modo Fiesta: multiplicador de la pregunta especial y bonificación por la racha que se traía.
+      const multiplier = q.special ? SPECIAL_INFO[q.special].multiplier : 1;
+      const bonus = correct && this.settings.partyMode ? streakBonus(p.streak) : 0;
+      const points = Math.round(basePoints * multiplier * (1 + bonus));
+      p.results.set(this.currentIndex, {
+        choice: ans?.choice ?? null,
+        correct,
+        points,
+        elapsedMs: ans?.elapsedMs ?? null,
+        multiplier,
+        streakBonus: bonus,
+      });
       p.lastPoints = points;
       if (ans) {
         p.answeredCount++;
@@ -725,6 +749,23 @@ export class Room {
         fastestAnswer: this.fastestAnswer,
         bestStreak: streakLeader && streakLeader.bestStreak > 1 ? { name: streakLeader.name, streak: streakLeader.bestStreak } : null,
       },
+      awards: computeAwards(
+        [...this.players.values()].map((p) => {
+          const results = [...p.results.entries()];
+          return {
+            playerId: p.id,
+            name: p.name,
+            avatar: p.avatar,
+            joinOrder: p.joinOrder,
+            score: p.score,
+            correct: p.correctCount,
+            wrong: results.filter(([, r]) => r.choice !== null && !r.correct).length,
+            hardCorrect: results.filter(([i, r]) => r.correct && this.questions[i]?.difficulty === 'dificil').length,
+            avgCorrectMs: p.correctCount ? p.totalCorrectMs / p.correctCount : null,
+            bestStreak: p.bestStreak,
+          };
+        }),
+      ),
       endedEarly,
     };
   }
@@ -744,7 +785,13 @@ export class Room {
       category: q.category,
       difficulty: q.difficulty,
       audioUrl: q.audioUrl,
+      special: q.special,
     };
+  }
+
+  /** Pregunta especial que viene, para anunciarla durante la cuenta regresiva. */
+  private nextSpecial(): SpecialKind | null {
+    return this.phase === 'countdown' ? (this.questions[this.currentIndex + 1]?.special ?? null) : null;
   }
 
   private progress() {
@@ -802,6 +849,7 @@ export class Room {
       timer: this.timerView(),
       countdownEndsAt: this.timerKind === 'countdown' && !this.paused ? this.timerDeadline : null,
       nextAudioUrl: this.phase === 'countdown' ? (this.questions[this.currentIndex + 1]?.audioUrl ?? null) : null,
+      nextSpecial: this.nextSpecial(),
       answeredCount: this.answers.size,
       expectedCount: connected,
       reveal: this.publicReveal(),
@@ -833,6 +881,7 @@ export class Room {
         podium: this.final.ranking.slice(0, 3),
         stats: this.final.stats.find((s) => s.playerId === p.id) ?? null,
         totalPlayers: this.players.size,
+        awards: this.final.awards.filter((x) => x.playerId === p.id),
       };
     }
 
@@ -861,6 +910,7 @@ export class Room {
       question: this.questionView(),
       timer: this.timerView(),
       countdownEndsAt: this.timerKind === 'countdown' && !this.paused ? this.timerDeadline : null,
+      nextSpecial: this.nextSpecial(),
       myAnswer: inQuestion && answer ? { choice: answer.choice, elapsedMs: answer.elapsedMs } : null,
       answeredCount: this.answers.size,
       result:
@@ -871,6 +921,8 @@ export class Room {
               myChoice: result.choice,
               correctIndex: q.correctIndex,
               pointsEarned: result.points,
+              multiplier: result.multiplier,
+              streakBonus: result.streakBonus,
               explanation: q.explanation,
             }
           : null,

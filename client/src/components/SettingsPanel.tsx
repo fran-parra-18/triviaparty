@@ -44,7 +44,8 @@ export function settingsSummary(s: GameSettings): string {
       : s.categories.length === 1
         ? (CATEGORIES.find((c) => c.id === s.categories[0])?.name ?? '1 categoría')
         : `${s.categories.length} categorías`;
-  return `${s.questionCount} preguntas · ${s.timePerQuestion} s · ${categories} · ${DIFFICULTY_MODE_LABELS[s.difficulty]}`;
+  const base = `${s.questionCount} preguntas · ${s.timePerQuestion} s · ${categories} · ${DIFFICULTY_MODE_LABELS[s.difficulty]}`;
+  return s.partyMode ? `🎉 Modo Fiesta · ${base}` : base;
 }
 
 /**
@@ -130,6 +131,32 @@ export function SettingsPanel({
         </div>
 
         <div className="flex-1 space-y-6 overflow-y-auto px-6 py-5">
+          <Field label="Modo de juego">
+            <div className="grid gap-2 sm:grid-cols-2" role="radiogroup" aria-label="Modo de juego">
+              {(
+                [
+                  [false, '🎯 Clásico', 'Todas las preguntas valen lo mismo.'],
+                  [true, '🎉 Modo Fiesta', 'Preguntas relámpago, dobles y bomba al azar, bonificación por racha y la última vale el doble.'],
+                ] as const
+              ).map(([value, title, hint]) => (
+                <button
+                  key={title}
+                  type="button"
+                  role="radio"
+                  aria-label={`${title}: ${hint}`}
+                  aria-checked={draft.partyMode === value}
+                  onClick={() => set('partyMode', value)}
+                  className={`rounded-2xl border-2 px-4 py-3 text-left transition ${
+                    draft.partyMode === value ? 'border-brand-cyan bg-brand-cyan/15' : 'border-white/10 bg-white/5 opacity-70 hover:opacity-100'
+                  }`}
+                >
+                  <span className="block font-display text-lg font-bold">{title}</span>
+                  <span className="block text-sm text-white/70">{hint}</span>
+                </button>
+              ))}
+            </div>
+          </Field>
+
           <Field label="Modos rápidos">
             <div className="flex flex-wrap gap-2">
               <button type="button" className="btn-secondary text-base" onClick={() => applyPreset('rapida')}>

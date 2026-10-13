@@ -1,8 +1,9 @@
-import { ROOM_CODE_LENGTH, nextActionLabel, type GameSettings, type LeaderAction, type PlayerView } from '@trivia/shared';
+import { PODIUM_REVEAL_MS, ROOM_CODE_LENGTH, nextActionLabel, type GameSettings, type LeaderAction, type PlayerView } from '@trivia/shared';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { CountdownNumber, Podium, TimerBar, fireConfetti, useCountdownNumber } from '../../components/game';
 import { SettingsPanel, settingsSummary } from '../../components/SettingsPanel';
+import { AwardCard, SpecialAnnouncement, SpecialBadge } from '../../components/party';
 import { Avatar, CategoryBadge, ConnectionBanner, Logo, OPTION_BG, OPTION_NAMES, OPTION_TEXT, OptionShape, Screen, SoundToggle, Spinner, Toast } from '../../components/ui';
 import { usePlayerSession } from '../../hooks/usePlayerSession';
 import { formatPoints, ordinal, useConnection, useCountUp, useOnChange } from '../../lib/hooks';
@@ -363,7 +364,7 @@ function CountdownWait({ view }: { view: PlayerView }) {
       <p className="font-display text-2xl text-white/70">
         Pregunta {(view.progress?.index ?? 0) + 1} de {view.progress?.total}
       </p>
-      <p className="text-3xl font-bold">¡Prepárate!</p>
+      {view.nextSpecial ? <SpecialAnnouncement kind={view.nextSpecial} compact /> : <p className="text-3xl font-bold">¡Prepárate!</p>}
       <div className="flex h-40 items-center">
         <CountdownNumber endsAt={view.countdownEndsAt} size="text-[8rem]" />
       </div>
@@ -411,7 +412,10 @@ function AnswerPad({ view, onAnswer }: { view: PlayerView; onAnswer: (index: num
         <span className="font-display text-lg font-bold text-brand-cyan">
           {q.index + 1}/{q.total}
         </span>
-        <CategoryBadge category={q.category} />
+        <div className="flex flex-wrap items-center justify-end gap-1">
+          {q.special && <SpecialBadge kind={q.special} />}
+          <CategoryBadge category={q.category} />
+        </div>
       </div>
       <TimerBar timer={view.timer} />
       <p className={`font-display font-bold leading-snug ${q.text.length > 110 ? 'text-lg' : 'text-xl'}`}>{q.text}</p>
@@ -471,6 +475,12 @@ function ResultView({ view }: { view: PlayerView }) {
           <div className="mx-auto flex h-28 w-28 items-center justify-center rounded-full bg-emerald-500 text-6xl shadow-2xl shadow-emerald-500/40">✓</div>
           <p className="font-display text-4xl font-bold text-emerald-300">¡Correcto!</p>
           <p className="font-display text-3xl font-bold">+{formatPoints(r.pointsEarned)}</p>
+          {(r.multiplier > 1 || r.streakBonus > 0) && (
+            <p className="flex flex-wrap justify-center gap-2 text-sm font-bold">
+              {r.multiplier > 1 && <span className="chip bg-amber-300/20 text-amber-200">×{r.multiplier} pregunta especial</span>}
+              {r.streakBonus > 0 && <span className="chip bg-orange-400/20 text-orange-200">🔥 Racha +{Math.round(r.streakBonus * 100)} %</span>}
+            </p>
+          )}
         </div>
       ) : (
         <div className="animate-shake space-y-2">
@@ -496,10 +506,29 @@ function ResultView({ view }: { view: PlayerView }) {
 
 function FinalView({ view }: { view: PlayerView }) {
   const f = view.final;
+  // Mientras la pantalla principal revela el podio con suspenso, el celular no adelanta el resultado.
+  const [revealed, setRevealed] = useState(false);
   useEffect(() => {
-    if (f && f.rank <= 3) fireConfetti(1);
-  }, [f?.rank]); // eslint-disable-line react-hooks/exhaustive-deps
+    setRevealed(false);
+    const t = setTimeout(() => setRevealed(true), PODIUM_REVEAL_MS);
+    return () => clearTimeout(t);
+  }, [view.gameNumber]);
+  useEffect(() => {
+    if (revealed && f && f.rank <= 3) {
+      fireConfetti(1);
+      vibrate([80, 50, 80, 50, 160]);
+    }
+  }, [revealed, f?.rank]); // eslint-disable-line react-hooks/exhaustive-deps
   if (!f) return null;
+  if (!revealed) {
+    return (
+      <Centered>
+        <div className="animate-pulse text-7xl">🥁</div>
+        <p className="font-display text-4xl font-bold">¡Mira la pantalla!</p>
+        <p className="text-lg text-white/70">Se está revelando el podio…</p>
+      </Centered>
+    );
+  }
   const messages = ['¡Eres el campeón! 🏆', '¡Segundo puesto! 🥈', '¡Tercer puesto! 🥉'];
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
@@ -513,6 +542,14 @@ function FinalView({ view }: { view: PlayerView }) {
           <Stat label="Aciertos" value={`${f.stats.correct}`} />
           <Stat label="Precisión" value={`${Math.round(f.stats.accuracy * 100)} %`} />
           <Stat label="Racha" value={`${f.stats.bestStreak}`} />
+        </div>
+      )}
+      {f.awards.length > 0 && (
+        <div className="w-full max-w-sm space-y-2">
+          <p className="font-display text-lg font-bold">🎖️ {f.awards.length === 1 ? 'Tu premio' : 'Tus premios'}</p>
+          {f.awards.map((a, i) => (
+            <AwardCard key={a.kind} award={a} delayMs={i * 300} showName={false} />
+          ))}
         </div>
       )}
       <Podium entries={f.podium} compact />

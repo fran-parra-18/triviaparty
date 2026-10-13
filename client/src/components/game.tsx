@@ -1,9 +1,10 @@
-import type { LeaderboardEntry, TimerView } from '@trivia/shared';
+import { PODIUM_TIMINGS, type LeaderboardEntry, type TimerView } from '@trivia/shared';
 import confetti from 'canvas-confetti';
 import QRCode from 'qrcode';
 import { useEffect, useMemo, useState } from 'react';
 import { msUntil } from '../lib/clock';
 import { formatPoints, useCountUp, useRemaining } from '../lib/hooks';
+import { sounds } from '../lib/sound';
 import { Avatar } from './ui';
 
 /** Temporizador circular (pantalla principal). El tiempo lo decide el servidor: aquí solo se dibuja. */
@@ -151,49 +152,91 @@ function ScoreValue({ value, className }: { value: number; className?: string })
 }
 
 /** Podio animado: aparecen 3.º, 2.º y 1.º en ese orden. */
-export function Podium({ entries, compact = false }: { entries: LeaderboardEntry[]; compact?: boolean }) {
+/**
+ * Podio que aparece del 3.º al 1.º. Con `suspense` (pantalla principal) lo hace despacio, con un texto
+ * para cada puesto, un redoble antes del campeón y la fanfarria al final (ver PODIUM_TIMINGS).
+ */
+export function Podium({ entries, compact = false, suspense = false }: { entries: LeaderboardEntry[]; compact?: boolean; suspense?: boolean }) {
+  // 1 = tercero, 2 = segundo, 3 = redoble, 4 = campeón
   const [stage, setStage] = useState(0);
   useEffect(() => {
     setStage(0);
-    const timers = [600, 1600, 2800].map((ms, i) => setTimeout(() => setStage(i + 1), ms));
-    const t = setTimeout(() => fireConfetti(), 2900);
-    return () => {
-      timers.forEach(clearTimeout);
-      clearTimeout(t);
-    };
-  }, [entries.map((e) => e.playerId).join()]); // eslint-disable-line react-hooks/exhaustive-deps
+    const t = suspense ? PODIUM_TIMINGS : { third: 600, second: 1600, drumroll: null, first: 2800 };
+    const at = (ms: number, fn: () => void) => setTimeout(fn, ms);
+    const timers = [
+      at(t.third, () => {
+        setStage(1);
+        if (suspense && entries[2]) sounds.podiumHit();
+      }),
+      at(t.second, () => {
+        setStage(2);
+        if (suspense && entries[1]) sounds.podiumHit();
+      }),
+      ...(t.drumroll !== null
+        ? [
+            at(t.drumroll, () => {
+              setStage(3);
+              sounds.drumroll();
+            }),
+          ]
+        : []),
+      at(t.first, () => {
+        setStage(4);
+        if (suspense) sounds.fanfare();
+        fireConfetti();
+      }),
+    ];
+    return () => timers.forEach(clearTimeout);
+  }, [entries.map((e) => e.playerId).join(), suspense]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const [first, second, third] = entries;
+  const caption =
+    stage >= 4 && first
+      ? `🏆 ¡${first.name}!`
+      : stage === 3
+        ? 'Y el campeón es… 🥁'
+        : stage === 2 && second
+          ? 'En segundo lugar…'
+          : stage === 1 && third
+            ? 'En tercer lugar…'
+            : '';
   const medals = ['🥇', '🥈', '🥉'];
   // En caso de empate se muestra el puesto real (por ejemplo, dos medallas de oro).
   const slots = [
     { e: second, place: 2, height: compact ? 'h-20' : 'h-40 md:h-52', color: 'from-slate-300 to-slate-500', show: stage >= 2 },
-    { e: first, place: 1, height: compact ? 'h-28' : 'h-56 md:h-72', color: 'from-amber-300 to-amber-500', show: stage >= 3 },
+    { e: first, place: 1, height: compact ? 'h-28' : 'h-56 md:h-72', color: 'from-amber-300 to-amber-500', show: stage >= 4 },
     { e: third, place: 3, height: compact ? 'h-14' : 'h-28 md:h-36', color: 'from-orange-400 to-orange-700', show: stage >= 1 },
   ].filter((s) => s.e);
   return (
-    <div className="flex items-end justify-center gap-3 md:gap-6">
-      {slots.map(({ e, place, height, color, show }) => (
-        <div key={place} className={`flex flex-col items-center ${compact ? 'w-24' : 'w-28 md:w-48'}`}>
-          <div className={`mb-3 flex flex-col items-center transition-all duration-500 ${show && e ? 'opacity-100' : 'translate-y-4 opacity-0'}`}>
-            {e && (
-              <>
-                <span className={compact ? 'text-2xl' : 'text-4xl md:text-5xl'}>{medals[e.rank - 1] ?? ''}</span>
-                <Avatar name={e.name} index={e.avatar} size={compact ? (place === 1 ? 44 : 36) : place === 1 ? 72 : 56} />
-                <span className={`mt-1 max-w-full truncate text-center font-display font-bold ${compact ? 'text-base' : 'text-xl md:text-2xl'}`}>{e.name}</span>
-                <span className="font-bold tabular-nums text-white/80">{formatPoints(e.score)} pts</span>
-              </>
-            )}
+    <div className="flex flex-col items-center gap-4">
+      {suspense && (
+        <p key={stage} className="animate-pop-in h-12 font-display text-4xl font-bold text-amber-200" aria-live="polite">
+          {caption}
+        </p>
+      )}
+      <div className="flex items-end justify-center gap-3 md:gap-6">
+        {slots.map(({ e, place, height, color, show }) => (
+          <div key={place} className={`flex flex-col items-center ${compact ? 'w-24' : 'w-28 md:w-48'}`}>
+            <div className={`mb-3 flex flex-col items-center transition-all duration-500 ${show && e ? 'opacity-100' : 'translate-y-4 opacity-0'}`}>
+              {e && (
+                <>
+                  <span className={compact ? 'text-2xl' : 'text-4xl md:text-5xl'}>{medals[e.rank - 1] ?? ''}</span>
+                  <Avatar name={e.name} index={e.avatar} size={compact ? (place === 1 ? 44 : 36) : place === 1 ? 72 : 56} />
+                  <span className={`mt-1 max-w-full truncate text-center font-display font-bold ${compact ? 'text-base' : 'text-xl md:text-2xl'}`}>{e.name}</span>
+                  <span className="font-bold tabular-nums text-white/80">{formatPoints(e.score)} pts</span>
+                </>
+              )}
+            </div>
+            <div
+              className={`w-full origin-bottom rounded-t-2xl bg-gradient-to-b ${color} ${height} flex items-start justify-center pt-3 shadow-xl ${
+                show ? 'animate-rise' : 'scale-y-0'
+              }`}
+            >
+              <span className={`font-display font-bold text-night-950/70 ${compact ? 'text-2xl' : 'text-5xl'}`}>{e?.rank ?? place}</span>
+            </div>
           </div>
-          <div
-            className={`w-full origin-bottom rounded-t-2xl bg-gradient-to-b ${color} ${height} flex items-start justify-center pt-3 shadow-xl ${
-              show ? 'animate-rise' : 'scale-y-0'
-            }`}
-          >
-            <span className={`font-display font-bold text-night-950/70 ${compact ? 'text-2xl' : 'text-5xl'}`}>{e?.rank ?? place}</span>
-          </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }

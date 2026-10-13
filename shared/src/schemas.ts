@@ -41,6 +41,8 @@ export const gameSettingsSchema = z
     showResultsAfterEach: z.boolean().default(true),
     randomOrder: z.boolean().default(true),
     autoAdvance: z.boolean().default(false),
+    /** Modo Fiesta: preguntas especiales al azar, última oportunidad y bonificación por racha. */
+    partyMode: z.boolean().default(false),
   })
   .refine((s) => s.minPlayers <= s.maxPlayers, {
     message: 'El mínimo de jugadores no puede superar al máximo',

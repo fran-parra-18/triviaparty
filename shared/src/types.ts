@@ -1,4 +1,5 @@
 import type { CategoryId, Difficulty } from './categories';
+import type { AwardKind, SpecialKind } from './party';
 import type { GameSettings } from './schemas';
 
 export type GamePhase =
@@ -41,6 +42,8 @@ export interface QuestionView {
   difficulty: Difficulty;
   /** Fragmento de audio que la pantalla principal reproduce (preguntas de pistas musicales). */
   audioUrl: string | null;
+  /** Pregunta especial del Modo Fiesta (null en las normales). */
+  special: SpecialKind | null;
 }
 
 export interface RevealView {
@@ -77,6 +80,16 @@ export interface PlayerStats {
   bestStreak: number;
 }
 
+/** Premio gracioso del podio. */
+export interface Award {
+  kind: AwardKind;
+  playerId: string;
+  name: string;
+  avatar: number;
+  /** Motivo en una frase, por ejemplo «8 aciertos». */
+  detail: string;
+}
+
 export interface QuestionSummary {
   index: number;
   text: string;
@@ -96,6 +109,7 @@ export interface FinalView {
     fastestAnswer: { name: string; ms: number } | null;
     bestStreak: { name: string; streak: number } | null;
   };
+  awards: Award[];
   endedEarly: boolean;
 }
 
@@ -123,6 +137,8 @@ export interface HostView {
   countdownEndsAt: number | null;
   /** Audio de la próxima pregunta, para precargarlo durante la cuenta regresiva. */
   nextAudioUrl: string | null;
+  /** Pregunta especial que viene (solo durante la cuenta regresiva). */
+  nextSpecial: SpecialKind | null;
   answeredCount: number;
   expectedCount: number;
   reveal: RevealView | null;
@@ -143,6 +159,10 @@ export interface PlayerResult {
   myChoice: number | null;
   correctIndex: number;
   pointsEarned: number;
+  /** Multiplicador de la pregunta especial (1 en las normales). */
+  multiplier: number;
+  /** Bonificación por racha aplicada, de 0 a 0,5 (solo Modo Fiesta). */
+  streakBonus: number;
   explanation: string;
 }
 
@@ -170,6 +190,8 @@ export interface PlayerView {
   question: QuestionView | null;
   timer: TimerView | null;
   countdownEndsAt: number | null;
+  /** Pregunta especial que viene (solo durante la cuenta regresiva). */
+  nextSpecial: SpecialKind | null;
   myAnswer: { choice: number; elapsedMs: number } | null;
   answeredCount: number;
   result: PlayerResult | null;
@@ -180,6 +202,8 @@ export interface PlayerView {
     podium: LeaderboardEntry[];
     stats: PlayerStats | null;
     totalPlayers: number;
+    /** Premios graciosos que ganó este jugador. */
+    awards: Award[];
   } | null;
   showResultsAfterEach: boolean;
   /** Configuración de la partida: solo se envía al líder, que puede cambiarla desde el celular. */

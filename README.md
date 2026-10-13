@@ -281,8 +281,10 @@ Dentro de una misma sala **no se repiten preguntas**, ni siquiera entre partidas
 - Los puntos se calculan al cerrar la pregunta y **se publican al revelar la respuesta**. Antes de eso nadie ve quién acertó.
 - **Desempates:** 1) más puntos; 2) más aciertos; 3) menos tiempo acumulado en los aciertos. Si todo coincide, los jugadores comparten el puesto (1, 1, 3…).
 - Un jugador que se une tarde empieza con 0 puntos; las preguntas anteriores no le cuentan.
+- **🎉 Modo Fiesta** (opción de la configuración; el modo clásico no cambia): aproximadamente 1 de cada 3,5 preguntas es especial y se anuncia en la cuenta regresiva: ⚡ **Relámpago** (la mitad del tiempo, mínimo 5 s; nunca en pistas musicales), ✖️2 **Puntos dobles** o 💣 **Bomba** (×3, como mucho una por partida). Nunca hay dos especiales seguidas. La última pregunta es 🏁 **Última oportunidad** (×2). Además, 🔥 **racha**: +10 % por cada acierto seguido que se traía, hasta +50 %.
+- **Final:** el podio se revela con suspenso (3.º, 2.º, redoble y campeón, unos 8 s); mientras tanto, los celulares no muestran el resultado. Después se entregan los **premios**: 🧠 El Cerebrito, ⚡ El Rayo, 🔥 El Imparable, 🍀 El Suertudo y 🤡 El Caótico. Cada premio exige un mínimo (por ejemplo, una racha de 3) y, en caso de empate, gana quien tenga más puntos.
 
-**Controles del anfitrión:** `Espacio`/`Enter` = siguiente fase; `P` = pausa; `F` = pantalla completa; `M` = sonido.
+**Controles del anfitrión:** `Espacio`/`Enter` = siguiente fase; `P` = pausa; `F` = pantalla completa; `M` = sonido; `R` = repetir el fragmento musical.
 
 ---
 
