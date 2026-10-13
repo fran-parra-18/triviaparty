@@ -35,7 +35,7 @@ export function nextActionLabel(
     case 'locked':
       return showResultsAfterEach ? 'Revelar respuesta' : isLast ? 'Ver resultados' : 'Siguiente pregunta';
     case 'reveal':
-      return 'Ver clasificación';
+      return isLast ? '🏆 Ver podio' : 'Ver clasificación';
     case 'leaderboard':
       return isLast ? '🏆 Ver podio' : 'Siguiente pregunta →';
     default:

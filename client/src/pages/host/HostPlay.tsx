@@ -217,17 +217,11 @@ function LeaderboardScreen({ view }: { view: HostView }) {
   const leader = view.leaderboard[0];
   const leaderChanged = leader && leader.previousRank !== null && leader.previousRank !== 1;
   const firstLeader = leader && leader.previousRank === null && (view.progress?.index ?? 0) === 0 && leader.score > 0;
-  const [showBanner, setShowBanner] = useState(true);
-  useEffect(() => {
-    setShowBanner(true);
-    const t = setTimeout(() => setShowBanner(false), 3500);
-    return () => clearTimeout(t);
-  }, [view.progress?.index]);
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-5">
       <h1 className="text-center text-5xl font-bold">Clasificación</h1>
-      {leader && (leaderChanged || firstLeader) && showBanner && (
+      {leader && (leaderChanged || firstLeader) && (
         <div className="animate-pop-in rounded-3xl bg-gradient-to-r from-amber-300 to-orange-400 px-6 py-4 text-center font-display text-3xl font-bold text-night-950 shadow-xl">
           👑 ¡{leader.name} {leaderChanged ? 'toma la delantera' : 'va en cabeza'}!
         </div>

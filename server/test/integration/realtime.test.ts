@@ -91,15 +91,19 @@ describe('partida completa en tiempo real', () => {
         expect(r.correctIndex).toBe(correct);
         if (r.correct) expect(r.pointsEarned).toBeGreaterThanOrEqual(1000);
         else expect(r.pointsEarned).toBe(0);
-        expectedScores.set(players[k]!.playerId, expectedScores.get(players[k]!.playerId)! + r.pointsEarned);
-        expect(playerReveals[k]!.me.score).toBe(expectedScores.get(players[k]!.playerId));
+        const before = expectedScores.get(players[k]!.playerId)!;
+        expectedScores.set(players[k]!.playerId, before + r.pointsEarned);
+        // En la última pregunta los puntos y posiciones no se publican hasta el podio.
+        expect(playerReveals[k]!.me.score).toBe(i < 2 ? expectedScores.get(players[k]!.playerId) : before);
       }
 
-      await emit(host, 'host:next', {}); // clasificación
-      const lb = await hostState.waitFor((v) => v.phase === 'leaderboard');
-      expect(lb.leaderboard).toHaveLength(3);
-      expect(lb.leaderboard.find((e) => e.name === 'Beto')!.score).toBe(0);
-      await emit(host, 'host:next', {}); // siguiente
+      if (i < 2) {
+        await emit(host, 'host:next', {}); // clasificación
+        const lb = await hostState.waitFor((v) => v.phase === 'leaderboard');
+        expect(lb.leaderboard).toHaveLength(3);
+        expect(lb.leaderboard.find((e) => e.name === 'Beto')!.score).toBe(0);
+      }
+      await emit(host, 'host:next', {}); // siguiente pregunta o, tras la última, el podio
     }
 
     const final = await hostState.waitFor((v) => v.phase === 'finished');
@@ -174,8 +178,10 @@ describe('jugador líder', () => {
       expect((await emit(leader.socket, 'player:control', { action: 'pause' })).ok).toBe(true);
       await hostState.waitFor((v) => v.paused);
       expect((await emit(leader.socket, 'player:control', { action: 'resume' })).ok).toBe(true);
-      await emit(leader.socket, 'player:control', { action: 'next' }); // clasificación
-      await hostState.waitFor((v) => v.phase === 'leaderboard' && v.progress?.index === i);
+      if (i < 2) {
+        await emit(leader.socket, 'player:control', { action: 'next' }); // clasificación
+        await hostState.waitFor((v) => v.phase === 'leaderboard' && v.progress?.index === i);
+      }
       await emit(leader.socket, 'player:control', { action: 'next' }); // siguiente / podio
     }
     await hostState.waitFor((v) => v.phase === 'finished');

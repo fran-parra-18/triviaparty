@@ -506,12 +506,20 @@ export class Room {
     this.changed();
   }
 
+  private isLastQuestion() {
+    return this.currentIndex >= this.questions.length - 1;
+  }
+
   private revealAnswer() {
     if (this.phase !== 'locked') return;
     this.clearTimer();
     this.phase = 'reveal';
-    this.publishStandings();
-    if (this.settings.autoAdvance) this.schedule('auto', AUTO_LEADERBOARD_DELAY_MS, () => this.showLeaderboard());
+    // En la última pregunta no se publican posiciones ni se muestra la clasificación: se reservan para el podio.
+    const last = this.isLastQuestion();
+    if (!last) this.publishStandings();
+    if (this.settings.autoAdvance) {
+      this.schedule('auto', AUTO_LEADERBOARD_DELAY_MS, () => (last ? this.goToNextQuestion() : this.showLeaderboard()));
+    }
     this.changed();
   }
 
@@ -524,7 +532,7 @@ export class Room {
   }
 
   private goToNextQuestion() {
-    if (this.phase !== 'locked' && this.phase !== 'leaderboard') return;
+    if (this.phase !== 'locked' && this.phase !== 'leaderboard' && this.phase !== 'reveal') return;
     this.clearTimer();
     const next = this.currentIndex + 1;
     if (next >= this.questions.length) return this.finish(false);
@@ -553,7 +561,7 @@ export class Room {
       case 'locked':
         return this.settings.showResultsAfterEach ? this.revealAnswer() : this.goToNextQuestion();
       case 'reveal':
-        return this.showLeaderboard();
+        return this.isLastQuestion() ? this.goToNextQuestion() : this.showLeaderboard();
       case 'leaderboard':
         return this.goToNextQuestion();
       default:

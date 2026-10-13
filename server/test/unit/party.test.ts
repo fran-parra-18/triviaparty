@@ -112,8 +112,8 @@ describe('Room — Modo Fiesta', () => {
       room.next(); // revelar
       const r = room.playerView(playerId)!.result!;
       seen.push({ special: view.question!.special, durationMs: view.timer!.durationMs, points: r.pointsEarned, multiplier: r.multiplier, streakBonus: r.streakBonus });
-      room.next(); // clasificación
-      room.next(); // siguiente o final
+      room.next(); // clasificación o, tras la última, el podio
+      if (room.phase === 'leaderboard') room.next();
       if (room.phase === 'countdown') {
         announced = room.hostView().nextSpecial;
         vi.advanceTimersByTime(BETWEEN_QUESTIONS_COUNTDOWN_MS);

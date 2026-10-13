@@ -169,10 +169,13 @@ function PlayerGame({
             {!view.hostConnected && <span className="text-amber-300"> · anfitrión desconectado</span>}
           </p>
         </div>
-        <div className="text-right">
-          <ScoreBadge score={view.me.score} />
-          {view.me.rank !== null && <p className="text-xs text-white/60">{ordinal(view.me.rank)} puesto</p>}
-        </div>
+        {/* Al terminar, puntos y puesto se muestran en la pantalla final, después del suspenso del podio. */}
+        {view.phase !== 'finished' && (
+          <div className="text-right">
+            <ScoreBadge score={view.me.score} />
+            {view.me.rank !== null && <p className="text-xs text-white/60">{ordinal(view.me.rank)} puesto</p>}
+          </div>
+        )}
         <SoundToggle className="px-2 py-1" />
       </header>
 
@@ -494,7 +497,8 @@ function ResultView({ view }: { view: PlayerView }) {
         <span className="text-left font-bold">{q.options[r.correctIndex]}</span>
       </div>
       <p className="max-w-sm text-white/75">{r.explanation}</p>
-      {view.me.rank !== null && (
+      {/* En la última pregunta la posición se guarda para el podio. */}
+      {view.me.rank !== null && view.progress && view.progress.index < view.progress.total - 1 && (
         <p className="chip text-lg">
           Vas {ordinal(view.me.rank)} de {view.playerCount}
           {view.me.streak > 1 && <span> · 🔥 racha de {view.me.streak}</span>}

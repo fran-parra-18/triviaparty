@@ -138,9 +138,11 @@ describe('Room — flujo de partida', () => {
       expect(room.phase).toBe('locked'); // todos respondieron → se cierra antes de tiempo
       room.next(); // revelar
       expect(room.phase).toBe('reveal');
-      room.next(); // clasificación
-      expect(room.phase).toBe('leaderboard');
-      room.next(); // siguiente pregunta o final
+      if (i < 2) {
+        room.next(); // clasificación
+        expect(room.phase).toBe('leaderboard');
+      }
+      room.next(); // siguiente pregunta; tras la última, directo al podio (sin clasificación que lo adelante)
       if (i < 2) vi.advanceTimersByTime(BETWEEN_QUESTIONS_COUNTDOWN_MS);
     }
     expect(room.phase).toBe('finished');
@@ -152,6 +154,31 @@ describe('Room — flujo de partida', () => {
     expect(view.final!.ranking[0]!.rank).toBe(1);
     expect(view.final!.endedEarly).toBe(false);
     expect(onGameFinished).toHaveBeenCalledTimes(1);
+  });
+
+  it('tras la última pregunta va directo al podio, sin publicar posiciones que lo adelanten', async () => {
+    const { room } = makeRoom({ questionCount: 3 });
+    const a = room.addPlayer('Ana', 's1');
+    const b = room.addPlayer('Beto', 's2');
+    await openFirstQuestion(room);
+    for (let i = 0; i < 3; i++) {
+      // Beto acierta solo la última: así la última pregunta cambia el orden.
+      room.submitAnswer(a.id, i, i < 2 ? correctChoice(room) : (correctChoice(room) + 1) % 4);
+      room.submitAnswer(b.id, i, i < 2 ? (correctChoice(room) + 1) % 4 : correctChoice(room));
+      room.next(); // revelar
+      if (i < 2) {
+        room.next();
+        room.next();
+        vi.advanceTimersByTime(BETWEEN_QUESTIONS_COUNTDOWN_MS);
+      }
+    }
+    expect(room.phase).toBe('reveal');
+    expect(room.hostView().leaderboard.map((e) => e.score)).toEqual([expect.any(Number), 0]); // la de la pregunta 2
+    expect(room.playerView(b.id)!.me.score).toBe(0); // los puntos de la última aún no se ven
+    expect(room.playerView(b.id)!.result!.pointsEarned).toBeGreaterThan(0); // pero sí si acertó
+    room.next();
+    expect(room.phase).toBe('finished');
+    expect(room.playerView(b.id)!.me.score).toBeGreaterThan(0);
   });
 
   it('cierra la pregunta al agotarse el tiempo del servidor y rechaza respuestas tardías', async () => {
@@ -257,8 +284,10 @@ describe('Room — flujo de partida', () => {
         room.submitAnswer(a.id, i, 0);
         room.next();
         room.next();
-        room.next();
-        if (i < 9) vi.advanceTimersByTime(2000);
+        if (i < 9) {
+          room.next();
+          vi.advanceTimersByTime(2000);
+        }
       }
       expect(room.phase).toBe('finished');
       room.playAgain();
