@@ -1,5 +1,5 @@
 import { CATEGORIES, DIFFICULTY_LABELS, type CategoryId, type Difficulty } from '@trivia/shared';
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useState, type CSSProperties, type ReactNode } from 'react';
 import { useMusicVolume, useMuted, unlockAudio } from '../lib/sound';
 
 export const AVATAR_COLORS = [
@@ -45,24 +45,81 @@ export function Logo({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' | 'xl' }) {
   );
 }
 
-/** Forma asociada a cada opción, para no depender solo del color (accesibilidad). */
-export function OptionShape({ index, className = 'h-8 w-8' }: { index: number; className?: string }) {
-  const shapes = [
-    <path key="0" d="M12 3 22 20H2z" />,
-    <path key="1" d="M12 2 22 12 12 22 2 12z" />,
-    <circle key="2" cx="12" cy="12" r="10" />,
-    <rect key="3" x="3" y="3" width="18" height="18" rx="2" />,
+/** Nombre accesible de cada opción: su ícono y su color, para no depender solo del color. */
+export const OPTION_NAMES = ['Ondas celestes', 'Triángulos violetas', 'Diana rosa', 'Estrella turquesa'];
+
+const OPTION_COLORS = ['var(--color-opt-0)', 'var(--color-opt-1)', 'var(--color-opt-2)', 'var(--color-opt-3)'];
+
+export type OptionState = 'idle' | 'correct' | 'dim';
+
+/** Clases y color de una tarjeta de opción (vidrio oscuro con borde neón). */
+export function optionCard(index: number, state: OptionState = 'idle'): { className: string; style: CSSProperties } {
+  const extra = state === 'correct' ? 'option-card-correct' : state === 'dim' ? 'scale-[0.97] opacity-35 saturate-50' : '';
+  return { className: `option-card ${extra}`, style: { '--opt': OPTION_COLORS[index] } as CSSProperties };
+}
+
+/** Ícono de cada opción dentro de un círculo con borde del color de la opción. */
+export function OptionIcon({ index, className = 'h-12 w-12' }: { index: number; className?: string }) {
+  const icons = [
+    // Ondas de sonido
+    <g key="0" strokeWidth="2.2" strokeLinecap="round">
+      <path d="M5 10v4M8.5 7v10M12 4v16M15.5 7v10M19 10v4" />
+    </g>,
+    // Tres triángulos
+    <g key="1" strokeWidth="1.8" strokeLinejoin="round">
+      <path d="M12 3.5 15.6 9.8H8.4z" />
+      <path d="M7.5 12.2 11.1 18.5H3.9z" />
+      <path d="M16.5 12.2 20.1 18.5H12.9z" />
+    </g>,
+    // Diana
+    <g key="2" strokeWidth="2">
+      <circle cx="12" cy="12" r="8.5" />
+      <circle cx="12" cy="12" r="4.5" />
+      <circle cx="12" cy="12" r="1.2" fill="currentColor" />
+    </g>,
+    // Estrella de cuatro puntas
+    <path key="3" d="M12 2.5c.9 5.2 3.4 7.7 9.5 9.5-6.1 1.8-8.6 4.3-9.5 9.5-.9-5.2-3.4-7.7-9.5-9.5 6.1-1.8 8.6-4.3 9.5-9.5z" fill="currentColor" stroke="none" />,
   ];
   return (
-    <svg viewBox="0 0 24 24" className={className} fill="currentColor" aria-hidden>
-      {shapes[index]}
-    </svg>
+    <span
+      className={`flex shrink-0 items-center justify-center rounded-full border-2 bg-night-950/60 ${className}`}
+      style={{
+        borderColor: `color-mix(in srgb, ${OPTION_COLORS[index]} 70%, transparent)`,
+        color: OPTION_COLORS[index],
+        boxShadow: `0 0 14px color-mix(in srgb, ${OPTION_COLORS[index]} 35%, transparent)`,
+      }}
+      aria-hidden
+    >
+      <svg viewBox="0 0 24 24" className="h-[58%] w-[58%]" fill="none" stroke="currentColor">
+        {icons[index]}
+      </svg>
+    </span>
   );
 }
 
-export const OPTION_BG = ['bg-opt-0', 'bg-opt-1', 'bg-opt-2', 'bg-opt-3'];
-export const OPTION_TEXT = ['text-white', 'text-white', 'text-night-950', 'text-white'];
-export const OPTION_NAMES = ['Triángulo rojo', 'Rombo azul', 'Círculo amarillo', 'Cuadrado verde'];
+/** Subrayado de color bajo el texto de la opción; al revelar, muestra la proporción de votos. */
+export function OptionAccent({ index, fill, className = 'mt-2 h-1.5 max-w-xs' }: { index: number; fill: number; className?: string }) {
+  return (
+    <div className={`overflow-hidden rounded-full bg-white/10 ${className}`} aria-hidden>
+      <div
+        className="h-full rounded-full transition-[width] duration-1000"
+        style={{ width: `${Math.max(0, Math.min(1, fill)) * 100}%`, background: OPTION_COLORS[index], boxShadow: `0 0 10px ${OPTION_COLORS[index]}` }}
+      />
+    </div>
+  );
+}
+
+/** Onda decorativa a la derecha de la opción. */
+export function OptionWave({ index, className = 'h-10' }: { index: number; className?: string }) {
+  const bars = [0.35, 0.6, 0.85, 1, 0.7, 0.45];
+  return (
+    <span className={`flex shrink-0 items-center gap-1 ${className}`} style={{ color: OPTION_COLORS[index] }} aria-hidden>
+      {bars.map((h, i) => (
+        <span key={i} className="w-1 rounded-full bg-current" style={{ height: `${h * 100}%`, opacity: 0.45 + h * 0.5 }} />
+      ))}
+    </span>
+  );
+}
 
 export function categoryLabel(id: CategoryId) {
   const c = CATEGORIES.find((x) => x.id === id);

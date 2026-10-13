@@ -4,7 +4,7 @@ import { AutoAdvanceHint, CountdownNumber, Leaderboard, TimerRing, useCountdownN
 import { MusicIndicator, useMusicClip } from '../../components/MusicClip';
 import { MusicStageBar, MusicStageRing, useMusicStage } from '../../components/MusicStages';
 import { SpecialAnnouncement, SpecialBadge } from '../../components/party';
-import { Avatar, CategoryBadge, categoryLabel, OPTION_BG, OPTION_TEXT, OptionShape } from '../../components/ui';
+import { Avatar, CategoryBadge, categoryLabel, OptionAccent, OptionIcon, OptionWave, optionCard } from '../../components/ui';
 import { useOnChange, useRemaining } from '../../lib/hooks';
 import { sounds } from '../../lib/sound';
 import type { HostActions } from './HostPage';
@@ -209,30 +209,39 @@ function QuestionScreen({
         </div>
       </div>
 
-      <div className="grid flex-1 grid-cols-1 gap-4 md:grid-cols-2">
+      <div className="grid flex-1 grid-cols-1 gap-4 md:grid-cols-2 md:gap-6">
         {q.options.map((opt, i) => {
           const isCorrect = reveal?.correctIndex === i;
-          const dimmed = reveal && !isCorrect;
+          const card = optionCard(i, reveal ? (isCorrect ? 'correct' : 'dim') : 'idle');
           return (
             <div
               key={`${q.index}-${i}`}
-              className={`relative flex min-h-[clamp(4rem,11vh,9rem)] animate-pop-in items-center gap-4 overflow-hidden rounded-3xl px-6 py-3 shadow-xl transition duration-500 ${OPTION_BG[i]} ${OPTION_TEXT[i]} ${
-                dimmed ? 'scale-[0.97] opacity-35 grayscale-[40%]' : ''
-              } ${isCorrect ? 'ring-8 ring-white/90' : ''}`}
-              style={{ animationDelay: `${i * 70}ms` }}
+              className={`relative flex min-h-[clamp(4rem,11vh,9rem)] animate-pop-in items-center gap-[clamp(0.75rem,2vw,1.75rem)] rounded-3xl px-[clamp(1rem,2.5vw,2.25rem)] py-3 ${card.className}`}
+              style={{ ...card.style, animationDelay: `${i * 70}ms` }}
             >
-              <OptionShape index={i} className="h-12 w-12 shrink-0 drop-shadow" />
-              <span className={`flex-1 font-display font-bold leading-tight ${opt.length > 40 ? 'text-[clamp(1.1rem,2.8vh,2.1rem)]' : 'text-[clamp(1.3rem,3.6vh,2.7rem)]'}`}>
-                {opt}
-              </span>
-              {isCorrect && <span className="animate-pop-in text-5xl" aria-label="Respuesta correcta">✔</span>}
-              {reveal && (
-                <div className="flex flex-col items-end">
-                  <span className="font-display text-3xl font-bold tabular-nums">{reveal.counts[i]}</span>
-                  <div className="mt-1 h-2 w-24 overflow-hidden rounded-full bg-black/20">
-                    <div className="h-full bg-white/90 transition-[width] duration-1000" style={{ width: `${(reveal.counts[i]! / maxCount) * 100}%` }} />
-                  </div>
+              <OptionIcon index={i} className="h-[clamp(3rem,8vh,5.5rem)] w-[clamp(3rem,8vh,5.5rem)]" />
+              <div className="min-w-0 flex-1">
+                <span
+                  className={`block font-display font-bold leading-tight ${opt.length > 40 ? 'text-[clamp(1.1rem,2.8vh,2.1rem)]' : 'text-[clamp(1.3rem,3.6vh,2.7rem)]'}`}
+                >
+                  {opt}
+                </span>
+                {/* Antes de revelar es un adorno; al revelar, muestra cuántos la eligieron. */}
+                <OptionAccent index={i} fill={reveal ? reveal.counts[i]! / maxCount : 0.55} />
+              </div>
+              {reveal ? (
+                <div className="flex shrink-0 items-center gap-3">
+                  {isCorrect && (
+                    <span className="animate-pop-in text-5xl" aria-label="Respuesta correcta">
+                      ✔
+                    </span>
+                  )}
+                  <span className="font-display text-4xl font-bold tabular-nums" aria-label={`${reveal.counts[i]} respuestas`}>
+                    {reveal.counts[i]}
+                  </span>
                 </div>
+              ) : (
+                <OptionWave index={i} className="hidden h-[clamp(2rem,6vh,4rem)] lg:flex" />
               )}
             </div>
           );

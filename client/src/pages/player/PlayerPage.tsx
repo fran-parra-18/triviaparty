@@ -5,7 +5,7 @@ import { CountdownNumber, Podium, TimerBar, fireConfetti, useCountdownNumber } f
 import { SettingsPanel, settingsSummary } from '../../components/SettingsPanel';
 import { MusicStageBar } from '../../components/MusicStages';
 import { AwardCard, SpecialAnnouncement, SpecialBadge } from '../../components/party';
-import { Avatar, CategoryBadge, categoryLabel, ConnectionBanner, Logo, OPTION_BG, OPTION_NAMES, OPTION_TEXT, OptionShape, Screen, SoundToggle, Spinner, Toast } from '../../components/ui';
+import { Avatar, CategoryBadge, categoryLabel, ConnectionBanner, Logo, OPTION_NAMES, OptionIcon, OptionWave, optionCard, Screen, SoundToggle, Spinner, Toast } from '../../components/ui';
 import { usePlayerSession } from '../../hooks/usePlayerSession';
 import { formatPoints, ordinal, useConnection, useCountUp, useOnChange } from '../../lib/hooks';
 import { sounds, vibrate } from '../../lib/sound';
@@ -453,8 +453,8 @@ function AnswerPad({
       <Centered>
         {chosen !== null ? (
           <>
-            <div className={`flex h-32 w-32 animate-pop-in items-center justify-center rounded-3xl ${OPTION_BG[chosen]} ${OPTION_TEXT[chosen]} shadow-2xl`}>
-              <OptionShape index={chosen} className="h-16 w-16" />
+            <div className={`flex animate-pop-in items-center justify-center rounded-full p-4 ${optionCard(chosen).className}`} style={optionCard(chosen).style}>
+              <OptionIcon index={chosen} className="h-24 w-24" />
             </div>
             <p className="font-display text-3xl font-bold" aria-live="polite">
               {confirmed ? '¡Respuesta registrada!' : 'Enviando…'}
@@ -506,13 +506,14 @@ function AnswerPad({
       ) : (
         hidden.length > 0 && <p className="-mt-1 self-center text-sm text-white/60">🃏 50/50 usado: si aciertas, sumas la mitad</p>
       )}
-      <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 min-[380px]:grid-cols-2">
+      <div className="grid min-h-0 flex-1 auto-rows-fr grid-cols-1 gap-3">
         {q.options.map((opt, i) => (
           <button
             key={i}
             type="button"
             disabled={hidden.includes(i)}
-            className={`flex min-h-16 flex-col items-center justify-center gap-2 rounded-3xl p-3 text-center shadow-lg transition active:scale-95 disabled:scale-95 disabled:opacity-15 disabled:line-through ${OPTION_BG[i]} ${OPTION_TEXT[i]}`}
+            className={`flex min-h-16 items-center gap-3 rounded-2xl px-4 py-2 text-left active:scale-95 disabled:scale-95 disabled:opacity-20 disabled:line-through ${optionCard(i).className}`}
+            style={optionCard(i).style}
             aria-label={`${OPTION_NAMES[i]}: ${opt}${hidden.includes(i) ? ' (descartada por el 50/50)' : ''}`}
             onClick={async () => {
               setPending({ index: q.index, choice: i });
@@ -522,8 +523,9 @@ function AnswerPad({
               if (!ok) setPending(null);
             }}
           >
-            <OptionShape index={i} className="h-8 w-8 shrink-0" />
-            <span className={`font-bold leading-tight ${opt.length > 30 ? 'text-base' : 'text-lg'}`}>{opt}</span>
+            <OptionIcon index={i} className="h-11 w-11" />
+            <span className={`flex-1 font-display font-bold leading-tight ${opt.length > 30 ? 'text-base' : 'text-lg'}`}>{opt}</span>
+            <OptionWave index={i} className="h-6" />
           </button>
         ))}
       </div>
@@ -588,9 +590,12 @@ function ResultView({ view }: { view: PlayerView }) {
           {formatPoints(Math.abs(r.betDelta))}
         </p>
       )}
-      <div className={`flex w-full max-w-sm items-center gap-3 rounded-2xl px-4 py-3 ${OPTION_BG[r.correctIndex]} ${OPTION_TEXT[r.correctIndex]}`}>
-        <OptionShape index={r.correctIndex} className="h-7 w-7 shrink-0" />
-        <span className="text-left font-bold">{q.options[r.correctIndex]}</span>
+      <div
+        className={`flex w-full max-w-sm items-center gap-3 rounded-2xl px-4 py-3 ${optionCard(r.correctIndex, 'correct').className}`}
+        style={optionCard(r.correctIndex, 'correct').style}
+      >
+        <OptionIcon index={r.correctIndex} className="h-10 w-10" />
+        <span className="text-left font-display font-bold">{q.options[r.correctIndex]}</span>
       </div>
       <p className="max-w-sm text-white/75">{r.explanation}</p>
       {/* En la última pregunta la posición se guarda para el podio. */}

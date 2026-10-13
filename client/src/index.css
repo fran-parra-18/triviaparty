@@ -14,11 +14,11 @@
   --color-brand-cyan: #22d3ee;
   --color-brand-lime: #a3e635;
 
-  /* Colores de las cuatro opciones (con forma asociada para no depender solo del color). */
-  --color-opt-0: #d62839;
-  --color-opt-1: #2563eb;
-  --color-opt-2: #f59e0b;
-  --color-opt-3: #15803d;
+  /* Colores neón de las cuatro opciones (cada una con su ícono, para no depender solo del color). */
+  --color-opt-0: #22d3ee;
+  --color-opt-1: #a78bfa;
+  --color-opt-2: #f472b6;
+  --color-opt-3: #2dd4bf;
 
   --animate-pop-in: pop-in 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.3) both;
   --animate-slide-up: slide-up 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
@@ -109,6 +109,31 @@
     radial-gradient(900px 600px at 110% 10%, rgb(255 77 141 / 0.25), transparent 55%),
     radial-gradient(900px 700px at 50% 120%, rgb(34 211 238 / 0.18), transparent 60%),
     linear-gradient(180deg, var(--color-night-900), var(--color-night-950));
+}
+/* Tarjeta de opción: vidrio oscuro con borde y brillo neón del color de la opción (variable --opt). */
+@utility option-card {
+  border: 2px solid color-mix(in srgb, var(--opt) 80%, transparent);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--opt) 14%, transparent), transparent 55%),
+    rgb(11 6 32 / 0.72);
+  box-shadow:
+    0 0 22px color-mix(in srgb, var(--opt) 30%, transparent),
+    inset 0 0 26px color-mix(in srgb, var(--opt) 12%, transparent);
+  backdrop-filter: blur(10px);
+  transition:
+    transform 0.25s,
+    opacity 0.5s,
+    box-shadow 0.4s,
+    border-color 0.4s,
+    filter 0.5s;
+}
+/* Respuesta correcta al revelar: borde casi blanco y brillo más fuerte. */
+@utility option-card-correct {
+  border-color: color-mix(in srgb, var(--opt) 45%, white);
+  box-shadow:
+    0 0 0 4px color-mix(in srgb, var(--opt) 35%, transparent),
+    0 0 48px color-mix(in srgb, var(--opt) 65%, transparent),
+    inset 0 0 34px color-mix(in srgb, var(--opt) 28%, transparent);
 }
 @utility glass {
   @apply rounded-3xl border border-white/10 bg-white/[0.06] shadow-xl shadow-black/30 backdrop-blur-md;
