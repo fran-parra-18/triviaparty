@@ -84,9 +84,9 @@ export function OptionIcon({ index, className = 'h-12 w-12' }: { index: number; 
     <span
       className={`flex shrink-0 items-center justify-center rounded-full border-2 bg-night-950/60 ${className}`}
       style={{
-        borderColor: `color-mix(in srgb, ${OPTION_COLORS[index]} 70%, transparent)`,
+        borderColor: OPTION_COLORS[index],
         color: OPTION_COLORS[index],
-        boxShadow: `0 0 14px color-mix(in srgb, ${OPTION_COLORS[index]} 35%, transparent)`,
+        boxShadow: `0 0 14px color-mix(in srgb, ${OPTION_COLORS[index]} 60%, transparent), inset 0 0 10px color-mix(in srgb, ${OPTION_COLORS[index]} 30%, transparent)`,
       }}
       aria-hidden
     >
