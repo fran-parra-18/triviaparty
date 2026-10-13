@@ -10,7 +10,7 @@ Juego de preguntas multijugador en tiempo real para fiestas: una **pantalla prin
 
 ---
 
-## Índice
+## Índice:
 
 1. [Estado actual](#estado-actual)
    - [Inicio rápido con doble clic](#inicio-rápido-con-doble-clic-windows) · [Jugador líder](#jugador-líder-controlar-desde-el-celular)
