@@ -10,6 +10,14 @@ export const SPECIAL_INFO: Record<SpecialKind, { emoji: string; title: string; d
   final: { emoji: '🏁', title: 'Última oportunidad', description: 'La última pregunta vale el doble: ¡todavía se puede remontar!', multiplier: 2 },
 };
 
+/** Apuestas (solo Modo Fiesta): cantidades fijas; solo se puede apostar lo que se tiene. */
+export const BET_OPTIONS = [0, 250, 500] as const;
+/** Cuenta regresiva antes de una pregunta con apuesta: tiempo para decidir. */
+export const BET_COUNTDOWN_MS = 8000;
+
+/** Comodín 50/50 (solo Modo Fiesta): uno por partida; acertar con él da la mitad de los puntos. */
+export const FIFTY_FIFTY_FACTOR = 0.5;
+
 /** Las preguntas relámpago duran la mitad, pero nunca menos de esto. */
 export const LIGHTNING_MIN_SECONDS = 5;
 

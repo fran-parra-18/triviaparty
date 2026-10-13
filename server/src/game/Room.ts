@@ -3,6 +3,9 @@ import {
   AUTO_NEXT_DELAY_MS,
   AUTO_REVEAL_DELAY_MS,
   AUDIO_MIN_SECONDS,
+  BET_COUNTDOWN_MS,
+  BET_OPTIONS,
+  FIFTY_FIFTY_FACTOR,
   LIGHTNING_MIN_SECONDS,
   SPECIAL_INFO,
   BETWEEN_QUESTIONS_COUNTDOWN_MS,
@@ -24,6 +27,7 @@ import {
   type QuestionSummary,
   type QuestionView,
   type RevealView,
+  type BettingView,
   type SessionHistoryEntry,
   type SpecialKind,
   type TimerView,
@@ -33,9 +37,9 @@ import { nameKey, sanitizeName } from '../security/sanitize';
 import { generateId, generateToken } from '../security/tokens';
 import { GameError } from './errors';
 import { rankPlayers } from './ranking';
-import { computeAwards, planSpecials } from './party';
+import { computeAwards, planBets, planSpecials } from './party';
 import { computePoints } from './scoring';
-import { secureRng, selectQuestionIds, shuffleOptions, type Rng } from './selection';
+import { secureRng, selectQuestionIds, shuffle, shuffleOptions, type Rng } from './selection';
 
 /** Pregunta en juego. Solo existe en el servidor: incluye la respuesta correcta. */
 export interface GameQuestion {
@@ -49,6 +53,7 @@ export interface GameQuestion {
   difficulty: Difficulty;
   audioUrl: string | null;
   special: SpecialKind | null;
+  bet: boolean;
 }
 
 interface AnswerRecord {
@@ -63,6 +68,9 @@ interface QuestionResult {
   elapsedMs: number | null;
   multiplier: number;
   streakBonus: number;
+  usedFiftyFifty: boolean;
+  bet: number;
+  betDelta: number;
 }
 
 /** Datos visibles para los clientes; se actualizan solo al revelar resultados. */
@@ -93,6 +101,9 @@ export interface Player {
   lastPoints: number;
   results: Map<number, QuestionResult>;
   published: PublishedStanding;
+  /** Pregunta en la que usó el 50/50 (null si aún lo tiene) y opciones que le ocultó. */
+  fiftyIndex: number | null;
+  fiftyHidden: number[];
 }
 
 export interface FinishedGame {
@@ -142,6 +153,8 @@ export class Room {
   private questions: GameQuestion[] = [];
   private currentIndex = -1;
   private readonly answers = new Map<string, AnswerRecord>();
+  /** Apuestas para la próxima pregunta con apuesta (se abren en su cuenta regresiva). */
+  private readonly bets = new Map<string, number>();
   private timer: NodeJS.Timeout | null = null;
   private timerKind: TimerKind | null = null;
   private timerDeadline: number | null = null;
@@ -364,10 +377,13 @@ export class Room {
           difficulty: r.difficulty,
           audioUrl: r.audioUrl,
           special: null,
+          bet: false,
         };
       });
       if (this.settings.partyMode) {
-        planSpecials(this.questions, this.rng).forEach((special, i) => (this.questions[i]!.special = special));
+        const specials = planSpecials(this.questions, this.rng);
+        const bets = planBets(specials, this.rng);
+        this.questions.forEach((q, i) => Object.assign(q, { special: specials[i], bet: bets[i] }));
       }
       this.notice =
         this.questions.length < this.settings.questionCount
@@ -408,6 +424,39 @@ export class Room {
     this.changed();
   }
 
+  /** Modo Fiesta: apuesta para la próxima pregunta con apuesta, durante su cuenta regresiva. */
+  placeBet(playerId: string, questionIndex: number, amount: number) {
+    this.assertOpen();
+    const player = this.players.get(playerId);
+    if (!player) throw new GameError('NOT_ALLOWED');
+    const q = this.questions[questionIndex];
+    if (this.phase !== 'countdown' || questionIndex !== this.currentIndex + 1 || !q?.bet) {
+      throw new GameError('INVALID_STATE', 'Ahora no se puede apostar.');
+    }
+    if (!(BET_OPTIONS as readonly number[]).includes(amount)) throw new GameError('INVALID_PAYLOAD');
+    if (amount > player.score) throw new GameError('INVALID_PAYLOAD', 'No tienes puntos suficientes para esa apuesta.');
+    this.bets.set(playerId, amount);
+    this.touch();
+    this.changed();
+  }
+
+  /** Modo Fiesta: el comodín 50/50 oculta dos opciones incorrectas al jugador (uno por partida). */
+  useFiftyFifty(playerId: string, questionIndex: number) {
+    this.assertOpen();
+    const player = this.players.get(playerId);
+    if (!player) throw new GameError('NOT_ALLOWED');
+    if (!this.settings.partyMode) throw new GameError('INVALID_STATE', 'El 50/50 solo está en el Modo Fiesta.');
+    if (this.phase !== 'question' || questionIndex !== this.currentIndex || this.paused) throw new GameError('INVALID_STATE');
+    if (this.answers.has(playerId)) throw new GameError('ALREADY_ANSWERED');
+    if (player.fiftyIndex !== null) throw new GameError('INVALID_STATE', 'Ya usaste tu 50/50 en esta partida.');
+    const q = this.questions[questionIndex]!;
+    const wrong = [0, 1, 2, 3].filter((i) => i !== q.correctIndex);
+    player.fiftyIndex = questionIndex;
+    player.fiftyHidden = shuffle(wrong, this.rng).slice(0, 2).sort();
+    this.touch();
+    this.changed();
+  }
+
   submitAnswer(playerId: string, questionIndex: number, choice: number) {
     this.assertOpen();
     const player = this.players.get(playerId);
@@ -418,6 +467,9 @@ export class Room {
     if (this.paused) throw new GameError('INVALID_STATE', 'La partida está en pausa.');
     if (this.answers.has(playerId)) throw new GameError('ALREADY_ANSWERED');
     if (!Number.isInteger(choice) || choice < 0 || choice > 3) throw new GameError('INVALID_PAYLOAD');
+    if (player.fiftyIndex === questionIndex && player.fiftyHidden.includes(choice)) {
+      throw new GameError('INVALID_PAYLOAD', 'Esa opción la descartó el 50/50.');
+    }
     const now = Date.now();
     if (this.timerKind !== 'question' || this.timerDeadline === null || now > this.timerDeadline) {
       throw new GameError('TOO_LATE');
@@ -452,7 +504,9 @@ export class Room {
       // Modo Fiesta: multiplicador de la pregunta especial y bonificación por la racha que se traía.
       const multiplier = q.special ? SPECIAL_INFO[q.special].multiplier : 1;
       const bonus = correct && this.settings.partyMode ? streakBonus(p.streak) : 0;
-      const points = Math.round(basePoints * multiplier * (1 + bonus));
+      const usedFiftyFifty = p.fiftyIndex === this.currentIndex;
+      const points = Math.round(basePoints * multiplier * (1 + bonus) * (usedFiftyFifty ? FIFTY_FIFTY_FACTOR : 1));
+      const bet = q.bet ? (this.bets.get(p.id) ?? 0) : 0;
       p.results.set(this.currentIndex, {
         choice: ans?.choice ?? null,
         correct,
@@ -460,6 +514,9 @@ export class Room {
         elapsedMs: ans?.elapsedMs ?? null,
         multiplier,
         streakBonus: bonus,
+        usedFiftyFifty,
+        bet,
+        betDelta: 0,
       });
       p.lastPoints = points;
       if (ans) {
@@ -476,6 +533,14 @@ export class Room {
         if (!fastest || ans.elapsedMs < fastest.ms) fastest = { name: p.name, ms: ans.elapsedMs };
       } else {
         p.streak = 0;
+      }
+      // Apuesta: se gana o se pierde lo apostado (nunca por debajo de 0 puntos).
+      if (bet > 0) {
+        const before = p.score;
+        p.score = Math.max(0, p.score + (correct ? bet : -bet));
+        const delta = p.score - before;
+        p.results.get(this.currentIndex)!.betDelta = delta;
+        p.lastPoints = points + delta;
       }
     }
     if (fastest && (!this.fastestAnswer || fastest.ms < this.fastestAnswer.ms)) this.fastestAnswer = fastest;
@@ -537,7 +602,10 @@ export class Room {
     const next = this.currentIndex + 1;
     if (next >= this.questions.length) return this.finish(false);
     this.phase = 'countdown';
-    this.schedule('countdown', BETWEEN_QUESTIONS_COUNTDOWN_MS, () => this.openQuestion(next));
+    this.bets.clear();
+    // Antes de una pregunta con apuesta, la cuenta regresiva da tiempo para decidir.
+    const countdownMs = this.questions[next]!.bet ? BET_COUNTDOWN_MS : BETWEEN_QUESTIONS_COUNTDOWN_MS;
+    this.schedule('countdown', countdownMs, () => this.openQuestion(next));
     this.changed();
   }
 
@@ -794,7 +862,23 @@ export class Room {
       difficulty: q.difficulty,
       audioUrl: q.audioUrl,
       special: q.special,
+      bet: q.bet,
     };
+  }
+
+  /** Apuestas abiertas: durante la cuenta regresiva de una pregunta con apuesta. */
+  private bettingView(): BettingView | null {
+    const q = this.questions[this.currentIndex + 1];
+    if (this.phase !== 'countdown' || !q?.bet) return null;
+    const bets = [...this.bets.entries()]
+      .filter(([, amount]) => amount > 0)
+      .map(([playerId, amount]) => {
+        const p = this.players.get(playerId);
+        return p ? { playerId, name: p.name, avatar: p.avatar, amount } : null;
+      })
+      .filter((b): b is NonNullable<typeof b> => !!b)
+      .sort((a, b) => b.amount - a.amount);
+    return { questionIndex: this.currentIndex + 1, category: q.category, difficulty: q.difficulty, bets };
   }
 
   /** Pregunta especial que viene, para anunciarla durante la cuenta regresiva. */
@@ -858,6 +942,11 @@ export class Room {
       countdownEndsAt: this.timerKind === 'countdown' && !this.paused ? this.timerDeadline : null,
       nextAudioUrl: this.phase === 'countdown' ? (this.questions[this.currentIndex + 1]?.audioUrl ?? null) : null,
       nextSpecial: this.nextSpecial(),
+      betting: this.bettingView(),
+      fiftyFiftyCount:
+        this.phase === 'question' || this.phase === 'locked' || this.phase === 'reveal'
+          ? [...this.players.values()].filter((x) => x.fiftyIndex === this.currentIndex).length
+          : 0,
       answeredCount: this.answers.size,
       expectedCount: connected,
       reveal: this.publicReveal(),
@@ -919,6 +1008,17 @@ export class Room {
       timer: this.timerView(),
       countdownEndsAt: this.timerKind === 'countdown' && !this.paused ? this.timerDeadline : null,
       nextSpecial: this.nextSpecial(),
+      betting: (() => {
+        const b = this.bettingView();
+        return b
+          ? { questionIndex: b.questionIndex, category: b.category, difficulty: b.difficulty, myBet: this.bets.get(p.id) ?? null, maxBet: p.score }
+          : null;
+      })(),
+      fiftyFifty: {
+        available:
+          this.settings.partyMode && this.phase === 'question' && !this.paused && p.fiftyIndex === null && !this.answers.has(p.id),
+        hiddenOptions: inQuestion && p.fiftyIndex === this.currentIndex ? p.fiftyHidden : [],
+      },
       myAnswer: inQuestion && answer ? { choice: answer.choice, elapsedMs: answer.elapsedMs } : null,
       answeredCount: this.answers.size,
       result:
@@ -931,6 +1031,9 @@ export class Room {
               pointsEarned: result.points,
               multiplier: result.multiplier,
               streakBonus: result.streakBonus,
+              usedFiftyFifty: result.usedFiftyFifty,
+              bet: result.bet,
+              betDelta: result.betDelta,
               explanation: q.explanation,
             }
           : null,
@@ -979,5 +1082,7 @@ function freshStats() {
     lastPoints: 0,
     results: new Map<number, QuestionResult>(),
     published: { score: 0, rank: null, correctCount: 0, streak: 0 } as PublishedStanding,
+    fiftyIndex: null as number | null,
+    fiftyHidden: [] as number[],
   };
 }

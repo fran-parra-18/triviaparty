@@ -136,7 +136,7 @@ export function SettingsPanel({
               {(
                 [
                   [false, '🎯 Clásico', 'Todas las preguntas valen lo mismo.'],
-                  [true, '🎉 Modo Fiesta', 'Preguntas relámpago, dobles y bomba al azar, bonificación por racha y la última vale el doble.'],
+                  [true, '🎉 Modo Fiesta', 'Preguntas relámpago, dobles y bomba al azar, rachas, apuestas, un comodín 50/50 y la última vale el doble.'],
                 ] as const
               ).map(([value, title, hint]) => (
                 <button

@@ -44,6 +44,17 @@ export interface QuestionView {
   audioUrl: string | null;
   /** Pregunta especial del Modo Fiesta (null en las normales). */
   special: SpecialKind | null;
+  /** Pregunta con apuesta (Modo Fiesta). */
+  bet: boolean;
+}
+
+/** Apuestas abiertas antes de una pregunta con apuesta (vista de la pantalla principal). */
+export interface BettingView {
+  questionIndex: number;
+  category: CategoryId;
+  difficulty: Difficulty;
+  /** Apuestas mayores que 0 hechas hasta ahora. */
+  bets: { playerId: string; name: string; avatar: number; amount: number }[];
 }
 
 export interface RevealView {
@@ -139,6 +150,9 @@ export interface HostView {
   nextAudioUrl: string | null;
   /** Pregunta especial que viene (solo durante la cuenta regresiva). */
   nextSpecial: SpecialKind | null;
+  betting: BettingView | null;
+  /** Cuántos usaron el 50/50 en la pregunta actual. */
+  fiftyFiftyCount: number;
   answeredCount: number;
   expectedCount: number;
   reveal: RevealView | null;
@@ -163,6 +177,11 @@ export interface PlayerResult {
   multiplier: number;
   /** Bonificación por racha aplicada, de 0 a 0,5 (solo Modo Fiesta). */
   streakBonus: number;
+  /** Si usó el 50/50 en esta pregunta (los puntos se reducen a la mitad). */
+  usedFiftyFifty: boolean;
+  /** Apuesta hecha (0 si no apostó) y cuánto ganó o perdió con ella. */
+  bet: number;
+  betDelta: number;
   explanation: string;
 }
 
@@ -192,6 +211,10 @@ export interface PlayerView {
   countdownEndsAt: number | null;
   /** Pregunta especial que viene (solo durante la cuenta regresiva). */
   nextSpecial: SpecialKind | null;
+  /** Apuesta de la próxima pregunta (solo durante su cuenta regresiva). */
+  betting: { questionIndex: number; category: CategoryId; difficulty: Difficulty; myBet: number | null; maxBet: number } | null;
+  /** Comodín 50/50: si puede usarlo ahora y qué opciones le oculta en la pregunta actual. */
+  fiftyFifty: { available: boolean; hiddenOptions: number[] };
   myAnswer: { choice: number; elapsedMs: number } | null;
   answeredCount: number;
   result: PlayerResult | null;

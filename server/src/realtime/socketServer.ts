@@ -1,6 +1,8 @@
 import {
   ERROR_MESSAGES,
   answerPayloadSchema,
+  betPayloadSchema,
+  fiftyFiftyPayloadSchema,
   hostReclaimPayloadSchema,
   joinPayloadSchema,
   kickPayloadSchema,
@@ -240,6 +242,17 @@ export function registerSocketHandlers(io: IoServer, manager: RoomManager, opts:
       const { room, playerId } = requirePlayer();
       const { questionIndex, choice } = parse(answerPayloadSchema, payload);
       room.submitAnswer(playerId, questionIndex, choice);
+    });
+
+    handle('player:bet', (payload) => {
+      const { room, playerId } = requirePlayer();
+      const { questionIndex, amount } = parse(betPayloadSchema, payload);
+      room.placeBet(playerId, questionIndex, amount);
+    });
+
+    handle('player:fiftyFifty', (payload) => {
+      const { room, playerId } = requirePlayer();
+      room.useFiftyFifty(playerId, parse(fiftyFiftyPayloadSchema, payload).questionIndex);
     });
 
     // El líder puede configurar la partida desde el celular, con las mismas reglas que el anfitrión.

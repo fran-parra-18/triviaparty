@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { BETWEEN_QUESTIONS_COUNTDOWN_MS, COUNTDOWN_MS, streakBonus } from '@trivia/shared';
-import { computeAwards, planSpecials, type AwardInput } from '../../src/game/party';
+import { BET_COUNTDOWN_MS, BETWEEN_QUESTIONS_COUNTDOWN_MS, COUNTDOWN_MS, streakBonus } from '@trivia/shared';
+import { computeAwards, planBets, planSpecials, type AwardInput } from '../../src/game/party';
 import { Room } from '../../src/game/Room';
 import { InMemoryQuestionRepository } from '../../src/questions/repository';
 import { makeQuestion } from '../helpers/fixtures';
@@ -44,6 +44,23 @@ describe('planSpecials', () => {
 
   it('con menos de 3 preguntas no hay especiales', () => {
     expect(planSpecials([{ audioUrl: null }, { audioUrl: null }], seeded(1))).toEqual([null, null]);
+  });
+});
+
+describe('planBets', () => {
+  it('nunca en la primera ni en una especial, sin dos seguidas y aproximadamente 1 de cada 5', () => {
+    for (let n = 4; n <= 30; n++) {
+      for (let seed = 1; seed <= 30; seed++) {
+        const rng = seeded(seed * 31 + n);
+        const specials = planSpecials(Array.from({ length: n }, () => ({ audioUrl: null })), rng);
+        const bets = planBets(specials, rng);
+        expect(bets[0]).toBe(false);
+        bets.forEach((b, i) => b && expect(specials[i]).toBeNull());
+        const idx = bets.map((b, i) => (b ? i : -1)).filter((i) => i >= 0);
+        for (let j = 1; j < idx.length; j++) expect(idx[j]! - idx[j - 1]!).toBeGreaterThanOrEqual(2);
+        expect(idx.length).toBeLessThanOrEqual(Math.max(1, Math.floor(n / 5)));
+      }
+    }
   });
 });
 
@@ -116,7 +133,8 @@ describe('Room — Modo Fiesta', () => {
       if (room.phase === 'leaderboard') room.next();
       if (room.phase === 'countdown') {
         announced = room.hostView().nextSpecial;
-        vi.advanceTimersByTime(BETWEEN_QUESTIONS_COUNTDOWN_MS);
+        // Antes de una pregunta con apuesta la cuenta regresiva es más larga.
+        vi.advanceTimersByTime(room.hostView().betting ? BET_COUNTDOWN_MS : BETWEEN_QUESTIONS_COUNTDOWN_MS);
       }
     }
     return seen;
@@ -163,5 +181,95 @@ describe('Room — Modo Fiesta', () => {
     expect(kinds).toEqual(expect.arrayContaining(['cerebrito', 'rayo', 'imparable']));
     expect(kinds).not.toContain('caotico'); // no falló ninguna
     expect(room.playerView(a.id)!.final!.awards).toHaveLength(final.awards.length);
+  });
+
+  /** Avanza hasta la cuenta regresiva de la primera pregunta con apuesta, con Ana acertando todo. */
+  async function toFirstBet(seed: number, players: string[]) {
+    const room = makeRoom({ partyMode: true, questionCount: 10 }, seed);
+    const ids = players.map((n, i) => room.addPlayer(n, `s${i}`).id);
+    await room.start();
+    vi.advanceTimersByTime(COUNTDOWN_MS);
+    for (let i = 0; i < 10; i++) {
+      const q = room._debugCurrentQuestion()!;
+      ids.forEach((id, k) => room.submitAnswer(id, i, k === 0 ? q.correctIndex : (q.correctIndex + 1) % 4));
+      room.next();
+      room.next();
+      room.next();
+      if (room.hostView().betting) return { room, ids, index: i + 1 };
+      vi.advanceTimersByTime(BETWEEN_QUESTIONS_COUNTDOWN_MS);
+    }
+    throw new Error('No hubo pregunta con apuesta');
+  }
+
+  it('apuestas: se gana o se pierde lo apostado, sin bajar de 0, y solo lo que se tiene', async () => {
+    const { room, ids, index } = await toFirstBet(3, ['Ana', 'Beto']);
+    const [ana, beto] = ids as [string, string];
+    const anaScore = room.players.get(ana)!.score;
+    expect(room.playerView(ana)!.betting).toMatchObject({ questionIndex: index, myBet: null, maxBet: anaScore });
+    // Beto tiene 0 puntos: no puede apostar más de lo que tiene.
+    expect(() => room.placeBet(beto, index, 250)).toThrow();
+    expect(() => room.placeBet(ana, index, 300)).toThrow();
+    expect(() => room.placeBet(ana, index + 1, 250)).toThrow();
+    room.placeBet(beto, index, 0);
+    room.placeBet(ana, index, 250);
+    room.placeBet(ana, index, 500); // puede cambiar de idea
+    expect(room.hostView().betting!.bets).toEqual([expect.objectContaining({ name: 'Ana', amount: 500 })]);
+
+    vi.advanceTimersByTime(BET_COUNTDOWN_MS);
+    expect(room.phase).toBe('question');
+    expect(room.hostView().question!.bet).toBe(true);
+    const q = room._debugCurrentQuestion()!;
+    room.submitAnswer(ana, index, (q.correctIndex + 1) % 4); // Ana falla
+    room.submitAnswer(beto, index, q.correctIndex);
+    room.next();
+    const r = room.playerView(ana)!.result!;
+    expect(r).toMatchObject({ bet: 500, betDelta: -500, pointsEarned: 0 });
+    expect(room.players.get(ana)!.score).toBe(anaScore - 500);
+    expect(() => room.placeBet(ana, index, 0)).toThrow(); // ya no hay apuestas abiertas
+  });
+
+  it('50/50: oculta dos incorrectas solo a quien lo usa, una vez por partida, y da la mitad de puntos', async () => {
+    const room = makeRoom({ partyMode: true, questionCount: 5 });
+    const a = room.addPlayer('Ana', 's1');
+    const b = room.addPlayer('Beto', 's2');
+    await room.start();
+    vi.advanceTimersByTime(COUNTDOWN_MS);
+    const q = room._debugCurrentQuestion()!;
+    expect(room.playerView(a.id)!.fiftyFifty).toEqual({ available: true, hiddenOptions: [] });
+    room.useFiftyFifty(a.id, 0);
+    const hidden = room.playerView(a.id)!.fiftyFifty.hiddenOptions;
+    expect(hidden).toHaveLength(2);
+    expect(hidden).not.toContain(q.correctIndex);
+    expect(room.playerView(b.id)!.fiftyFifty.hiddenOptions).toEqual([]);
+    expect(room.hostView().fiftyFiftyCount).toBe(1);
+    expect(() => room.useFiftyFifty(a.id, 0)).toThrow();
+    expect(() => room.submitAnswer(a.id, 0, hidden[0]!)).toThrow();
+    room.submitAnswer(a.id, 0, q.correctIndex);
+    room.submitAnswer(b.id, 0, q.correctIndex);
+    room.next();
+    expect(room.playerView(a.id)!.result).toMatchObject({ usedFiftyFifty: true, pointsEarned: 500 });
+    expect(room.playerView(b.id)!.result).toMatchObject({ usedFiftyFifty: false, pointsEarned: 1000 });
+    room.next();
+    room.next();
+    vi.advanceTimersByTime(8000);
+    expect(room.playerView(a.id)!.fiftyFifty.available).toBe(false); // ya lo gastó
+    expect(() => room.useFiftyFifty(a.id, 1)).toThrow();
+  });
+
+  it('en el modo clásico no hay 50/50 ni apuestas', async () => {
+    const room = makeRoom({ partyMode: false, questionCount: 10 });
+    const a = room.addPlayer('Ana', 's1');
+    await room.start();
+    vi.advanceTimersByTime(COUNTDOWN_MS);
+    expect(room.playerView(a.id)!.fiftyFifty.available).toBe(false);
+    expect(() => room.useFiftyFifty(a.id, 0)).toThrow();
+    for (let i = 0; i < 9; i++) {
+      room.submitAnswer(a.id, i, 0);
+      room.next();
+      room.next();
+      room.next();
+      expect(room.hostView().betting).toBeNull();
+      vi.advanceTimersByTime(BETWEEN_QUESTIONS_COUNTDOWN_MS);
+    }
   });
 });

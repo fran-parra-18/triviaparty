@@ -132,9 +132,14 @@ export function Leaderboard({
                 {e.name}
                 {moved && settled && <span className="ml-2 text-base text-emerald-300" aria-label="sube">▲</span>}
               </span>
-              {e.lastPoints > 0 && !compact && (
-                <span className="animate-pop-in rounded-full bg-emerald-400/20 px-3 py-1 text-lg font-bold text-emerald-200">
-                  +{formatPoints(e.lastPoints)}
+              {e.lastPoints !== 0 && !compact && (
+                <span
+                  className={`animate-pop-in rounded-full px-3 py-1 text-lg font-bold ${
+                    e.lastPoints > 0 ? 'bg-emerald-400/20 text-emerald-200' : 'bg-rose-400/20 text-rose-200'
+                  }`}
+                >
+                  {e.lastPoints > 0 ? '+' : '−'}
+                  {formatPoints(Math.abs(e.lastPoints))}
                 </span>
               )}
               <ScoreValue value={e.score} className={`font-display font-bold tabular-nums ${compact ? 'text-xl' : 'text-3xl'}`} />

@@ -70,6 +70,11 @@ export const answerPayloadSchema = z.object({
   questionIndex: z.number().int().min(0).max(QUESTION_COUNT_MAX),
   choice: z.number().int().min(0).max(3),
 });
+export const betPayloadSchema = z.object({
+  questionIndex: z.number().int().min(0).max(QUESTION_COUNT_MAX),
+  amount: z.union([z.literal(0), z.literal(250), z.literal(500)]),
+});
+export const fiftyFiftyPayloadSchema = z.object({ questionIndex: z.number().int().min(0).max(QUESTION_COUNT_MAX) });
 export const setLeaderPayloadSchema = z.object({ playerId: z.string().min(1).max(64).nullable() });
 export const leaderControlPayloadSchema = z.object({
   action: z.enum(['start', 'next', 'pause', 'resume', 'playAgain']),

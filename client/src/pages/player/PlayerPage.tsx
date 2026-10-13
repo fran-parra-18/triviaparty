@@ -1,10 +1,10 @@
-import { PODIUM_REVEAL_MS, ROOM_CODE_LENGTH, nextActionLabel, type GameSettings, type LeaderAction, type PlayerView } from '@trivia/shared';
+import { BET_OPTIONS, DIFFICULTY_LABELS, PODIUM_REVEAL_MS, ROOM_CODE_LENGTH, nextActionLabel, type GameSettings, type LeaderAction, type PlayerView } from '@trivia/shared';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { CountdownNumber, Podium, TimerBar, fireConfetti, useCountdownNumber } from '../../components/game';
 import { SettingsPanel, settingsSummary } from '../../components/SettingsPanel';
 import { AwardCard, SpecialAnnouncement, SpecialBadge } from '../../components/party';
-import { Avatar, CategoryBadge, ConnectionBanner, Logo, OPTION_BG, OPTION_NAMES, OPTION_TEXT, OptionShape, Screen, SoundToggle, Spinner, Toast } from '../../components/ui';
+import { Avatar, CategoryBadge, categoryLabel, ConnectionBanner, Logo, OPTION_BG, OPTION_NAMES, OPTION_TEXT, OptionShape, Screen, SoundToggle, Spinner, Toast } from '../../components/ui';
 import { usePlayerSession } from '../../hooks/usePlayerSession';
 import { formatPoints, ordinal, useConnection, useCountUp, useOnChange } from '../../lib/hooks';
 import { sounds, vibrate } from '../../lib/sound';
@@ -22,7 +22,7 @@ export function PlayerPage() {
       <ConnectionBanner {...conn} />
       <Toast message={session.error} onClose={session.clearError} />
       {view ? (
-        <PlayerGame view={view} onAnswer={session.answer} onLeave={session.leave} onControl={session.control} onUpdateSettings={session.updateSettings} />
+        <PlayerGame view={view} onAnswer={session.answer} onLeave={session.leave} onControl={session.control} onUpdateSettings={session.updateSettings} party={{ bet: session.bet, fiftyFifty: session.fiftyFifty }} />
       ) : (
         <div className="relative z-10 flex min-h-dvh flex-col items-center justify-center gap-6 px-5 py-8">
           <Link to="/" aria-label="Inicio">
@@ -150,12 +150,14 @@ function PlayerGame({
   onLeave,
   onControl,
   onUpdateSettings,
+  party,
 }: {
   view: PlayerView;
   onAnswer: (index: number, choice: number) => Promise<boolean>;
   onLeave: () => Promise<void>;
   onControl: (action: LeaderAction) => Promise<boolean>;
   onUpdateSettings: (settings: GameSettings) => Promise<boolean>;
+  party: PartyActions;
 }) {
   return (
     <div className="relative z-10 flex h-dvh flex-col">
@@ -187,7 +189,7 @@ function PlayerGame({
             <p className="text-white/60">{view.hostConnected ? 'El anfitrión la reanudará enseguida.' : 'Esperando a que el anfitrión se reconecte…'}</p>
           </Centered>
         ) : (
-          <PhaseView view={view} onAnswer={onAnswer} onLeave={onLeave} />
+          <PhaseView view={view} onAnswer={onAnswer} onLeave={onLeave} party={party} />
         )}
       </main>
       {view.me.isLeader && <LeaderBar view={view} onControl={onControl} onUpdateSettings={onUpdateSettings} />}
@@ -294,23 +296,31 @@ function Centered({ children }: { children: React.ReactNode }) {
   return <div className="flex flex-1 animate-fade-in flex-col items-center justify-center gap-4 text-center">{children}</div>;
 }
 
+/** Acciones del Modo Fiesta desde el celular. */
+interface PartyActions {
+  bet: (questionIndex: number, amount: number) => Promise<boolean>;
+  fiftyFifty: (questionIndex: number) => Promise<boolean>;
+}
+
 function PhaseView({
   view,
   onAnswer,
   onLeave,
+  party,
 }: {
   view: PlayerView;
   onAnswer: (index: number, choice: number) => Promise<boolean>;
   onLeave: () => Promise<void>;
+  party: PartyActions;
 }) {
   switch (view.phase) {
     case 'lobby':
       return <LobbyWait view={view} onLeave={onLeave} />;
     case 'countdown':
-      return <CountdownWait view={view} />;
+      return <CountdownWait view={view} onBet={party.bet} />;
     case 'question':
     case 'locked':
-      return <AnswerPad view={view} onAnswer={onAnswer} />;
+      return <AnswerPad view={view} onAnswer={onAnswer} onFiftyFifty={party.fiftyFifty} />;
     case 'reveal':
     case 'leaderboard':
       return <ResultView view={view} />;
@@ -359,9 +369,10 @@ function LobbyWait({ view, onLeave }: { view: PlayerView; onLeave: () => Promise
   );
 }
 
-function CountdownWait({ view }: { view: PlayerView }) {
+function CountdownWait({ view, onBet }: { view: PlayerView; onBet: PartyActions['bet'] }) {
   const n = useCountdownNumber(view.countdownEndsAt);
   useOnChange(n === null ? null : String(n), () => vibrate(30));
+  if (view.betting) return <BetPicker view={view} betting={view.betting} onBet={onBet} />;
   return (
     <Centered>
       <p className="font-display text-2xl text-white/70">
@@ -375,12 +386,64 @@ function CountdownWait({ view }: { view: PlayerView }) {
   );
 }
 
-function AnswerPad({ view, onAnswer }: { view: PlayerView; onAnswer: (index: number, choice: number) => Promise<boolean> }) {
+/** Elegir la apuesta durante la cuenta regresiva de una pregunta con apuesta. */
+function BetPicker({ view, betting, onBet }: { view: PlayerView; betting: NonNullable<PlayerView['betting']>; onBet: PartyActions['bet'] }) {
+  return (
+    <Centered>
+      <p className="font-display text-xl text-white/70">
+        Pregunta {(view.progress?.index ?? 0) + 1} de {view.progress?.total}
+      </p>
+      <p className="font-display text-4xl font-bold text-amber-200">💰 ¡Pregunta con apuesta!</p>
+      <p className="chip text-base">
+        {categoryLabel(betting.category)} · {DIFFICULTY_LABELS[betting.difficulty]}
+      </p>
+      <p className="max-w-xs text-white/75">Si aciertas, ganas lo apostado. Si fallas o no respondes, lo pierdes.</p>
+      <div className="grid w-full max-w-sm grid-cols-3 gap-2" role="radiogroup" aria-label="Apuesta">
+        {BET_OPTIONS.map((amount) => {
+          const chosen = (betting.myBet ?? 0) === amount;
+          return (
+            <button
+              key={amount}
+              type="button"
+              role="radio"
+              aria-checked={chosen}
+              disabled={amount > betting.maxBet}
+              onClick={() => {
+                vibrate(30);
+                void onBet(betting.questionIndex, amount);
+              }}
+              className={`rounded-2xl border-2 px-2 py-4 font-display text-xl font-bold transition disabled:opacity-30 ${
+                chosen ? 'border-amber-300 bg-amber-300/25' : 'border-white/15 bg-white/5'
+              }`}
+            >
+              {amount === 0 ? 'Nada' : formatPoints(amount)}
+            </button>
+          );
+        })}
+      </div>
+      <p className="text-sm text-white/50">
+        {betting.maxBet < BET_OPTIONS[1] ? 'Necesitas más puntos para apostar.' : 'Si no eliges, no apuestas.'}
+      </p>
+      <CountdownNumber endsAt={view.countdownEndsAt} size="text-6xl" />
+    </Centered>
+  );
+}
+
+function AnswerPad({
+  view,
+  onAnswer,
+  onFiftyFifty,
+}: {
+  view: PlayerView;
+  onAnswer: (index: number, choice: number) => Promise<boolean>;
+  onFiftyFifty: PartyActions['fiftyFifty'];
+}) {
   const q = view.question!;
   const [pending, setPending] = useState<{ index: number; choice: number } | null>(null);
   const chosen = view.myAnswer?.choice ?? (pending?.index === q.index ? pending.choice : null);
   const confirmed = !!view.myAnswer;
   const locked = view.phase === 'locked';
+  const hidden = view.fiftyFifty.hiddenOptions;
 
   useEffect(() => setPending(null), [q.index]);
 
@@ -423,13 +486,29 @@ function AnswerPad({ view, onAnswer }: { view: PlayerView; onAnswer: (index: num
       <TimerBar timer={view.timer} />
       <p className={`font-display font-bold leading-snug ${q.text.length > 110 ? 'text-lg' : 'text-xl'}`}>{q.text}</p>
       {q.audioUrl && <p className="-mt-1 text-sm text-brand-cyan">🎧 Escucha el fragmento en la pantalla principal</p>}
+      {q.bet && <p className="-mt-1 text-sm font-bold text-amber-200">💰 Pregunta con apuesta</p>}
+      {view.fiftyFifty.available ? (
+        <button
+          type="button"
+          className="btn-secondary self-center px-5 py-2 text-base"
+          onClick={() => {
+            vibrate(30);
+            void onFiftyFifty(q.index);
+          }}
+        >
+          🃏 Usar 50/50 <span className="text-xs text-white/60">(una vez · mitad de puntos)</span>
+        </button>
+      ) : (
+        hidden.length > 0 && <p className="-mt-1 self-center text-sm text-white/60">🃏 50/50 usado: si aciertas, sumas la mitad</p>
+      )}
       <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 min-[380px]:grid-cols-2">
         {q.options.map((opt, i) => (
           <button
             key={i}
             type="button"
-            className={`flex min-h-16 flex-col items-center justify-center gap-2 rounded-3xl p-3 text-center shadow-lg transition active:scale-95 ${OPTION_BG[i]} ${OPTION_TEXT[i]}`}
-            aria-label={`${OPTION_NAMES[i]}: ${opt}`}
+            disabled={hidden.includes(i)}
+            className={`flex min-h-16 flex-col items-center justify-center gap-2 rounded-3xl p-3 text-center shadow-lg transition active:scale-95 disabled:scale-95 disabled:opacity-15 disabled:line-through ${OPTION_BG[i]} ${OPTION_TEXT[i]}`}
+            aria-label={`${OPTION_NAMES[i]}: ${opt}${hidden.includes(i) ? ' (descartada por el 50/50)' : ''}`}
             onClick={async () => {
               setPending({ index: q.index, choice: i });
               sounds.answer();
@@ -478,10 +557,11 @@ function ResultView({ view }: { view: PlayerView }) {
           <div className="mx-auto flex h-28 w-28 items-center justify-center rounded-full bg-emerald-500 text-6xl shadow-2xl shadow-emerald-500/40">✓</div>
           <p className="font-display text-4xl font-bold text-emerald-300">¡Correcto!</p>
           <p className="font-display text-3xl font-bold">+{formatPoints(r.pointsEarned)}</p>
-          {(r.multiplier > 1 || r.streakBonus > 0) && (
+          {(r.multiplier > 1 || r.streakBonus > 0 || r.usedFiftyFifty) && (
             <p className="flex flex-wrap justify-center gap-2 text-sm font-bold">
               {r.multiplier > 1 && <span className="chip bg-amber-300/20 text-amber-200">×{r.multiplier} pregunta especial</span>}
               {r.streakBonus > 0 && <span className="chip bg-orange-400/20 text-orange-200">🔥 Racha +{Math.round(r.streakBonus * 100)} %</span>}
+              {r.usedFiftyFifty && <span className="chip">🃏 50/50: mitad de puntos</span>}
             </p>
           )}
         </div>
@@ -491,6 +571,12 @@ function ResultView({ view }: { view: PlayerView }) {
           <p className="font-display text-4xl font-bold text-rose-300">{r.answered ? 'Incorrecto' : 'Sin respuesta'}</p>
           <p className="text-lg text-white/70">0 puntos</p>
         </div>
+      )}
+      {r.bet > 0 && (
+        <p className={`chip text-lg font-bold ${r.betDelta >= 0 ? 'bg-emerald-400/20 text-emerald-200' : 'bg-rose-400/20 text-rose-200'}`}>
+          💰 Apuesta: {r.betDelta >= 0 ? '+' : '−'}
+          {formatPoints(Math.abs(r.betDelta))}
+        </p>
       )}
       <div className={`flex w-full max-w-sm items-center gap-3 rounded-2xl px-4 py-3 ${OPTION_BG[r.correctIndex]} ${OPTION_TEXT[r.correctIndex]}`}>
         <OptionShape index={r.correctIndex} className="h-7 w-7 shrink-0" />

@@ -119,6 +119,20 @@ export function usePlayerSession(urlCode: string | null) {
     return res.ok;
   }, []);
 
+  /** Modo Fiesta: apuesta para la próxima pregunta. */
+  const bet = useCallback(async (questionIndex: number, amount: number) => {
+    const res = await request('player:bet', { questionIndex, amount });
+    if (!res.ok) setError(errorText(res));
+    return res.ok;
+  }, []);
+
+  /** Modo Fiesta: usa el comodín 50/50 en la pregunta abierta. */
+  const fiftyFifty = useCallback(async (questionIndex: number) => {
+    const res = await request('player:fiftyFifty', { questionIndex });
+    if (!res.ok) setError(errorText(res));
+    return res.ok;
+  }, []);
+
   /** El líder cambia la configuración de la partida desde el celular. */
   const updateSettings = useCallback(async (settings: GameSettings) => {
     const res = await request('player:updateSettings', { settings });
@@ -150,6 +164,8 @@ export function usePlayerSession(urlCode: string | null) {
     join,
     answer,
     control,
+    bet,
+    fiftyFifty,
     updateSettings,
     leave,
     reset,

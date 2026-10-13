@@ -31,6 +31,10 @@ export interface ClientToServerEvents {
   'player:leave': (payload: Record<string, never>, ack: Ack) => void;
   /** Acciones de control permitidas al jugador líder. */
   'player:control': (payload: { action: LeaderAction }, ack: Ack) => void;
+  /** Modo Fiesta: apuesta para la próxima pregunta (durante su cuenta regresiva). */
+  'player:bet': (payload: { questionIndex: number; amount: number }, ack: Ack) => void;
+  /** Modo Fiesta: usa el comodín 50/50 en la pregunta abierta (uno por partida). */
+  'player:fiftyFifty': (payload: { questionIndex: number }, ack: Ack) => void;
   /** El líder cambia la configuración desde su celular (solo antes de empezar o al terminar). */
   'player:updateSettings': (payload: { settings: unknown }, ack: Ack) => void;
 

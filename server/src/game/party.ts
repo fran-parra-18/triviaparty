@@ -43,6 +43,29 @@ export function planSpecials(questions: readonly { audioUrl: string | null }[], 
   return plan;
 }
 
+/**
+ * Elige las preguntas con apuesta del Modo Fiesta: aproximadamente 1 de cada 5, nunca la primera
+ * (todos tienen 0 puntos) ni una pregunta especial, y sin dos seguidas.
+ */
+export function planBets(specials: readonly (SpecialKind | null)[], rng: Rng): boolean[] {
+  const n = specials.length;
+  const plan = Array.from({ length: n }, () => false);
+  if (n < 4) return plan;
+  const target = Math.max(1, Math.floor(n / 5));
+  const candidates = shuffle(
+    Array.from({ length: n - 1 }, (_, i) => i + 1).filter((i) => specials[i] === null),
+    rng,
+  );
+  const chosen: number[] = [];
+  for (const i of candidates) {
+    if (chosen.length >= target) break;
+    if (chosen.some((c) => Math.abs(c - i) < 2)) continue;
+    chosen.push(i);
+  }
+  for (const i of chosen) plan[i] = true;
+  return plan;
+}
+
 export interface AwardInput {
   playerId: string;
   name: string;

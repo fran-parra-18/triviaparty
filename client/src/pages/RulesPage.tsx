@@ -50,6 +50,14 @@ export function RulesPage() {
               <li className="ml-4 list-none">⚡ <strong>Relámpago</strong>: la mitad del tiempo · ✖️2 <strong>Puntos dobles</strong> · 💣 <strong>Bomba</strong>: el triple (como mucho una por partida).</li>
               <li>🏁 <strong>Última oportunidad</strong>: la última pregunta vale el doble, para que se pueda remontar.</li>
               <li>🔥 <strong>Racha</strong>: cada acierto seguido suma un 10 % extra, hasta un 50 %. Al fallar, la racha vuelve a cero.</li>
+              <li>
+                💰 <strong>Apuestas</strong>: más o menos 1 de cada 5 preguntas. Antes de verla se conoce la categoría y cada uno apuesta 0, 250 o 500 puntos
+                desde el celular (solo lo que tiene). Si acierta, gana lo apostado; si falla o no responde, lo pierde. Nadie baja de 0.
+              </li>
+              <li>
+                🃏 <strong>Comodín 50/50</strong>: uno por partida. Elimina dos opciones incorrectas solo en tu celular; si aciertas, sumas la mitad de los
+                puntos.
+              </li>
             </ul>
           </section>
 

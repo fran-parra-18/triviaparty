@@ -1,9 +1,9 @@
-import { nextActionLabel, type HostView } from '@trivia/shared';
+import { DIFFICULTY_LABELS, nextActionLabel, type HostView } from '@trivia/shared';
 import { useEffect, useRef, useState } from 'react';
 import { AutoAdvanceHint, CountdownNumber, Leaderboard, TimerRing, useCountdownNumber } from '../../components/game';
 import { MusicIndicator, useMusicClip } from '../../components/MusicClip';
 import { SpecialAnnouncement, SpecialBadge } from '../../components/party';
-import { CategoryBadge, OPTION_BG, OPTION_TEXT, OptionShape } from '../../components/ui';
+import { Avatar, CategoryBadge, categoryLabel, OPTION_BG, OPTION_TEXT, OptionShape } from '../../components/ui';
 import { useOnChange, useRemaining } from '../../lib/hooks';
 import { sounds } from '../../lib/sound';
 import type { HostActions } from './HostPage';
@@ -90,8 +90,32 @@ function CountdownScreen({ view }: { view: HostView }) {
         Pregunta {index + 1} de {view.progress?.total}
       </p>
       {view.nextSpecial && <SpecialAnnouncement kind={view.nextSpecial} />}
-      <div className="flex h-56 items-center justify-center">
-        {view.paused ? <span className="text-8xl">⏸</span> : <CountdownNumber endsAt={view.countdownEndsAt} size="text-[12rem]" />}
+      {view.betting && (
+        <div className="glass animate-pop-in w-full max-w-3xl space-y-4 p-6">
+          <p className="font-display text-5xl font-bold text-amber-200">💰 ¡Pregunta con apuesta!</p>
+          <p className="text-2xl">
+            {categoryLabel(view.betting.category)} · {DIFFICULTY_LABELS[view.betting.difficulty]}
+          </p>
+          <p className="text-xl text-white/70">Apuesten desde el celular: si aciertan, ganan lo apostado; si fallan, lo pierden.</p>
+          <div className="flex min-h-12 flex-wrap justify-center gap-3" aria-live="polite">
+            {view.betting.bets.length === 0 ? (
+              <span className="text-lg text-white/50">Nadie apostó todavía…</span>
+            ) : (
+              view.betting.bets.map((b) => (
+                <span key={b.playerId} className="animate-pop-in chip gap-2 text-xl">
+                  <Avatar name={b.name} index={b.avatar} size={28} /> {b.name} apostó <strong className="text-amber-200">{b.amount}</strong>
+                </span>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+      <div className={`flex items-center justify-center ${view.betting ? 'h-28' : 'h-56'}`}>
+        {view.paused ? (
+          <span className="text-8xl">⏸</span>
+        ) : (
+          <CountdownNumber endsAt={view.countdownEndsAt} size={view.betting ? 'text-8xl' : 'text-[12rem]'} />
+        )}
       </div>
     </div>
   );
@@ -129,6 +153,12 @@ function QuestionScreen({ view, clip }: { view: HostView; clip: ReturnType<typeo
             </span>
             <CategoryBadge category={q.category} difficulty={q.difficulty} />
             {q.special && <SpecialBadge kind={q.special} />}
+            {q.bet && <span className="chip font-bold text-amber-200">💰 Con apuesta</span>}
+            {view.fiftyFiftyCount > 0 && (
+              <span className="chip">
+                🃏 {view.fiftyFiftyCount} {view.fiftyFiftyCount === 1 ? 'usó' : 'usaron'} el 50/50
+              </span>
+            )}
           </div>
           <h1 key={q.index} className={`animate-slide-up font-display font-bold leading-tight ${textSize}`}>
             {q.text}
