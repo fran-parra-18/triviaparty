@@ -12,6 +12,8 @@ export interface ClientToServerEvents {
   'host:start': (payload: Record<string, never>, ack: Ack) => void;
   /** Avanza la partida según la fase: cierra la pregunta, revela, muestra la tabla o pasa a la siguiente. */
   'host:next': (payload: Record<string, never>, ack: Ack) => void;
+  /** Modo Musical: adelanta la canción al siguiente tramo (por ejemplo, si nadie la reconoce). */
+  'host:skipStage': (payload: Record<string, never>, ack: Ack) => void;
   'host:pause': (payload: Record<string, never>, ack: Ack) => void;
   'host:resume': (payload: Record<string, never>, ack: Ack) => void;
   'host:end': (payload: Record<string, never>, ack: Ack) => void;

@@ -65,7 +65,7 @@ export function settingsSummary(s: GameSettings): string {
         : m.categories.length === 1
           ? (CATEGORIES.find((c) => c.id === m.categories[0])?.name ?? '1 categoría')
           : `${m.categories.length} categorías musicales`;
-    return `🎵 Modo Musical · ${m.songCount} canciones · ${categories} · ${m.thinkSeconds} s para pensar`;
+    return `🎵 Modo Musical · ${m.songCount} canciones · ${categories} · ${m.thinkSeconds} s por tramo`;
   }
   const categories =
     s.categories.length === CATEGORIES.length
@@ -404,8 +404,9 @@ function MusicFields({
       <div>
         <p className="font-display text-xl font-bold">🎵 Adivina la canción</p>
         <p className="mt-1 text-sm text-white/70">
-          Cada canción suena por tramos, siempre desde el principio. Se puede responder en cualquier momento, una sola vez: cuanto antes,
-          más vale. Fallar no resta puntos, pero ya no puedes volver a responder esa canción.
+          Cada canción suena por tramos, siempre desde el principio, y cada tramo tiene su propio contador. Se puede responder en cualquier
+          momento, una sola vez: cuanto antes, más vale. Fallar no resta puntos, pero ya no puedes volver a responder esa canción. El
+          anfitrión puede pasar al siguiente tramo si nadie la reconoce.
         </p>
         <div className="mt-3 grid grid-cols-3 gap-2 text-center">
           {MUSIC_STAGE_RULES.map((r, i) => (
@@ -439,8 +440,8 @@ function MusicFields({
           </div>
         </Field>
 
-        <Field label="Tiempo para pensar entre tramos">
-          <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Tiempo para pensar entre tramos">
+        <Field label="Tiempo para responder en cada tramo">
+          <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Tiempo para responder en cada tramo">
             {MUSIC_THINK_OPTIONS.map((t) => (
               <Pill key={t} active={music.thinkSeconds === t} onClick={() => setMusic('thinkSeconds', t)} role="radio">
                 {t} s
@@ -448,7 +449,8 @@ function MusicFields({
             ))}
           </div>
           <p className="mt-2 text-sm text-white/60">
-            Silencio después de los 2 s y de los 5 s, para pensar antes del siguiente tramo. Cada canción dura como mucho {total} s.
+            El contador se reinicia en cada tramo: arranca cuando terminan de sonar los 2 s y los 5 s. El último tramo dura lo que el
+            fragmento (30 s). Cada canción dura como mucho {total} s, menos si responden todos antes.
           </p>
         </Field>
       </div>

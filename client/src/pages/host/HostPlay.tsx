@@ -1,8 +1,8 @@
-import { DIFFICULTY_LABELS, nextActionLabel, type HostView } from '@trivia/shared';
+import { DIFFICULTY_LABELS, nextActionLabel, type HostView, type MusicStage, type TimerView } from '@trivia/shared';
 import { useEffect, useRef, useState } from 'react';
 import { AutoAdvanceHint, CountdownNumber, Leaderboard, TimerRing, useCountdownNumber } from '../../components/game';
 import { MusicIndicator, useMusicClip } from '../../components/MusicClip';
-import { MusicStageBar } from '../../components/MusicStages';
+import { MusicStageBar, MusicStageRing, useMusicStage } from '../../components/MusicStages';
 import { SpecialAnnouncement, SpecialBadge } from '../../components/party';
 import { Avatar, CategoryBadge, categoryLabel, OPTION_BG, OPTION_TEXT, OptionShape } from '../../components/ui';
 import { useOnChange, useRemaining } from '../../lib/hooks';
@@ -14,22 +14,28 @@ export function HostPlay({ view, actions }: { view: HostView; actions: HostActio
   // Vive aquí (no en QuestionScreen) para que el fragmento siga sonando al pasar de la pregunta a la revelación.
   const clip = useMusicClip(view);
   const { replay } = clip;
+  const canSkipStage = view.phase === 'question' && !view.paused && !!view.question?.musicStages;
+  const { skipStage } = actions;
 
-  // R: repetir el fragmento de las pistas musicales.
+  // R: repetir el fragmento de las pistas musicales. T: pasar al siguiente tramo (Modo Musical).
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.target as HTMLElement).closest('input, select, textarea, [role="dialog"]')) return;
-      if (e.key.toLowerCase() === 'r') replay();
+      const key = e.key.toLowerCase();
+      if (key === 'r') replay();
+      else if (key === 't' && canSkipStage) void skipStage();
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [replay]);
+  }, [replay, canSkipStage, skipStage]);
 
   return (
     <main className="relative flex flex-1 flex-col px-4 pb-4 md:px-8">
       <div className="flex flex-1 flex-col">
         {view.phase === 'countdown' && <CountdownScreen view={view} />}
-        {(view.phase === 'question' || view.phase === 'locked' || view.phase === 'reveal') && <QuestionScreen view={view} clip={clip} />}
+        {(view.phase === 'question' || view.phase === 'locked' || view.phase === 'reveal') && (
+          <QuestionScreen view={view} clip={clip} onSkipStage={canSkipStage ? () => void skipStage() : null} />
+        )}
         {view.phase === 'leaderboard' && <LeaderboardScreen view={view} />}
       </div>
 
@@ -65,6 +71,7 @@ export function HostPlay({ view, actions }: { view: HostView; actions: HostActio
         </button>
         <span className="hidden flex-1 text-center text-sm text-white/40 md:block">
           Espacio: siguiente · P: pausa · F: pantalla completa · M: sonido{clip.active && ' · R: repetir'}
+          {view.question?.musicStages && ' · T: siguiente tramo'}
         </span>
         <AutoAdvanceHint at={view.autoAdvanceAt} />
         <button type="button" className="btn-primary ml-auto px-8 py-4 text-xl" onClick={() => void actions.next()} title="Siguiente (Espacio)">
@@ -93,7 +100,8 @@ function CountdownScreen({ view }: { view: HostView }) {
       </p>
       {music && index === 0 && (
         <p className="max-w-3xl text-2xl text-white/70">
-          Primero suenan 2 segundos, después 5 y al final el fragmento completo. Cuanto antes respondan, más vale: 1.500, 1.000 o 500.
+          Primero suenan 2 segundos, después 5 y al final el fragmento completo, y cada tramo tiene su propio contador. Cuanto antes
+          respondan, más vale: 1.500, 1.000 o 500.
         </p>
       )}
       {view.nextSpecial && <SpecialAnnouncement kind={view.nextSpecial} />}
@@ -128,21 +136,29 @@ function CountdownScreen({ view }: { view: HostView }) {
   );
 }
 
-function QuestionScreen({ view, clip }: { view: HostView; clip: ReturnType<typeof useMusicClip> }) {
+function QuestionScreen({
+  view,
+  clip,
+  onSkipStage,
+}: {
+  view: HostView;
+  clip: ReturnType<typeof useMusicClip>;
+  onSkipStage: (() => void) | null;
+}) {
   const q = view.question!;
   const reveal = view.reveal;
   const locked = view.phase === 'locked';
   const remaining = useRemaining(view.phase === 'question' && !view.paused ? view.timer?.endsAt : null);
   const lastTick = useRef<number | null>(null);
 
-  // Tic-tac en los últimos 5 segundos.
+  // Tic-tac en los últimos 5 segundos (en el Modo Musical, lo hace cada tramo).
   useEffect(() => {
     const s = Math.ceil(remaining / 1000);
-    if (view.phase === 'question' && s <= 5 && s > 0 && s !== lastTick.current) {
+    if (view.phase === 'question' && !q.musicStages && s <= 5 && s > 0 && s !== lastTick.current) {
       lastTick.current = s;
       sounds.urgentTick();
     }
-  }, [remaining, view.phase]);
+  }, [remaining, view.phase, q.musicStages]);
 
   const maxCount = reveal ? Math.max(1, ...reveal.counts) : 1;
   // Tamaños ligados a la altura de la pantalla: el contenido cabe en un televisor sin desplazarse.
@@ -170,13 +186,19 @@ function QuestionScreen({ view, clip }: { view: HostView; clip: ReturnType<typeo
           <h1 key={q.index} className={`animate-slide-up font-display font-bold leading-tight ${textSize}`}>
             {q.text}
           </h1>
-          <div className="self-start">
+          <div className="flex flex-wrap items-center gap-3 self-start">
             <MusicIndicator clip={clip} />
+            {onSkipStage && q.musicStages && <SkipStageButton stages={q.musicStages} timer={view.timer} onSkip={onSkipStage} />}
           </div>
           {q.musicStages && view.phase === 'question' && <MusicStageBar stages={q.musicStages} timer={view.timer} />}
         </div>
         <div className="flex flex-col items-center gap-2">
-          {view.phase === 'question' ? (
+          {view.phase === 'question' && q.musicStages ? (
+            <>
+              <MusicStageRing stages={q.musicStages} timer={view.timer} size={150} />
+              <MusicStageSounds stages={q.musicStages} timer={view.timer} />
+            </>
+          ) : view.phase === 'question' ? (
             <TimerRing timer={view.timer} size={150} />
           ) : (
             <div className="flex h-[min(150px,20vh)] w-[min(150px,20vh)] items-center justify-center rounded-full bg-white/10 text-center font-display text-2xl font-bold">
@@ -237,6 +259,32 @@ function QuestionScreen({ view, clip }: { view: HostView; clip: ReturnType<typeo
       )}
     </div>
   );
+}
+
+/** Modo Musical: pasar al siguiente tramo si nadie la reconoce (no aparece en el último). */
+function SkipStageButton({ stages, timer, onSkip }: { stages: MusicStage[]; timer: TimerView | null; onSkip: () => void }) {
+  const { last } = useMusicStage(stages, timer);
+  if (last) return null;
+  return (
+    <button type="button" className="btn-secondary px-5 py-2 text-lg" onClick={onSkip} title="Pasar al siguiente tramo (T)">
+      ⏭ Siguiente tramo
+    </button>
+  );
+}
+
+/** Modo Musical: aviso al cambiar de tramo y tic-tac al final de cada uno. */
+function MusicStageSounds({ stages, timer }: { stages: MusicStage[]; timer: TimerView | null }) {
+  const { current, listening, remainingMs, last } = useMusicStage(stages, timer);
+  const seconds = Math.ceil(remainingMs / 1000);
+  useOnChange(String(current), () => sounds.special());
+  const lastTick = useRef<string | null>(null);
+  useEffect(() => {
+    const key = `${current}-${seconds}`;
+    if (timer?.paused || listening || seconds > (last ? 5 : 3) || seconds <= 0 || key === lastTick.current) return;
+    lastTick.current = key;
+    sounds.urgentTick();
+  }, [current, seconds, listening, last, timer?.paused]);
+  return null;
 }
 
 function AnsweredCounter({ answered, expected }: { answered: number; expected: number }) {

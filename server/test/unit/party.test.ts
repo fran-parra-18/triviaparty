@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { BET_COUNTDOWN_MS, BETWEEN_QUESTIONS_COUNTDOWN_MS, COUNTDOWN_MS, musicStageAt, musicTimeline, streakBonus } from '@trivia/shared';
+import { BET_COUNTDOWN_MS, BETWEEN_QUESTIONS_COUNTDOWN_MS, COUNTDOWN_MS, musicStageAt, musicStageClock, musicTimeline, streakBonus } from '@trivia/shared';
 import { computeAwards, planBets, planSpecials, type AwardInput } from '../../src/game/party';
 import { Room } from '../../src/game/Room';
 import { InMemoryQuestionRepository } from '../../src/questions/repository';
@@ -275,16 +275,24 @@ describe('Room — Modo Fiesta', () => {
 });
 
 describe('Modo Musical — línea de tiempo', () => {
-  it('tramos de 2 s y 5 s con tiempo para pensar, y el fragmento completo', () => {
-    expect(musicTimeline(5)).toEqual([
-      { startMs: 0, playMs: 2000, endMs: 7000, points: 1500 },
-      { startMs: 7000, playMs: 5000, endMs: 17_000, points: 1000 },
-      { startMs: 17_000, playMs: 30_000, endMs: 47_000, points: 500 },
+  it('tramos de 2 s y 5 s con tiempo para responder, y el fragmento completo', () => {
+    expect(musicTimeline(10)).toEqual([
+      { startMs: 0, playMs: 2000, endMs: 12_000, points: 1500 },
+      { startMs: 12_000, playMs: 5000, endMs: 27_000, points: 1000 },
+      { startMs: 27_000, playMs: 30_000, endMs: 57_000, points: 500 },
     ]);
   });
 
   it('ubica cada instante en su tramo', () => {
-    const t = musicTimeline(3);
-    expect([0, 4999, 5000, 12_999, 13_000, 99_999].map((ms) => musicStageAt(t, ms))).toEqual([0, 0, 1, 1, 2, 2]);
+    const t = musicTimeline(10);
+    expect([0, 11_999, 12_000, 26_999, 27_000, 99_999].map((ms) => musicStageAt(t, ms))).toEqual([0, 0, 1, 1, 2, 2]);
+  });
+
+  it('el contador de cada tramo se reinicia: se escucha y después corre el tiempo para responder', () => {
+    const [first, , last] = musicTimeline(10);
+    expect(musicStageClock(first!, 1000)).toEqual({ listening: true, remainingMs: 10_000, totalMs: 10_000 });
+    expect(musicStageClock(first!, 5000)).toEqual({ listening: false, remainingMs: 7000, totalMs: 10_000 });
+    // En el último tramo el contador corre mientras suena.
+    expect(musicStageClock(last!, 37_000)).toEqual({ listening: false, remainingMs: 20_000, totalMs: 30_000 });
   });
 });

@@ -393,7 +393,7 @@ describe('Room — Modo Musical', () => {
     const room = new Room(
       'ABCDEF',
       { repository: new InMemoryQuestionRepository([...bank, ...songs]), hardMaxPlayers: 10, onChange: vi.fn(), onGameFinished: vi.fn() },
-      { questionCount: 10, categories: ['historia'], musicMode: true, music: { songCount: 4, categories: ['pistas-90s'], thinkSeconds: 5 }, ...settings },
+      { questionCount: 10, categories: ['historia'], musicMode: true, music: { songCount: 4, categories: ['pistas-90s'], thinkSeconds: 10 }, ...settings },
     );
     room.attachHost('host-socket');
     return room;
@@ -406,9 +406,9 @@ describe('Room — Modo Musical', () => {
     const view = room.hostView();
     expect(view.progress?.total).toBe(4);
     expect(view.question?.category).toBe('pistas-90s');
-    // 2 s + 5 para pensar, 5 s + 5 para pensar y el fragmento completo (30 s).
+    // 2 s + 10 para responder, 5 s + 10 para responder y el fragmento completo (30 s).
     expect(view.question?.musicStages?.map((s) => s.points)).toEqual([1500, 1000, 500]);
-    expect(view.timer?.durationMs).toBe(47_000);
+    expect(view.timer?.durationMs).toBe(57_000);
   });
 
   it('puntúa según el tramo en el que se respondió, sin castigo por fallar', async () => {
@@ -422,9 +422,9 @@ describe('Room — Modo Musical', () => {
     vi.advanceTimersByTime(1000);
     room.submitAnswer(ana.id, 0, right);
     room.submitAnswer(dani.id, 0, (right + 1) % 4);
-    vi.advanceTimersByTime(7000); // 8 s: segundo tramo
+    vi.advanceTimersByTime(12_000); // 13 s: segundo tramo
     room.submitAnswer(beto.id, 0, right);
-    vi.advanceTimersByTime(12_000); // 20 s: tercer tramo
+    vi.advanceTimersByTime(17_000); // 30 s: tercer tramo
     room.submitAnswer(caro.id, 0, right);
     expect(room.phase).toBe('locked');
     room.next();
@@ -436,12 +436,12 @@ describe('Room — Modo Musical', () => {
     expect(room.playerView(dani.id)!.me.score).toBe(0);
   });
 
-  it('el tiempo para pensar alarga los tramos', async () => {
-    const room = makeMusicRoom({ music: { songCount: 3, categories: ['pistas-80s'], thinkSeconds: 8 } });
+  it('el tiempo para responder alarga los tramos', async () => {
+    const room = makeMusicRoom({ music: { songCount: 3, categories: ['pistas-80s'], thinkSeconds: 20 } });
     const ana = room.addPlayer('Ana', 's1');
     await openFirstQuestion(room);
-    expect(room.hostView().timer?.durationMs).toBe(2000 + 8000 + 5000 + 8000 + 30_000);
-    vi.advanceTimersByTime(9000); // todavía dentro del primer tramo (2 s + 8 para pensar)
+    expect(room.hostView().timer?.durationMs).toBe(2000 + 20_000 + 5000 + 20_000 + 30_000);
+    vi.advanceTimersByTime(21_000); // todavía dentro del primer tramo (2 s + 20 para responder)
     room.submitAnswer(ana.id, 0, correctChoice(room));
     room.next();
     expect(room.playerView(ana.id)!.result!.pointsEarned).toBe(1500);
@@ -469,7 +469,40 @@ describe('Room — Modo Musical', () => {
   it('rechaza categorías que no son musicales en su configuración', () => {
     const room = makeMusicRoom();
     expectGameError(() => room.updateSettings({ music: { categories: ['historia'] } }), 'INVALID_PAYLOAD');
-    room.updateSettings({ music: { thinkSeconds: 3 } });
-    expect(room.settings.music).toMatchObject({ songCount: 4, thinkSeconds: 3, categories: ['pistas-90s'] });
+    expectGameError(() => room.updateSettings({ music: { thinkSeconds: 5 } }), 'INVALID_PAYLOAD');
+    room.updateSettings({ music: { thinkSeconds: 15 } });
+    expect(room.settings.music).toMatchObject({ songCount: 4, thinkSeconds: 15, categories: ['pistas-90s'] });
+  });
+
+  it('el anfitrión puede pasar al siguiente tramo; lo que vale sigue el reloj del servidor', async () => {
+    const room = makeMusicRoom();
+    const ana = room.addPlayer('Ana', 's1');
+    room.addPlayer('Beto', 's2');
+    await openFirstQuestion(room);
+    vi.advanceTimersByTime(3000);
+    room.skipMusicStage(); // al principio del tramo 2 (12 s)
+    expect(room.hostView().timer?.remainingMs).toBe(57_000 - 12_000);
+    room.skipMusicStage(); // al principio del tramo 3 (29 s)
+    expectGameError(() => room.skipMusicStage(), 'INVALID_STATE');
+    room.submitAnswer(ana.id, 0, correctChoice(room));
+    vi.advanceTimersByTime(28_000);
+    expect(room.phase).toBe('question');
+    vi.advanceTimersByTime(2000);
+    expect(room.phase).toBe('locked'); // el último tramo dura sus 30 s
+    room.next();
+    expect(room.playerView(ana.id)!.result).toMatchObject({ pointsEarned: 500, musicStage: 2 });
+  });
+
+  it('una configuración guardada de una versión anterior no impide crear la sala', () => {
+    const room = makeMusicRoom({ music: { songCount: 4, categories: ['pistas-90s'], thinkSeconds: 3 } });
+    expect(room.settings.musicMode).toBe(true);
+    expect(room.settings.music.thinkSeconds).toBe(10);
+  });
+
+  it('no se puede pasar de tramo fuera del Modo Musical', async () => {
+    const { room } = makeRoom();
+    room.addPlayer('Ana', 's1');
+    await openFirstQuestion(room);
+    expectGameError(() => room.skipMusicStage(), 'INVALID_STATE');
   });
 });

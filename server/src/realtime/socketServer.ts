@@ -190,6 +190,7 @@ export function registerSocketHandlers(io: IoServer, manager: RoomManager, opts:
       await requireHost().start();
     });
     handle('host:next', () => requireHost().next());
+    handle('host:skipStage', () => requireHost().skipMusicStage());
     handle('host:pause', () => requireHost().pause());
     handle('host:resume', () => requireHost().resume());
     handle('host:end', () => requireHost().end());

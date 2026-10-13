@@ -184,7 +184,23 @@ export class Room {
   ) {
     this.rng = deps.rng ?? secureRng;
     this.settings = DEFAULT_SETTINGS;
-    this.settings = this.parseSettings(settings);
+    this.settings = this.initialSettings(settings);
+  }
+
+  /**
+   * La configuración inicial suele venir guardada en el navegador del anfitrión, quizá de una versión
+   * anterior: si algo ya no es válido, se descarta esa parte en vez de impedir crear la sala.
+   */
+  private initialSettings(raw: unknown): GameSettings {
+    const patch = raw && typeof raw === 'object' ? (raw as Record<string, unknown>) : {};
+    for (const candidate of [patch, { ...patch, music: undefined }]) {
+      try {
+        return this.parseSettings(candidate);
+      } catch {
+        // se prueba con menos datos
+      }
+    }
+    return DEFAULT_SETTINGS;
   }
 
   // ───────────────────────── Conexiones ─────────────────────────
@@ -439,6 +455,25 @@ export class Room {
     // Modo Musical: la pregunta dura lo que la línea de tiempo de los tramos.
     this.questionDurationMs = q.musicStages ? q.musicStages[q.musicStages.length - 1]!.endMs : seconds * 1000;
     this.schedule('question', this.questionDurationMs, () => this.closeQuestion());
+    this.changed();
+  }
+
+  /**
+   * Modo Musical: salta al principio del siguiente tramo. Se adelanta el cierre de la pregunta, así
+   * la línea de tiempo (y lo que vale responder) sigue saliendo del reloj del servidor.
+   */
+  skipMusicStage() {
+    this.assertOpen();
+    const q = this.questions[this.currentIndex];
+    if (this.phase !== 'question' || this.paused || !q?.musicStages || this.timerDeadline === null) {
+      throw new GameError('INVALID_STATE', 'Ahora no se puede pasar de tramo.');
+    }
+    const elapsed = this.questionDurationMs - (this.timerDeadline - Date.now());
+    const current = musicStageAt(q.musicStages, elapsed);
+    const next = q.musicStages[current + 1];
+    if (!next) throw new GameError('INVALID_STATE', 'Ya es el último tramo.');
+    this.arm(this.questionDurationMs - next.startMs);
+    this.touch();
     this.changed();
   }
 

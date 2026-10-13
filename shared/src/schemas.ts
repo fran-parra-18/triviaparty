@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { CATEGORY_IDS } from './categories';
-import { MUSIC_CATEGORY_IDS, MUSIC_THINK_OPTIONS, isMusicCategory } from './music';
+import { MUSIC_CATEGORY_IDS, MUSIC_THINK_DEFAULT, MUSIC_THINK_OPTIONS, isMusicCategory } from './music';
 import {
   NAME_MAX_LENGTH,
   QUESTION_COUNT_MAX,
@@ -30,8 +30,8 @@ export const musicSettingsSchema = z.object({
   thinkSeconds: z
     .number()
     .int()
-    .refine((v) => (MUSIC_THINK_OPTIONS as readonly number[]).includes(v), 'Tiempo para pensar no permitido')
-    .default(5),
+    .refine((v) => (MUSIC_THINK_OPTIONS as readonly number[]).includes(v), 'Tiempo para responder no permitido')
+    .default(MUSIC_THINK_DEFAULT),
 });
 export type MusicSettings = z.infer<typeof musicSettingsSchema>;
 
@@ -61,7 +61,7 @@ export const gameSettingsSchema = z
     partyMode: z.boolean().default(false),
     /** Modo Musical: solo canciones, que se revelan en tramos; cuanto antes aciertas, más vale. */
     musicMode: z.boolean().default(false),
-    music: musicSettingsSchema.default({ songCount: 10, categories: [...MUSIC_CATEGORY_IDS], thinkSeconds: 5 }),
+    music: musicSettingsSchema.default({ songCount: 10, categories: [...MUSIC_CATEGORY_IDS], thinkSeconds: MUSIC_THINK_DEFAULT }),
   })
   .refine((s) => s.minPlayers <= s.maxPlayers, {
     message: 'El mínimo de jugadores no puede superar al máximo',

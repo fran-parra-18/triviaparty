@@ -89,14 +89,15 @@ export function useHostSession() {
   /** Ejecuta una acción del anfitrión y muestra el error si falla. */
   const act = useCallback(async (event: Parameters<typeof request>[0], payload: object = {}) => {
     const res = await request(event, payload as never);
-    // Pulsar «Siguiente» varias veces seguidas puede llegar tras el cambio de fase: no es un error real.
-    if (!res.ok && !(event === 'host:next' && res.error === 'INVALID_STATE')) setError(errorText(res));
+    // Pulsar «Siguiente» (o «Siguiente tramo») varias veces seguidas puede llegar tras el cambio: no es un error real.
+    if (!res.ok && !((event === 'host:next' || event === 'host:skipStage') && res.error === 'INVALID_STATE')) setError(errorText(res));
     return res.ok;
   }, []);
 
   const actions = {
     start: () => act('host:start'),
     next: () => act('host:next'),
+    skipStage: () => act('host:skipStage'),
     pause: () => act('host:pause'),
     resume: () => act('host:resume'),
     end: () => act('host:end'),
